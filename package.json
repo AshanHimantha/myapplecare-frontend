@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@nextui-org/input": "^2.4.6",
     "@tanstack/react-query": "^5.62.7",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
@@ -34,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.16"
   }
 }
