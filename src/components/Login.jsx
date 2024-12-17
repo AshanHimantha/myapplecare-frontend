@@ -1,16 +1,24 @@
-import React, { useState } from "react";
-import "./index.css";
+import { useState } from "react";
 import axios from "axios";
-import ChooseStore from "./components/ChooseStore";
-
+import "../index.css";
+import ChooseStore from "./ChooseStore";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate(); // Hook to navigate
 
+  const chooseView = () => {
+    console.log("Choosing view based on access levels");
+  };
 
+  const cashierAccess = () => {
+    console.log("Accessing cashier view");
+    navigate('/service-center'); // Redirect to ServiceCenter page
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,15 +29,15 @@ const Login = () => {
       });
       setMessage(response.data.message);
       const userData = response.data.user;
-     
+      
 
-      if ((userData.technician_access === 1 && userData.cashier_access === 1) || userData.admin_access === 1) {
-          setUser(userData);
+      if (
+        (userData.admin_access === 1 || userData.cashier_access === 1) &&
+        userData.technician_access === 1) {
+
+			setUser(userData);
       } else if (userData.cashier_access === 1) {
-        
-      } else if (userData.technician_access === 1) {
-      }else{
-        setMessage("You do not have access to this portal");
+       
       }
       // Store token and user data as needed
     } catch (error) {
