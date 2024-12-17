@@ -1,9 +1,10 @@
 import React from "react";
 
 const ChooseStore = () => {
+
   return (
-    <div className="lg:flex lg:flex-row items-center justify-center gap-10 pb-32 lg:mt-10 mt-1">
-        <div className="flex flex-col lg:w-72 lg:h-72 w-60 h-60 mb-10">
+    <div className="lg:flex lg:flex-row items-center justify-center gap-10 pb-32 lg:mt-10 mt-1 ">
+        <div className="flex flex-col lg:w-72 lg:h-72 w-60 h-60 mb-10 lg:mb-0" >
           <div
             className="flex flex-col items-center px-16 py-12 w-full text-xl font-medium leading-none text-center text-black bg-white rounded-xl border border-gray-200 border-solid max-md:px-5 max-md:mt-10"
             role="button"

@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import "./index.css";
 import axios from "axios";
-import ChooseStore from "./ChooseStore";
+import ChooseStore from "./components/ChooseStore";
+
 
 const Login = () => {
-  const [username, setUsername] = useState("ashan1@gmail.com");
-  const [password, setPassword] = useState("P@ssw0rd");
-  const [message, setMessage] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(null);
   const [user, setUser] = useState(null);
 
-  const chooseView = () => {
-    console.log("Choosing view based on access levels");
-  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,15 +21,15 @@ const Login = () => {
       });
       setMessage(response.data.message);
       const userData = response.data.user;
-      setUser(userData);
+     
 
-      if (
-        (userData.admin_access === 1 || userData.cashier_access === 1) &&
-        userData.technician_access === 1
-      ) {
-        chooseView();
+      if ((userData.technician_access === 1 && userData.cashier_access === 1) || userData.admin_access === 1) {
+          setUser(userData);
       } else if (userData.cashier_access === 1) {
+        
       } else if (userData.technician_access === 1) {
+      }else{
+        setMessage("You do not have access to this portal");
       }
       // Store token and user data as needed
     } catch (error) {
@@ -44,14 +43,14 @@ const Login = () => {
           <div className="text-2xl font-medium mb-4 text-dark">
             My AppleCare
           </div>
-          <div className="text-lg mb-4 text-gray-400">Sign In</div>
+          <div className="text-md mb-4 text-gray-400">Sign In</div>
         </div>
         {/* Logo */}
         <div className="flex items-center justify-center mb-6 mt-20">
           <img
             src="./images/Apple-ID.png" // Replace with actual logo
             alt="Apple Logo"
-            className="lg:h-40 lg:w-40 h-20 w-20"
+            className="lg:h-40 lg:w-40 "
           />
         </div>
 
@@ -64,13 +63,26 @@ const Login = () => {
         {/* Form */}
         {user == null ? (
           <div className="w-full max-w-sm rounded-lg p-6">
+            <div className="w-full text-center mb-1 mt-0">
+              {" "}
+              <text className="text-red-500 ">{message}</text>
+            </div>
+
             {/* Your form fields */}
             <div>
-              <label className="block text-gray-300 text-xs font-medium  absolute ml-3 mt-2 ">
+              <label className={
+                message == null?
+               "block text-gray-300 text-xs font-medium  absolute ml-3 mt-2 "
+               :"block text-red-500 text-xs font-medium  absolute ml-3 mt-2 "
+              }>
                 Username
               </label>
               <input
-                className="appearance-none border  rounded-t-md w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6"
+                className={
+                  message == null
+                    ? " border rounded-t-md rounded-b-none  w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6 "
+                    : " bg-red-100 border border-red-700  rounded-t-md rounded-b-none w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6 "
+                }
                 id="username"
                 type="text"
                 value={username}
@@ -79,13 +91,21 @@ const Login = () => {
             </div>
             <div className="mb-2">
               <label
-                className="block text-gray-300 text-xs font-medium  absolute ml-3 mt-2 "
+               className={
+                message == null?
+               "block text-gray-300 text-xs font-medium  absolute ml-3 mt-2 "
+               :"block text-red-500 text-xs font-medium  absolute ml-3 mt-2 "
+              }
                 htmlFor="password"
               >
                 Password
               </label>
               <input
-                className="appearance-none border border-t-0  rounded-b-md w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6"
+                className={
+                  message == null
+                    ? "appearance-none border  rounded-b-md border-t-0 w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6 "
+                    : "appearance-none bg-red-100 border border-red-700  rounded-b-md border-t-0 w-full py-2 px-3 font-semibold  leading-tight focus:outline-none focus:shadow-outline pt-6 "
+                }
                 id="password"
                 type="password"
                 value={password}
