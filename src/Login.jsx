@@ -1,7 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
-import "../index.css";
-import ChooseStore from "./ChooseStore";
+import "./index.css";
+import ChooseStore from "./components/ChooseStore";
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -11,42 +10,41 @@ const Login = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate(); // Hook to navigate
 
-  const chooseView = () => {
-    console.log("Choosing view based on access levels");
-  };
-
-  const cashierAccess = () => {
-    console.log("Accessing cashier view");
-    navigate('/service-center'); // Redirect to ServiceCenter page
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/login", {
-        email: username,
-        password: password,
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: username,
+          password: password
+        })
       });
-      setMessage(response.data.message);
-      const userData = response.data.user;
-      
 
-      if (
-        (userData.admin_access === 1 || userData.cashier_access === 1) &&
-        userData.technician_access === 1) {
+      const data = await response.json();
+      console.log(data);
+      setMessage(data.message);
+      const userData = data.user;
 
-			setUser(userData);
+      if ((userData.technician_access === 1 && userData.cashier_access === 1) || userData.admin_access === 1) {
+        setUser(userData);
       } else if (userData.cashier_access === 1) {
-       
+        navigate('/sales-outlet');
+      } else if (userData.technician_access === 1) {
+        navigate('/service-center');
       }
-      // Store token and user data as needed
     } catch (error) {
-      setMessage(error.response ? error.response.data.message : error.message);
+      setMessage(error.message);
     }
-  };
+};
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+      <div className="flex flex-col items-cenmin-h-screen bg-white">
         <div className=" top-4 absolute w-[90%]  boredr-b-2 border border-t-0 border-l-0 border-r-0 border-gray-200 flex items-center justify-between">
           <div className="text-2xl font-medium mb-4 text-dark">
             My AppleCare
