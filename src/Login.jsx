@@ -44,7 +44,7 @@ const Login = () => {
 };
   return (
     <>
-      <div className="flex flex-col items-cenmin-h-screen bg-white">
+      <div className="flex flex-col items-cenmin-h-screen bg-white justify-center items-center">
         <div className=" top-4 absolute w-[90%]  boredr-b-2 border border-t-0 border-l-0 border-r-0 border-gray-200 flex items-center justify-between">
           <div className="text-2xl font-medium mb-4 text-dark">
             My AppleCare
@@ -52,7 +52,7 @@ const Login = () => {
           <div className="text-md mb-4 text-gray-400">Sign In</div>
         </div>
         {/* Logo */}
-        <div className="flex items-center justify-center mb-6 mt-20">
+        <div className="flex items-center justify-center mb-6 mt-40">
           <img
             src="./images/Apple-ID.png" // Replace with actual logo
             alt="Apple Logo"
@@ -61,8 +61,8 @@ const Login = () => {
         </div>
 
         {/* Welcome Text */}
-        <h2 className="lg:text-2xl text-lg text-dark ">Welcome to</h2>
-        <h1 className="lg:text-[32px] text-2xl font-semibold text-dark ">
+        <h2 className="lg:text-2xl text-lg text-dark text-center">Welcome to</h2>
+        <h1 className="lg:text-[32px] text-2xl font-semibold text-dark text-center">
           My AppleCare Mobile
         </h1>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const CreateTicketForm = ({ onClose }) => {
+const CreateTicketForm = ({ onClose, onSuccess }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [contactNumber, setContactNumber] = useState('');
@@ -11,7 +11,7 @@ const CreateTicketForm = ({ onClose }) => {
   const [imei, setImei] = useState('');
   const [issue, setIssue] = useState('');
   const [errors, setErrors] = useState({});
-  const [waiting, setWaiting] = useState('');
+  const [waiting, setWaiting] = useState(false);
   const handlePriorityChange = (e) => {
     setSelectedPriority(e.target.value);
   };
@@ -50,7 +50,7 @@ const CreateTicketForm = ({ onClose }) => {
   };
 
   const handleSubmit = async (e) => {
-    setWaiting(true);
+    
     e.preventDefault();
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
@@ -70,10 +70,10 @@ const CreateTicketForm = ({ onClose }) => {
         issue,
       });
       console.log('Ticket created:', firstName, lastName, response.data);
-      // Reset form or handle success as needed
+      onSuccess();
+      onClose(); // Close form
     } catch (error) {
       console.error('Error creating ticket:', error);
-      // Handle error as needed
     }
   };
 
@@ -118,7 +118,7 @@ const CreateTicketForm = ({ onClose }) => {
         <label htmlFor="contactNumber" className="self-start mt-2.5">Contact Number</label>
         <input
           id="contactNumber"
-          type="text"
+          type="number"
           value={contactNumber}
           onChange={(e) => setContactNumber(e.target.value)}
           className="flex overflow-hidden mt-1 px-1.5 py-2 w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
@@ -250,7 +250,7 @@ const CreateTicketForm = ({ onClose }) => {
         />
         {errors.issue && <p className="text-red-500 text-xs mt-1">{errors.issue}</p>}
 
-{waiting==false?(
+{waiting===false?(
         <button
           type="submit"
           className="flex py-3 mt-5 text-lg font-medium text-white gap-3 rounded-lg bg-zinc-800 justify-center items-center"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TopMenu = () => {
+const ServiceCenterNav = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -31,8 +31,7 @@ const TopMenu = () => {
         <img src="/images/apple-logo.svg" alt="Logo" className="lg:w-4 lg:h-4 w-3 h-3" />
         <a className="text-sm font-semibold cursor-pointer" href='/service-center'>Service Center</a>
         <div className="flex space-x-4 text-xs font-semibold">
-          <a className="hover:text-gray-600 px-2 py-0.5 rounded cursor-pointer" href='/invoice'>Return</a>
-          <button className="hover:text-gray-600  px-2 py-0.5 rounded cursor-pointer">Invoice</button>
+          <a className="hover:text-gray-600  px-2 py-0.5 rounded cursor-pointer" href='/invoice'>Invoice</a>
         </div>
       </div>
 
@@ -50,4 +49,4 @@ const TopMenu = () => {
   );
 };
 
-export default TopMenu;
+export default ServiceCenterNav;

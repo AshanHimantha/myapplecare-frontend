@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CreateTicketForm from "./components/CreateTicketForm";
 import SegmentedPicker from "./components/SegmentedPicker";
-import TopMenu from "./components/TopMenu";
+import ServiceCenterNav from "./components/ServiceCenterNav";
+import Alert from './components/Alert';
+
 const ServiceCenter = () => {
   const [isCreateTicketVisible, setIsCreateTicketVisible] = useState(true);
-
+  const [showAlert, setShowAlert] = useState(false);
   const handleCreateTicketClick = () => {
     setIsCreateTicketVisible(!isCreateTicketVisible);
   };
@@ -20,7 +22,13 @@ const ServiceCenter = () => {
   };
   return (
     <>
-      <TopMenu />
+      <ServiceCenterNav />
+      <Alert 
+        isVisible={showAlert}
+        onClose={() => setShowAlert(false)}
+        message="Ticket Created Successfully"
+        type="success"
+      />
       <div className="w-full lg:h-screen flex overflow-hidden">
         <div className="lg:w-3/4 w-full  h-full flex justify-center ">
           <div className="w-11/12 ">
@@ -76,9 +84,9 @@ const ServiceCenter = () => {
                       Pending
                     </div>
                     <div className="w-1/12 flex justify-center">
-                      <button className="text-blue-500 text-center text-xs">
+                      <a className="text-blue-500 text-center text-xs" href="/view-ticket">
                         View
-                      </button>
+                      </a>
                     </div>
                   </div>
 
@@ -91,14 +99,17 @@ const ServiceCenter = () => {
         <AnimatePresence>
           {isCreateTicketVisible && (
             <motion.div
-              className="lg:w-1/4 w-10/12 bg-gray-300 h-full absolute right-0 lg:block"
+              className="lg:w-1/4 w-10/12 bg-gray-300 h-full absolute right-0 lg:relative"
               initial="hidden"
               animate="visible"
               exit="hidden"
               variants={drawerVariants}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <CreateTicketForm onClose={handleCreateTicketClick} />
+              <CreateTicketForm 
+                onClose={() => setIsCreateTicketVisible(false)}
+                onSuccess={() => setShowAlert(true)}
+              />
             </motion.div>
           )}
         </AnimatePresence>
