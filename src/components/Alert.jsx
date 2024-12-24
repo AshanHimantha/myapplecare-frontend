@@ -14,7 +14,7 @@ const Alert = ({ isVisible, onClose, message, type = 'success' }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="h-full w-full fixed top-0 left-0 backdrop-blur-sm flex justify-center items-center bg-black bg-opacity-10 z-50"
+          className="h-full w-full fixed top-0 left-0 backdrop-blur-sm flex justify-center items-center bg-black bg-opacity-10 z-[9999]"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}

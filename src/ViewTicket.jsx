@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import ServiceCenterNav from "./components/ServiceCenterNav";
 import SelectPoR from "./components/SelectPoR";
 import Parts from "./components/Parts";
+import Repair from "./components/Repair";
 
 const ViewTicket = () => {
-
-	// const [addItem, setAddItem] = React.useState(null);
+  const [addItem, setAddItem] = useState(null);
   return (
     <>
       <ServiceCenterNav />
@@ -26,15 +26,14 @@ const ViewTicket = () => {
           </div>
 
           <div className=" w-full flex lg:flex-row flex-col bg-white border border-gray-200 rounded-md  p-5 mt-2 gap-5">
-
             <div className="lg:w-4/12 w-full">
-			
-			{/* <SelectPoR/> */}
-
-			<Parts/>
-
-            
-			 
+              {addItem === "parts" ? (
+                <Parts onBack={() => setAddItem(null)} />
+              ) : addItem === "repair" ? (
+                <Repair onBack={() => setAddItem(null)} />
+              ) : (
+                <SelectPoR onSelect={setAddItem} selectedItem={addItem} />
+              )}
             </div>
 
             <div className="lg:w-8/12 w-full ">
@@ -54,11 +53,11 @@ const ViewTicket = () => {
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
                   {/* Example row */}
                   <div className="flex border-b p-3 text-sm">
-                    <div className="w-3/12 font-medium">iPhone 14 Pro Display
-					
-					</div>
+                    <div className="w-3/12 font-medium">
+                      iPhone 14 Pro Display
+                    </div>
                     <div className="w-3/12 text-gray-400 text-center">
-                     Display
+                      Display
                     </div>
                     <div className="w-3/12 text-center text-gray-400 ">
                       4000 LKR
@@ -69,34 +68,37 @@ const ViewTicket = () => {
 
                     <div className="w-1/12 flex justify-center">
                       <button className="text-blue-500 text-center text-xs">
-                        <img src="./images/bin.svg" alt="" srcset="" className="h-5 w-5" />
+                        <img
+                          src="./images/bin.svg"
+                          alt=""
+                          srcset=""
+                          className="h-5 w-5"
+                        />
                       </button>
                     </div>
                   </div>
 
                   {/* Add more rows as needed */}
                 </div>
-				<div className="text-start w-full font-medium text-lg mt-5 mb-2">
-                Total
-              </div>
-				<div className="w-full border border-gray-200 rounded-md flex flex-col ">
-					<div className="w-full flex justify-between p-3 text-xs">
-						<span>Service Charge</span>
-						<span>4000 LKR</span>
-					</div>
-					<div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
-					<div className="w-full flex  justify-between p-3 font-semibold text-xs">
-						<span>Total Due</span>
-						
-						<span>13,000 LKR</span>
-					</div>
-				
-				</div>
+                <div className="text-start w-full font-medium text-lg mt-5 mb-2">
+                  Total
+                </div>
+                <div className="w-full border border-gray-200 rounded-md flex flex-col ">
+                  <div className="w-full flex justify-between p-3 text-xs">
+                    <span>Service Charge</span>
+                    <span>4000 LKR</span>
+                  </div>
+                  <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
+                  <div className="w-full flex  justify-between p-3 font-semibold text-xs">
+                    <span>Total Due</span>
+
+                    <span>13,000 LKR</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-		  
-</div>
+        </div>
       </div>
     </>
   );

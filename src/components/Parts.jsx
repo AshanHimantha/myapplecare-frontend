@@ -1,20 +1,34 @@
 import React, { useState } from 'react';
 import EnterSerial from './EnterSerial';
+import AddNewPart from './AddNewPart';
 
-const Parts = () => {
+const Parts = ({onBack}) => {
   const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
+  const [isAddPartModalOpen, setIsAddPartModalOpen] = useState(false);
 
   const handleSerialSubmit = (serialNumber) => {
     console.log('Serial number submitted:', serialNumber);
     // Handle the serial number submission
   };
 
+  const handlePartSubmit = (partDetails) => {
+    console.log('Part details:', partDetails);
+    // Handle the part submission
+  };
+
   return (
-    <>
+    <div className="w-full flex flex-col">
       <div className="text-start w-full font-medium text-lg">Add Part</div>
       <div className="w-full mx-auto mt-5 overflow-x-auto">
         <div className=" border border-gray-200 rounded-md flex flex-col justify-center p-5 gap-2">
-          <div className="flex justify-between items-center p-5 text-white  ">
+        <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-sm font-medium mb-4 hover:opacity-70"
+          >
+            <img src="./images/arrow-left.svg" alt="back" className="w-4 h-4" />
+            <span>Back</span>
+          </button>
+          <div className="flex justify-between items-center p-5 pt-1 text-white  ">
             <input
               id="deviceModel"
               type="text"
@@ -39,14 +53,14 @@ const Parts = () => {
                 <div className=" text-xs mt-0.5">5700LKR</div>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-full border border-gray-200 flex justify-center items-center mr-3">
+            <div className="w-8 h-8 rounded-full border border-gray-200 flex justify-center items-center mr-3 cursor-pointer"  onClick={() => setIsSerialModalOpen(true)}>
               <img src="./images/add.svg" className="w-4"alt="add" />
             </div>
           </div>
 
           <div className="w-full">
             <button 
-              onClick={() => setIsSerialModalOpen(true)}
+              onClick={() => setIsAddPartModalOpen(true)}
               className="border border-gray-200 rounded text-xs text-center w-full py-2 font-medium"
             >
               Add New Part
@@ -60,7 +74,13 @@ const Parts = () => {
         onClose={() => setIsSerialModalOpen(false)}
         onSubmit={handleSerialSubmit}
       />
-    </>
+
+      <AddNewPart
+        isOpen={isAddPartModalOpen}
+        onClose={() => setIsAddPartModalOpen(false)}
+        onSubmit={handlePartSubmit}
+      />
+    </div>
   );
 };
 
