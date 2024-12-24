@@ -3,6 +3,8 @@ import SalesOutletNav from "./components/SalesOutletNav";
 import SegmentedPicker from "./components/SegmentedPicker";
 import { AnimatePresence } from "framer-motion";
 import ProductCard from "./components/ProductCard";
+import RecentBills from "./components/RecentBills";
+import Cart  from "./components/Cart";
 
 const SalesOutlet = () => {
   const handleSegmentChange = (option) => {
@@ -12,8 +14,8 @@ const SalesOutlet = () => {
   return (
     <>
       <SalesOutletNav />
-      <div className="w-full lg:h-screen flex overflow-hidden">
-        <div className="lg:w-3/4 w-full  h-full  justify-center mt-10">
+      <div className="w-full lg:h-screen flex overflow-hidden pt-6">
+        <div className="lg:w-3/4  w-full  h-full  justify-center mt-10">
           <div className="w-full  flex">
             <div className="w-full  flex">
               <div className="w-4/12"></div>
@@ -25,7 +27,7 @@ const SalesOutlet = () => {
                 />
               </div>
 
-              <div className="w-4/12 flex justify-end">
+              <div className="w-4/12 flex justify-end pr-5">
                 <input
                   id="deviceModel"
                   type="text"
@@ -36,7 +38,17 @@ const SalesOutlet = () => {
             </div>
           </div>
 
-          <div className="w-full  grid grid-cols-5 gap-4 mt-10 ">
+          <div className="w-full grid lg:grid-cols-5 grid-cols-2 gap-4 mt-10 overflow-y-auto h-[calc(100vh-100px)] px-2 hide-scrollbar bottom-0">
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
             <ProductCard />
             <ProductCard />
             <ProductCard />
@@ -50,8 +62,12 @@ const SalesOutlet = () => {
           </div>
 
         </div>
-
-        <AnimatePresence></AnimatePresence>
+<div className="lg:w-1/4  absolute right-0 h-full bg-white w-11/12 overflow-y-auto hide-scrollbar lg:shadow-none shadow-xl">
+        <AnimatePresence >
+          {/* <RecentBills /> */}
+          <Cart/>
+        </AnimatePresence>
+        </div>
       </div>
     </>
   );

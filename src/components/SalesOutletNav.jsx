@@ -25,7 +25,7 @@ const SalesOutletNav = () => {
   };
 
   return (
-	<div className="flex justify-between items-center h-6 bg-gray-100 text-black px-4">
+	<div className="flex justify-between items-center h-6 bg-gray-100 text-black px-4 absolute top-0 left-0 right-0 z-10">
 	  {/* Left side */}
 	  <div className="flex items-center space-x-4">
 		<img src="/images/apple-logo.svg" alt="Logo" className="lg:w-4 lg:h-4 w-3 h-3" />
