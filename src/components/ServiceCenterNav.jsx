@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ServiceCenterNav = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,8 +40,32 @@ const ServiceCenterNav = () => {
       {/* Right side */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
-          <img src="/images/profile-circle.svg " alt="Profile" className="w-4 h-4 cursor-pointer" />
-		  <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" />
+          <div className="relative">
+            <img 
+              src="/images/profile-circle.svg" 
+              alt="Profile" 
+              className="w-4 h-4 cursor-pointer" 
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            />
+            <AnimatePresence>
+              {showProfileMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute -right-20 mt-2 w-40 bg-white rounded-md shadow-lg z-50"
+                >
+                  <div className="py-1">
+                    
+                    <button className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100">
+                      Logout
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" />
           <span className="text-xs font-semibold lg:block hidden">
             {formatDateTime(currentTime)}
           </span>
