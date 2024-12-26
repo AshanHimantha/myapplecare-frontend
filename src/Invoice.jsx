@@ -54,9 +54,9 @@ const Invoice = () => {
                   </div>
 
                   <div className="w-2/12 flex justify-center">
-                    <button className="text-blue-500 text-center text-xs">
+                    <a className="text-blue-500 text-center text-xs" href="view-ticket">
                       View
-                    </button>
+                    </a>
                   </div>
                 </div>
 

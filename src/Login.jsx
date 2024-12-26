@@ -11,36 +11,37 @@ const Login = () => {
   const navigate = useNavigate(); // Hook to navigate
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:8000/api/login", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: username,
-          password: password
-        })
-      });
+    navigate('/sales-outlet');
+    // e.preventDefault();
+    // try {
+    //   const response = await fetch("http://localhost:8000/api/login", {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Accept': 'application/json'
+    //     },
+    //     credentials: 'include',
+    //     body: JSON.stringify({
+    //       email: username,
+    //       password: password
+    //     })
+    //   });
 
-      const data = await response.json();
-      console.log(data);
-      setMessage(data.message);
-      const userData = data.user;
+    //   const data = await response.json();
+    //   console.log(data);
+    //   setMessage(data.message);
+    //   const userData = data.user;
 
-      if ((userData.technician_access === 1 && userData.cashier_access === 1) || userData.admin_access === 1) {
-        setUser(userData);
-      } else if (userData.cashier_access === 1) {
-        navigate('/sales-outlet');
-      } else if (userData.technician_access === 1) {
-        navigate('/service-center');
-      }
-    } catch (error) {
-      setMessage(error.message);
-    }
+    //   if ((userData.technician_access === 1 && userData.cashier_access === 1) || userData.admin_access === 1) {
+    //     setUser(userData);
+    //   } else if (userData.cashier_access === 1) {
+    //     navigate('/sales-outlet');
+    //   } else if (userData.technician_access === 1) {
+    //     navigate('/service-center');
+    //   }
+    // } catch (error) {
+    //   setMessage(error.message);
+    // }
 };
   return (
     <>

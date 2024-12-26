@@ -2,7 +2,7 @@ import * as React from "react";
 
  function CartDetails() {
   return (
-    <div className="flex gap-4 mt-5 w-full font-semibold max-w-[311px]">
+    <div className="flex gap-4 mt-5 w-full font-semibold p-2">
       <div className="flex flex-col flex-1 items-start text-sm text-zinc-400">
         <button className="flex gap-3 text-sm self-stretch px-8 py-1.5  text-black whitespace-nowrap bg-white rounded-md border-2 border-black border-solid">
           <div>CASH</div>

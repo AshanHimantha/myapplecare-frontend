@@ -2,7 +2,7 @@ import * as React from "react";
 
  function CustomerForm() {
   return (
-    <form className="w-full max-w-[310px]">
+    <form className="w-full p-2">
       <div className="flex gap-4 w-full text-xs text-zinc-700 text-opacity-30">
         <div className="flex-1">
           <label htmlFor="firstName" className="sr-only">First Name</label>

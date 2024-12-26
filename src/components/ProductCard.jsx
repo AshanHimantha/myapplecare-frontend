@@ -2,7 +2,7 @@ import React from "react";
 
 const ProductCard = () => {
   return (
-    <div className="w-48 m-auto rounded-md p-5 border border-gray-200  flex items-center flex-col text-center ">
+    <div className=" m-auto rounded-md p-5 border border-gray-200  flex items-center flex-col text-center ">
       <div className="flex justify-center items-center w-32 h-32 rounded-md">
         <img src="./images/R.png" className="w-10/12" alt="product" />
       </div>
