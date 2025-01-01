@@ -16,9 +16,11 @@
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "react-to-print": "^3.0.3",
+    "react-tsparticles": "^2.12.2",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^4.2.4",
+    "zustand": "^5.0.2"
   },
   "scripts": {
     "start": "react-scripts start",

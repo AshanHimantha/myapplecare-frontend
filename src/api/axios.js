@@ -1,12 +1,29 @@
-import axios from 'axios';
+// src/api/axios.js
+import axios from 'axios'
+import useAuthStore from '../stores/authStore'
 
-const instance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-    withCredentials: true,
-    headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/json'
+const api = axios.create({
+  baseURL: 'http://localhost:8000',
+  withCredentials: true
+})
+
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout()
+      window.location.href = '/'
     }
-});
+    return Promise.reject(error)
+  }
+)
 
-export default instance;
+export default api
