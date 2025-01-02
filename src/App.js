@@ -8,6 +8,7 @@ import ServiceCenter from './ServiceCenter';
 import Invoice from './Invoice';
 import ViewTicket from './ViewTicket';
 import UnauthorizedPage from './components/UnauthorizedPage';
+import AddProduct from './AddProduct';
 
 const App = () => {
   return (
@@ -15,6 +16,14 @@ const App = () => {
       <Routes>
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/" element={<Login />} />
+
+   
+
+        <Route path="/add-product" element={
+          <ProtectedRoute accessType="admin">
+         <AddProduct />
+          </ProtectedRoute>
+        } />
         
         <Route path="/choose-store" element={
           <ProtectedRoute accessType="admin">
