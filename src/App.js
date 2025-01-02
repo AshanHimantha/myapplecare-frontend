@@ -9,6 +9,8 @@ import Invoice from './Invoice';
 import ViewTicket from './ViewTicket';
 import UnauthorizedPage from './components/UnauthorizedPage';
 import AddProduct from './AddProduct';
+import ProductList from './components/ProductList';
+import EditProduct from './components/editProduct';
 
 const App = () => {
   return (
@@ -18,6 +20,20 @@ const App = () => {
         <Route path="/" element={<Login />} />
 
    
+        <Route 
+  path="/products/:id/edit" 
+  element={
+    <ProtectedRoute accessType="admin">
+      <EditProduct />
+    </ProtectedRoute>
+  } 
+/>
+
+        <Route path="/products" element={
+          <ProtectedRoute accessType="admin">
+        <ProductList />
+          </ProtectedRoute>
+        } />
 
         <Route path="/add-product" element={
           <ProtectedRoute accessType="admin">
