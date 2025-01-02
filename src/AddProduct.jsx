@@ -5,9 +5,9 @@ import api from './api/axios';
 const AddProduct = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const [formData,i setFormData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
-    description: '',c
+    description: '',
     device_category_id: '',
     device_subcategory_id: '',
     status: 'active'
@@ -18,8 +18,15 @@ const AddProduct = () => {
   const [validationErrors, setValidationErrors] = useState({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCategory, setNewCategory] =o useState({ name: '' });
+  const [newCategory, setNewCategory] = useState({ name: '' });
   const [modalLoading, setModalLoading] = useState(false);
+
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [newSubCategory, setNewSubCategory] = useState({ 
+    name: '', 
+    device_category_id: '' 
+  });
+  const [subCategoryModalLoading, setSubCategoryModalLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -178,28 +185,74 @@ const AddProduct = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setImage(file);
-    }
-  };
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file && file.type.startsWith('image/')) {
+  //     setImage(file);
+  //   }
+  // };
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
     setModalLoading(true);
     
     try {
-      const response = await api.post('/categories', newCategory);
+      // Create slug from name
+      const name = newCategory.name.trim();
+      const slug = name.toLowerCase()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start
+        .replace(/-+$/, '');            // Trim - from end
+  
+      const response = await api.post('/device-categories', {
+        name: name,
+        slug: slug
+      });
+  
       if (response.data.status === 'success') {
         await fetchCategories(); // Refresh categories
         setIsModalOpen(false);
         setNewCategory({ name: '' });
       }
     } catch (err) {
-      console.error(err);
+
+      alert('Error adding category');
+      
     } finally {
       setModalLoading(false);
+    }
+  };
+
+  const handleAddSubCategory = async (e) => {
+    e.preventDefault();
+    setSubCategoryModalLoading(true);
+    
+    try {
+      const name = newSubCategory.name.trim();
+      const slug = name.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+
+      const response = await api.post('/device-subcategories', {
+        name,
+        slug,
+        device_category_id: newSubCategory.device_category_id
+      });
+
+      if (response.data.status === 'success') {
+        await fetchCategories();
+        setIsSubCategoryModalOpen(false);
+        setNewSubCategory({ name: '', device_category_id: '' });
+      }
+    } catch (err) {
+      console.error('Error adding subcategory:', err);
+    } finally {
+      setSubCategoryModalLoading(false);
     }
   };
 
@@ -251,7 +304,7 @@ const AddProduct = () => {
           Device Category
         </label>
         {/* add button for new catgory add */}
-        <button className="text-gray-500 text-xs">Add +</button>
+        <button className="text-blue-600 text-xs" onClick={() => setIsModalOpen(true)}>Add +</button>
         
         </div>
         <select
@@ -273,9 +326,19 @@ const AddProduct = () => {
       </div>
 
       <div>
+      <div className='flex justify-between'>
         <label className="block text-sm font-medium text-[#1D1D1F]  mb-2">
           Sub Category
         </label>
+        {/* add button for new catgory add */}
+        <button 
+          onClick={() => setIsSubCategoryModalOpen(true)}
+          className="text-[#0071E3] text-xs hover:text-[#0077ED]"
+        >
+          Add +
+        </button>
+        
+        </div>
         <select
           name="device_subcategory_id"
           value={formData.device_subcategory_id}
@@ -378,6 +441,122 @@ const AddProduct = () => {
           </div>
         </form>
       </div>
+
+      {/* Category Modal */}
+      {isModalOpen && (
+      
+
+
+
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-[#1D1D1F] mb-4">
+              Add New Category
+            </h3>
+            
+            <form onSubmit={handleAddCategory}>
+              <input
+                type="text"
+                value={newCategory.name}
+                onChange={(e) => setNewCategory({ name: e.target.value })}
+                placeholder="Category Name"
+                className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3] mb-4"
+                required
+              />
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-[#1D1D1F] hover:bg-[#F5F5F7] rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={modalLoading}
+                  className="px-4 py-2 bg-[#0071E3] text-white rounded-lg hover:bg-[#0077ED] disabled:opacity-50"
+                >
+                  {modalLoading ? 'Adding...' : 'Add Category'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isSubCategoryModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50
+                        animate-overlay-show">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6
+                          animate-content-show">
+            <h3 className="text-lg font-semibold text-[#1D1D1F] mb-4">
+              Add New Subcategory
+            </h3>
+            
+            <form onSubmit={handleAddSubCategory} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#1D1D1F] mb-2">
+                  Select Category
+                </label>
+                <select
+                  value={newSubCategory.device_category_id}
+                  onChange={(e) => setNewSubCategory(prev => ({
+                    ...prev,
+                    device_category_id: e.target.value
+                  }))}
+                  className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 
+                           focus:ring-2 focus:ring-[#0071E3]"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#1D1D1F] mb-2">
+                  Subcategory Name
+                </label>
+                <input
+                  type="text"
+                  value={newSubCategory.name}
+                  onChange={(e) => setNewSubCategory(prev => ({
+                    ...prev,
+                    name: e.target.value
+                  }))}
+                  className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 
+                           focus:ring-2 focus:ring-[#0071E3]"
+                  placeholder="Enter subcategory name"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsSubCategoryModalOpen(false)}
+                  className="px-4 py-2 text-[#1D1D1F] hover:bg-[#F5F5F7] rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={subCategoryModalLoading}
+                  className="px-4 py-2 bg-[#0071E3] text-white rounded-lg 
+                           hover:bg-[#0077ED] disabled:opacity-50"
+                >
+                  {subCategoryModalLoading ? 'Adding...' : 'Add Subcategory'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
