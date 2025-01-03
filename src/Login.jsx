@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "./stores/authStore";
 import ChooseStore from "./components/ChooseStore";
+
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -10,16 +11,24 @@ const Login = () => {
   const [message, setMessage] = useState(null);
   const setAuth = useAuthStore((state) => state.setAuth);
   const [choose, setChoose] = useState(false);
- 
-
   const navigate = useNavigate();
   const getRedirectPath = useAuthStore((state) => state.getRedirectPath);
+
+
+useEffect(() => {
+  const redirectPath = getRedirectPath();
+  if (redirectPath === "/choose-store") {
+    setChoose(true);
+  }else {
+    navigate(redirectPath);
+  }
+},[]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
     
-
     try {
       const response = await fetch("http://localhost:8000/api/login", {
         method: "POST",
@@ -54,6 +63,9 @@ const Login = () => {
       setMessage("Login failed");
     }
   };
+
+
+
   return (
     <div className="flex flex-col min-h-screen bg-white justify-center items-center">
       <div className="absolute top-4 w-[90%] border-b-2 border-gray-200 flex items-center justify-between">

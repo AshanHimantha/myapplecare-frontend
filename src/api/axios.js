@@ -1,4 +1,4 @@
-// src/api/axios.js
+
 import axios from 'axios';
 import useAuthStore from '../stores/authStore';
 
@@ -36,5 +36,33 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  }
+)
+
+export const checkAuth = async () => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    try {
+      const response = await api.get('/me')
+      useAuthStore.getState().setUser(response.data)
+  
+      return true
+    } catch (error) {
+      localStorage.removeItem('token')
+      useAuthStore.getState().logout()
+      return false
+    }
+  }
+  return false
+}
 
 export default api;
