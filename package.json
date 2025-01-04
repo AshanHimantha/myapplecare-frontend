@@ -16,6 +16,7 @@
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "react-to-print": "^3.0.3",
+    "react-toastify": "^11.0.2",
     "react-tsparticles": "^2.12.2",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

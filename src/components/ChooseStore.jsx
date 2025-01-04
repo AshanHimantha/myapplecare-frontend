@@ -60,6 +60,7 @@ const ChooseStore = () => {
         className="flex flex-col lg:w-72 lg:h-72 w-60 h-60"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        onClick={() => navigate('/sales-outlet')}
       >
         <div
           className="flex flex-col items-center px-16 py-12 w-full text-xl font-medium leading-none text-center text-black bg-white rounded-xl border border-gray-200 border-solid max-md:px-5 max-md:mt-10"

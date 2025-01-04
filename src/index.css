@@ -12,6 +12,13 @@ background: linear-gradient(180deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255,
 box-shadow: 0px 1px 2.5px 0px rgba(0, 122, 255, 0.24), 0px 0px 0px 0.5px rgba(0, 122, 255, 0.12);
 }
 
+.macGreenButton{
+  border-radius: 5px;
+background: linear-gradient(180deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.00) 100%), #00db00;
+box-shadow: 0px 1px 2.5px 0px rgba(0, 122, 255, 0.24), 0px 0px 0px 0.5px rgba(0, 122, 255, 0.12);
+}
+
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

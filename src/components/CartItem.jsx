@@ -1,6 +1,19 @@
 import * as React from "react";
 
-function CartItem({ image, title, price, subtitle, quantity, isDiscounted = false, discountedPrice, availableQty }) {
+const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
+  if (!item || !item.stock || !item.stock.product) return null;
+
+  const {
+    id,
+    price,
+    quantity,
+    stock: {
+      product: { name, image },
+      selling_price,
+      color
+    }
+  } = item;
+
   return (
     <>
       <div className="flex gap-4 mt-1.5  ">
@@ -9,7 +22,7 @@ function CartItem({ image, title, price, subtitle, quantity, isDiscounted = fals
             <img
               loading="lazy"
               src={image}
-              alt={title}
+              alt={name}
               className="object-contain aspect-[1.02] w-[41px]"
             />
           </div>
@@ -17,7 +30,7 @@ function CartItem({ image, title, price, subtitle, quantity, isDiscounted = fals
         <div className="flex flex-col grow shrink-0 my-auto basis-0 w-fit">
           <div className="flex gap-10 w-full">
             <div className="grow shrink text-xs font-semibold text-start text-black w-[171px]">
-              {title}
+              {name}
             </div>
             <div className="flex gap-3 self-start">
               <img
@@ -37,18 +50,18 @@ function CartItem({ image, title, price, subtitle, quantity, isDiscounted = fals
           <div className="flex gap-5 justify-between items-start mt-1.5 w-full">
             <div className="flex flex-col text-center">
               <div className="flex gap-2 text-xs">
-                {isDiscounted ? (
+                {price>0 ? (
                   <>
-                    <div className="grow text-neutral-400">{price}</div>
-                    <div className="text-red-600">{discountedPrice}</div>
+                    <div className="grow text-neutral-400">{selling_price}</div>
+                    <div className="text-red-600">{}</div>
                   </>
                 ) : (
-                  <div className="text-blue-600">{price}</div>
+                  <div className="text-blue-600">{null}</div>
                 )}
               </div>
-              {availableQty && (
+              {quantity && (
                 <div className="self-start mt-1.5 text-xs text-neutral-400">
-                  Available Qty : {availableQty}
+                  Available Qty : {null}
                 </div>
               )}
             </div>
@@ -56,7 +69,7 @@ function CartItem({ image, title, price, subtitle, quantity, isDiscounted = fals
               <div className="flex gap-3 mt-2.5">
                 <button className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]" aria-label="Decrease quantity" />
                 <div className="my-auto text-xs font-bold text-center text-black">
-                  {quantity}
+                  {null}
                 </div>
                 <button className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]" aria-label="Increase quantity">
                   <img
