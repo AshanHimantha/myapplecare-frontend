@@ -4,7 +4,7 @@ import CustomerForm from "./CustomerForm";
 import CartDetails from "./CartDetails";
 import PrintInvoice from "./PrintInvoice";
 import api from "../api/axios";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Cart = ({ cartId, onClose }) => {
@@ -17,14 +17,16 @@ const Cart = ({ cartId, onClose }) => {
     phone: "",
     email: "",
   });
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [discount, setDiscount] = useState("");
 
   const fetchCartItems = async () => {
     setCartLoading(true);
     try {
       const response = await api.get(`/cart/${cartId}`);
-      if (response.data.status === 'success') {
+      if (response.data.status === "success") {
         setCartItems(response.data.data.items || []);
-        
       }
     } catch (err) {
       setCartError(err.response?.data?.message || "Failed to load cart");
@@ -41,23 +43,47 @@ const Cart = ({ cartId, onClose }) => {
   const handleUpdateQuantity = async (itemId, newQuantity) => {
     try {
       const response = await api.put(`/cart/${cartId}/item/${itemId}`, {
-        quantity: newQuantity
+        quantity: newQuantity,
       });
-      if (response.data.status === 'success') {
+      if (response.data.status === "success") {
         fetchCartItems();
       }
     } catch (err) {
-      toast.error('Failed to update quantity');
+      toast.error("Failed to update quantity");
     }
   };
 
   const handleRemoveItem = async (itemId) => {
     try {
-      await api.delete(`/cart/${cartId}/item/${itemId}`);
+      await api.delete(`/cart/items/${itemId}`);
       fetchCartItems();
     } catch (err) {
-      toast.error('Failed to remove item');
+      toast.error("Failed to remove item");
     }
+  };
+
+  const handleUpdatePrice = async (itemId, price) => {
+    try {
+      const response = await api.put(`/cart/items/${itemId}`, {
+        price: price,
+      });
+
+      if (response.data.status === "success") {
+        fetchCartItems();
+        setShowDiscountModal(false);
+        setDiscount("");
+        toast.success("Price updated successfully");
+      }else if(response.data.status === 'error'){
+        toast.error('Failed to update price');
+      }
+    } catch (err) {
+      setCartError("Discount higher than the original price or invalid price");
+    }
+  };
+
+  const handleShowDiscountModal = (itemId) => {
+    setSelectedItemId(itemId);
+    setShowDiscountModal(true);
   };
 
   const total = cartItems.reduce((sum, item) => sum + item.price, 0);
@@ -87,6 +113,8 @@ const Cart = ({ cartId, onClose }) => {
                   item={item}
                   onUpdateQuantity={handleUpdateQuantity}
                   onRemove={handleRemoveItem}
+                  onShowDiscountModal={handleShowDiscountModal}
+                  onUpdatePrice={handleUpdatePrice}
                 />
               ))}
             </div>
@@ -119,10 +147,48 @@ const Cart = ({ cartId, onClose }) => {
         </div>
       </div>
 
+      {showDiscountModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Update Price</h3>
+              <button onClick={() => setShowDiscountModal(false)}>
+                <img src="/images/close2.svg" alt="close" className="w-3 h-3" />
+              </button>
+            </div>
+
+            <p className="text-red-500">{cartError}</p>
+            <input
+              type="number"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowDiscountModal(false)}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleUpdatePrice(selectedItemId, discount);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Update Price
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <PrintInvoice
         isOpen={showPrintModal}
         onClose={() => setShowPrintModal(false)}
         cartItems={cartItems}
+        onUpdatePrice={handleUpdatePrice}
         customerDetails={customerDetails}
         total={total}
       />

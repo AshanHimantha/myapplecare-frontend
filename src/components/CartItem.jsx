@@ -1,8 +1,43 @@
+import { useState } from 'react';
 import * as React from "react";
+import useAuthStore from '../stores/authStore';
+import api from '../api/axios';
+import { toast } from 'react-toastify';
 
-const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
+const CartItem = ({ 
+  item, 
+  onUpdateQuantity, 
+  onRemove, 
+  onShowDiscountModal, 
+  onUpdatePrice 
+}) => {
+  
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [discount, setDiscount] = useState('');
+  const user = useAuthStore(state => state.user);
+ 
+
+  const handlePriceUpdate = async () => {
+    try {
+      const response = await api.put(`/cart/items/${id}/price`, {
+        price: discount
+      });
+      
+      if (response.data.status === 'success') {
+        onUpdatePrice(id, discount);
+        setShowDiscountModal(false);
+        setDiscount('');
+        toast.success('Price updated successfully');
+      }else if(response.data.status === 'error'){
+        toast.error('Failed to update price');
+      }
+    } catch (err) {
+      toast.error('Failed to update price');
+    }
+  };
+
+
   if (!item || !item.stock || !item.stock.product) return null;
-
   const {
     id,
     price,
@@ -10,15 +45,16 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     stock: {
       product: { name, image },
       selling_price,
-      color
-    }
+      color,
+      quantity: stockQuantity,
+    },
   } = item;
 
   return (
     <>
       <div className="flex gap-4 mt-1.5  ">
-        <div className="flex flex-col justify-center items-center px-1 w-14 h-14 rounded-md bg-zinc-100">
-          <div className="flex flex-col justify-center items-center px-1 w-12 h-12 bg-white rounded">
+        <div className="flex flex-col justify-center items-center px-1 w-16 h-16 rounded-md bg-zinc-100">
+          <div className="flex flex-col justify-center items-center px-1 w-14 h-14 bg-white rounded">
             <img
               loading="lazy"
               src={image}
@@ -33,15 +69,19 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
               {name}
             </div>
             <div className="flex gap-3 self-start">
+              
+            <img
+            loading="lazy"
+            src="/images/edit.png"
+            alt="Edit price"
+            className="object-contain shrink-0 w-3 aspect-square cursor-pointer hover:opacity-75"
+            onClick={() => onShowDiscountModal(item.id)}
+          />
+
               <img
+              onClick={() => onRemove(id)}
                 loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/0f7281df02c81b011525d9dd165946f041b8647d91355e683978d96c0a7632df?placeholderIfAbsent=true&apiKey=c34433104d1d4810a291d4706b6578c9"
-                alt=""
-                className="object-contain shrink-0 w-3 aspect-square"
-              />
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/f2f430f88e74dd8856e704ee8946a03fdfa260e528fe02acb5a846fc2bf16847?placeholderIfAbsent=true&apiKey=c34433104d1d4810a291d4706b6578c9"
+                src="/images/close.png"
                 alt=""
                 className="object-contain shrink-0 w-3 aspect-square"
               />
@@ -50,28 +90,36 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           <div className="flex gap-5 justify-between items-start mt-1.5 w-full">
             <div className="flex flex-col text-center">
               <div className="flex gap-2 text-xs">
-                {price>0 ? (
+                {price > 0 ? (
                   <>
-                    <div className="grow text-neutral-400">{selling_price}</div>
-                    <div className="text-red-600">{}</div>
+                    <div className="grow text-neutral-400 line-through">LKR {selling_price}</div>
+                    <div className="text-red-600">LKR {(selling_price-price)}</div>
                   </>
                 ) : (
-                  <div className="text-blue-600">{null}</div>
+                  <div className="text-blue-600">LKR {selling_price}</div>
                 )}
               </div>
-              {quantity && (
+              {stockQuantity && (
                 <div className="self-start mt-1.5 text-xs text-neutral-400">
-                  Available Qty : {null}
+                  Available Qty : {stockQuantity}
                 </div>
               )}
             </div>
             {quantity && (
               <div className="flex gap-3 mt-2.5">
-                <button className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]" aria-label="Decrease quantity" />
+                <button
+                  className="flex shrink-0  bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1"
+                  aria-label="Decrease quantity"
+                >
+                  -
+                </button>
                 <div className="my-auto text-xs font-bold text-center text-black">
-                  {null}
+                  {quantity}
                 </div>
-                <button className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]" aria-label="Increase quantity">
+                <button
+                  className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]"
+                  aria-label="Increase quantity"
+                >
                   <img
                     loading="lazy"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/52acf41708e259cd7892605dfeb9d8a9d2304065edeba28b24eef56188f73ceb?placeholderIfAbsent=true&apiKey=c34433104d1d4810a291d4706b6578c9"
@@ -84,8 +132,10 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           </div>
         </div>
       </div>
+      
       <div className="shrink-0 mt-1.5 h-px border border-solid border-zinc-100" />
+
     </>
   );
-}
+};
 export default CartItem;

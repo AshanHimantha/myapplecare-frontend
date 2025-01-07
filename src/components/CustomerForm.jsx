@@ -24,12 +24,12 @@ import * as React from "react";
         </div>
       </div>
       <div className="mt-4 text-xs">
-      <label htmlFor="lastName" className="sr-only">Last Name</label>
+      <label htmlFor="lastName" className="sr-only">Contact No</label>
           <input
             id="lastName"
             type="text"
             className="w-full px-1.5 py-2 rounded-md border border-solid border-black border-opacity-10"
-            placeholder="Last Name"
+            placeholder="Contact No"
           />
       </div>
     </form>

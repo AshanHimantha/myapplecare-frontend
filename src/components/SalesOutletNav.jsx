@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../stores/authStore';
+import { toast } from 'react-toastify';
 
 const SalesOutletNav = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+  const logout = useAuthStore(state => state.logout);
 
   useEffect(() => {
 	const timer = setInterval(() => {
@@ -24,6 +30,13 @@ const SalesOutletNav = () => {
 	return `${weekday} ${month} ${day}  ${time}`;
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    logout();
+    toast.success('Logged out successfully');
+    navigate('/login');
+  };
+
   return (
 	<div className="flex justify-between items-center h-6 bg-gray-100 text-black px-4 absolute top-0 left-0 right-0 z-10">
 	  {/* Left side */}
@@ -39,7 +52,25 @@ const SalesOutletNav = () => {
 	  {/* Right side */}
 	  <div className="flex items-center space-x-4">
 		<div className="flex items-center space-x-2">
-		  <img src="/images/profile-circle.svg " alt="Profile" className="w-4 h-4 cursor-pointer" />
+		  <div className="relative">
+			<img 
+			  src="/images/profile-circle.svg" 
+			  alt="Profile" 
+			  className="w-4 h-4 cursor-pointer hover:opacity-75"
+			  onClick={() => setShowDropdown(!showDropdown)}
+			/>
+			
+			{showDropdown && (
+			  <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2 z-50">
+				<button
+				  onClick={handleLogout}
+				  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+				>
+				  Logout
+				</button>
+			  </div>
+			)}
+		  </div>
 		  <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" />
 		  <span className="text-xs font-semibold lg:block hidden">
 			{formatDateTime(currentTime)}

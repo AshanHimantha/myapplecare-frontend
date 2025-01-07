@@ -3,6 +3,7 @@ import "./index.css";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "./stores/authStore";
 import ChooseStore from "./components/ChooseStore";
+import api from "./api/axios";
 
 
 const Login = () => {
@@ -13,7 +14,6 @@ const Login = () => {
   const [choose, setChoose] = useState(false);
   const navigate = useNavigate();
   const getRedirectPath = useAuthStore((state) => state.getRedirectPath);
-
 
 useEffect(() => {
   const redirectPath = getRedirectPath();
@@ -41,6 +41,7 @@ useEffect(() => {
           password,
         }),
       });
+      
 
       const data = await response.json();
 
@@ -78,7 +79,7 @@ useEffect(() => {
         <img
           src="./images/Apple-ID.png" // Replace with actual logo
           alt="Apple Logo"
-          className="lg:h-40 lg:w-40"
+          className="lg:h-40 lg:w-40 w-28 h-28"
         />
       </div>
 

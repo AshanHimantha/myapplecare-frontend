@@ -48,21 +48,5 @@ api.interceptors.request.use(
   }
 )
 
-export const checkAuth = async () => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    try {
-      const response = await api.get('/me')
-      useAuthStore.getState().setUser(response.data)
-  
-      return true
-    } catch (error) {
-      localStorage.removeItem('token')
-      useAuthStore.getState().logout()
-      return false
-    }
-  }
-  return false
-}
 
 export default api;

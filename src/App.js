@@ -14,17 +14,15 @@ import EditProduct from "./components/editProduct";
 import AddStock from "./components/AddStock";
 import ViewStock from "./components/ViewStock";
 import EditStock from "./components/EditStock";
-import { checkAuth } from './api/axios'
+import api from "./api/axios";
 
 
 
+ 
 
 
 const App = () => {
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
 
   return (
     <Router>
