@@ -3,8 +3,9 @@ import api from '../api/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useAuthStore from '../stores/authStore';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const RecentBills = ({ onClose , onCartSelect }) => {
+const RecentBills = ({ onClose, onCartSelect }) => {
   const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,7 +80,13 @@ const RecentBills = ({ onClose , onCartSelect }) => {
   };
 
   return (
-    <div className="flex flex-col py-2 w-full bg-white border-[1px] border-neutral-200 overflow-scroll h-screen hide-scrollbar">
+    <motion.div
+      initial={{ x: '-100%' }}
+      animate={{ x: 0 }}
+      exit={{ x: '-100%' }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="flex flex-col py-2 w-full bg-white border-[1px] border-neutral-200 overflow-scroll h-screen hide-scrollbar"
+    >
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -121,34 +128,39 @@ const RecentBills = ({ onClose , onCartSelect }) => {
         ) : error ? (
           <div className="text-red-500 text-center py-4">{error}</div>
         ) : Array.isArray(carts) && carts.length > 0 ? (
-          carts.map((cart) => (
-            <div
-              key={cart.id}
-              onClick={() =>{onCartSelect(cart.id)} }
-              className="border border-gray-200 rounded-md p-3 mb-3 flex justify-between items-center 
-                        hover:border-gray-300 transition-colors cursor-pointer hover:bg-gray-50"
-            >
-              <div>
-                <div className="font-medium text-sm">Cart #{cart.id}</div>
-                <div className="text-xs text-gray-400 mt-0.5">
-                  {formatDate(cart.created_at)}
-                </div>
-              </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent cart selection when deleting
-                  handleDeleteCart(cart.id);
-                }}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          <AnimatePresence>
+            {carts.map((cart, index) => (
+              <motion.div
+                key={cart.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: index * 0.1 }}
+                className="border border-gray-200 rounded-md p-3 mb-3 flex justify-between items-center hover:border-gray-300 transition-colors cursor-pointer hover:bg-gray-50"
+                onClick={() =>{onCartSelect(cart.id)} }
               >
-                <img
-                  src="./images/close2.svg"
-                  className="w-3 h-3 opacity-50"
-                  alt="remove"
-                />
-              </button>
-            </div>
-          ))
+                <div>
+                  <div className="font-medium text-sm">Cart #{cart.id}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">
+                    {formatDate(cart.created_at)}
+                  </div>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent cart selection when deleting
+                    handleDeleteCart(cart.id);
+                  }}
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <img
+                    src="./images/close2.svg"
+                    className="w-3 h-3 opacity-50"
+                    alt="remove"
+                  />
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
           <div className="text-center py-4">No recent bills found</div>
         )}
@@ -166,7 +178,7 @@ const RecentBills = ({ onClose , onCartSelect }) => {
           <img src="./images/cartWhite.svg" className="w-5 h-5" alt="cart" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

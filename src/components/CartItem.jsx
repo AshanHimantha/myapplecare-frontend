@@ -15,8 +15,8 @@ const CartItem = ({
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [discount, setDiscount] = useState('');
   const user = useAuthStore(state => state.user);
- 
 
+ 
   const handlePriceUpdate = async () => {
     try {
       const response = await api.put(`/cart/items/${id}/price`, {
@@ -43,12 +43,14 @@ const CartItem = ({
     price,
     quantity,
     stock: {
-      product: { name, image },
+      product: { name, image, device_category_id },
       selling_price,
       color,
       quantity: stockQuantity,
     },
   } = item;
+
+  console.log('item:', item);
 
   return (
     <>
@@ -105,30 +107,30 @@ const CartItem = ({
                 </div>
               )}
             </div>
-            {quantity && (
-              <div className="flex gap-3 mt-2.5">
-                <button
-                  className="flex shrink-0  bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1"
-                  aria-label="Decrease quantity"
-                >
-                  -
-                </button>
-                <div className="my-auto text-xs font-bold text-center text-black">
-                  {quantity}
-                </div>
-                <button
-                  className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]"
-                  aria-label="Increase quantity"
-                >
-                  <img
-                    loading="lazy"
-                    src="https://cdn.builder.io/api/v1/image/assets/TEMP/52acf41708e259cd7892605dfeb9d8a9d2304065edeba28b24eef56188f73ceb?placeholderIfAbsent=true&apiKey=c34433104d1d4810a291d4706b6578c9"
-                    alt=""
-                    className="object-contain w-1.5 aspect-square"
-                  />
-                </button>
-              </div>
-            )}
+            {device_category_id !== 1 && quantity && (
+  <div className="flex gap-3 mt-2.5">
+    <button
+      className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1"
+      aria-label="Decrease quantity"
+    >
+      -
+    </button>
+    <div className="my-auto text-xs font-bold text-center text-black">
+      {quantity}
+    </div>
+    <button
+      className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]"
+      aria-label="Increase quantity"
+    >
+      <img
+        loading="lazy"
+        src="/images/plus.svg"
+        alt="increase"
+        className="object-contain w-1.5 aspect-square"
+      />
+    </button>
+  </div>
+)}
           </div>
         </div>
       </div>

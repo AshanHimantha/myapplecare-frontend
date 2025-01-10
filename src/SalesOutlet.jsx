@@ -14,16 +14,61 @@ const SalesOutlet = () => {
   const [stocks, setStocks] = useState([]);
   const [selectedCartId, setSelectedCartId] = useState(null);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [changeCart, setChangeCart] = useState(false);
+  const [filteredStocks, setFilteredStocks] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("Phones");
+  const [searchTerm, setSearchTerm] = useState('');
+
+const handleSearch = (e) => {
+  const term = e.target.value.toLowerCase();
+  setSearchTerm(term);
+  
+  const categoryId = selectedCategory === "Phones" ? 1 : 2;
+  
+  // If search is empty, only show category filtered items
+  const filtered = term === '' ? 
+    stocks.filter(stock => stock.product?.device_category_id === categoryId) :
+    stocks.filter(stock => {
+      const productName = stock.product?.name.toLowerCase();
+      const serialNumber = stock.serial_number?.toLowerCase();
+      const matchesSearch = productName?.includes(term) || serialNumber?.includes(term);
+      const matchesCategory = stock.product?.device_category_id === categoryId;
+      return matchesSearch && matchesCategory;
+    });
+  
+  setFilteredStocks(filtered);
+};
 
   const handleSegmentChange = (option) => {
-    console.log("Selected option:", option);
+    setSelectedCategory(option);
   };
 
-  const handleAddToCart = (productId) => {
-    if (selectedCartId == null) {
-      toast.error("Please select a Cart or Create ");
+  const handleAddToCart = async (stockId) => {
+    if (!selectedCartId) {
+      toast.error("Please select a Cart or Create new one");
       return;
-    } else {
+    }
+
+    try {
+      console.log("Adding item to cart:", stockId);
+      const response = await api.post("/cart/add", {
+        cart_id: selectedCartId,
+        stock_id: stockId,
+        quantity: 1,
+        price: 0
+      });
+
+      setChangeCart(!changeCart);
+
+      if (response.data.status == "success") {
+        toast.success("Item added to cart");
+              
+      } else {
+        toast.error(response.data.message || "Failed to add item");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add item to cart");
+      console.error("Failed to add item to cart:", err);
     }
   };
 
@@ -33,13 +78,31 @@ const SalesOutlet = () => {
         const response = await api.get("/stocks");
         if (response.data.status === "success") {
           setStocks(response.data.data);
-        }
+
+
+        }     
       } catch (err) {
         console.error("Failed to fetch stocks:", err);
       }
     };
     fetchStocks();
   }, []);
+
+
+
+  useEffect(() => {
+    if (selectedCategory === 'Phones') {
+      const phoneStocks = stocks.filter(stock => 
+        stock.product?.device_category_id === 1
+      );
+      setFilteredStocks(phoneStocks);
+    } else if (selectedCategory === 'Accessories') {
+      const accessoryStocks = stocks.filter(stock => 
+        stock.product?.device_category_id === 2
+      );
+      setFilteredStocks(accessoryStocks);
+    }
+  }, [selectedCategory, stocks]);
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -71,9 +134,11 @@ const SalesOutlet = () => {
 
               <div className="lg:w-4/12 flex w-full lg:justify-end justify-center lg:pr-5 lg:mt-0 mt-5">
                 <input
-                  id="deviceModel"
                   type="text"
-                  className="flex overflow-hidden duration-100 h-8 justify-between px-2 py-1 text-sm rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  onBlur={()=>{if(searchTerm === '') setSearchTerm(null)}}
+                  className="flex overflow-hidden duration-100 h-8 focus:outline-none justify-between px-2 py-1 text-sm rounded-md border border-solid  border-opacity-10 text-black "
                   placeholder="Search"
                 />
               </div>
@@ -81,7 +146,7 @@ const SalesOutlet = () => {
           </div>
 
           <div className="w-full grid lg:grid-cols-4 xl:grid-cols-5 grid-cols-2 md:grid-cols-3 gap-4 lg:mt-10 mt-5 overflow-y-auto h-[calc(100vh-100px)] px-2 hide-scrollbar bottom-0">
-            {stocks.map((stock) => (
+            {filteredStocks.map((stock) => (
               <ProductCard
                 key={stock.id}
                 image={stock.product.image}
@@ -106,7 +171,9 @@ const SalesOutlet = () => {
             ) : (
               <Cart
                 cartId={selectedCartId}
-                onClose={() => setSelectedCartId(null)}
+                onClose={() => setSelectedCartId(null)} 
+                change={changeCart}
+                   
               />
             )}
           </AnimatePresence>
