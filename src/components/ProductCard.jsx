@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import React from 'react';
 
 const ProductCard = ({ 
+  id,
   image, 
   name, 
   price, 
@@ -90,10 +91,10 @@ const ProductCard = ({
         </div>
       </motion.div>
 
-      <motion.button 
+          <motion.button 
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        onClick={onAddClick}
+        onClick={() => onAddClick(id)}
         className="mt-4 border rounded-full h-10 w-10 flex justify-center items-center shadow-md
                  hover:bg-[#F5F5F7] transition-colors"
       >
