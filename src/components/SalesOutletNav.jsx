@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import { toast } from 'react-toastify';
 
-const SalesOutletNav = () => {
+const SalesOutletNav = ({setShowSidebar}) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ const SalesOutletNav = () => {
 			  </div>
 			)}
 		  </div>
-		  <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" />
+		  <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block"  onClick={() => setShowSidebar(prev => !prev)} />
 		  <span className="text-xs font-semibold lg:block hidden">
 			{formatDateTime(currentTime)}
 		  </span>

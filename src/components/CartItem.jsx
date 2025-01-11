@@ -1,41 +1,30 @@
-import { useState } from 'react';
+import { useState } from "react";
 import * as React from "react";
-import useAuthStore from '../stores/authStore';
-import api from '../api/axios';
-import { toast } from 'react-toastify';
+import useAuthStore from "../stores/authStore";
 
-const CartItem = ({ 
-  item, 
-  onUpdateQuantity, 
-  onRemove, 
-  onShowDiscountModal, 
-  onUpdatePrice 
+
+const CartItem = ({
+  item,
+  onUpdateQuantity,
+  onRemove,
+  onShowDiscountModal,
 }) => {
-  
-  const [showDiscountModal, setShowDiscountModal] = useState(false);
-  const [discount, setDiscount] = useState('');
-  const user = useAuthStore(state => state.user);
+  const roles = useAuthStore((state) => state.roles);
+  const [loading, setLoading] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
- 
-  const handlePriceUpdate = async () => {
-    try {
-      const response = await api.put(`/cart/items/${id}/price`, {
-        price: discount
-      });
-      
-      if (response.data.status === 'success') {
-        onUpdatePrice(id, discount);
-        setShowDiscountModal(false);
-        setDiscount('');
-        toast.success('Price updated successfully');
-      }else if(response.data.status === 'error'){
-        toast.error('Failed to update price');
-      }
-    } catch (err) {
-      toast.error('Failed to update price');
+  const handleQuantityUpdate = async (newQuantity) => {
+    if (newQuantity < 1) return;
+    if (newQuantity > item.stock.quantity) {
+     
+      setAnimating(true);
+      setTimeout(() => setAnimating(false), 1000);
     }
-  };
 
+    
+    await onUpdateQuantity(item.id, newQuantity);
+   
+  };
 
   if (!item || !item.stock || !item.stock.product) return null;
   const {
@@ -45,12 +34,12 @@ const CartItem = ({
     stock: {
       product: { name, image, device_category_id },
       selling_price,
-      color,
+      serial_number,
       quantity: stockQuantity,
     },
   } = item;
 
-  console.log('item:', item);
+
 
   return (
     <>
@@ -71,17 +60,20 @@ const CartItem = ({
               {name}
             </div>
             <div className="flex gap-3 self-start">
+                           
               
-            <img
-            loading="lazy"
-            src="/images/edit.png"
-            alt="Edit price"
-            className="object-contain shrink-0 w-3 aspect-square cursor-pointer hover:opacity-75"
-            onClick={() => onShowDiscountModal(item.id)}
-          />
+              {roles?.includes('admin') && (
+                <img
+                  loading="lazy"
+                  src="/images/edit.png"
+                  alt="Edit price"
+                  className="object-contain shrink-0 w-3 aspect-square cursor-pointer hover:opacity-75"
+                  onClick={() => onShowDiscountModal(item.id)}
+                />
+              )}
 
               <img
-              onClick={() => onRemove(id)}
+                onClick={() => onRemove(id)}
                 loading="lazy"
                 src="/images/close.png"
                 alt=""
@@ -92,10 +84,14 @@ const CartItem = ({
           <div className="flex gap-5 justify-between items-start mt-1.5 w-full">
             <div className="flex flex-col text-center">
               <div className="flex gap-2 text-xs">
-                {price > 0 ? (
+                {price != 0 ? (
                   <>
-                    <div className="grow text-neutral-400 line-through">LKR {selling_price}</div>
-                    <div className="text-red-600">LKR {(selling_price-price)}</div>
+                    <div className="grow text-neutral-400 line-through">
+                      LKR {selling_price}
+                    </div>
+                    <div className="text-red-600">
+                      LKR {selling_price - price}
+                    </div>
                   </>
                 ) : (
                   <div className="text-blue-600">LKR {selling_price}</div>
@@ -103,40 +99,47 @@ const CartItem = ({
               </div>
               {stockQuantity && (
                 <div className="self-start mt-1.5 text-xs text-neutral-400">
-                  Available Qty : {stockQuantity}
+                 
+                  {device_category_id === 1?('IMEI : ' +serial_number):('Available Qty :'+ stockQuantity)}
                 </div>
               )}
             </div>
             {device_category_id !== 1 && quantity && (
-  <div className="flex gap-3 mt-2.5">
-    <button
-      className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1"
-      aria-label="Decrease quantity"
-    >
-      -
-    </button>
-    <div className="my-auto text-xs font-bold text-center text-black">
-      {quantity}
-    </div>
-    <button
-      className="flex flex-col justify-center items-center px-1 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px]"
-      aria-label="Increase quantity"
-    >
-      <img
-        loading="lazy"
-        src="/images/plus.svg"
-        alt="increase"
-        className="object-contain w-1.5 aspect-square"
-      />
-    </button>
-  </div>
-)}
+              <div className="flex gap-3 mt-2.5">
+                <button
+                  onClick={() => handleQuantityUpdate(quantity - 1)}
+                  disabled={loading || quantity <= 1}
+                  className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1 disabled:opacity-50"
+                >
+                  -
+                </button>
+                <div className="my-auto text-xs font-bold text-center text-black">
+                  {quantity}
+                </div>
+                <button
+                  onClick={() => handleQuantityUpdate(quantity + 1)}
+                  disabled={loading}
+                  className={`flex flex-col justify-center items-center px-1 rounded-full h-[13px] w-[13px] transition-colors duration-300
+                    ${animating ? 'bg-red-500 animate-bounce' : 'bg-white'} 
+                    shadow-[0px_1px_2px_rgba(0,0,0,0.25)] disabled:opacity-50`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-6 w-6 p-0.5 transition-colors duration-300 ${animating ? 'text-white' : 'text-black'}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      
-      <div className="shrink-0 mt-1.5 h-px border border-solid border-zinc-100" />
 
+      <div className="shrink-0 mt-1.5 h-px border border-solid border-zinc-100" />
     </>
   );
 };

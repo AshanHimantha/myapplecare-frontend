@@ -15,6 +15,7 @@ import AddStock from "./components/AddStock";
 import ViewStock from "./components/ViewStock";
 import EditStock from "./components/EditStock";
 import api from "./api/axios";
+import PrintInvoice from "./components/PrintInvoice";
 
 
 
@@ -29,6 +30,8 @@ const App = () => {
       <Routes>
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/" element={<Login />} />
+
+        <Route path="/inv" element={<PrintInvoice />} />
 
         <Route
           path="/AddStock"

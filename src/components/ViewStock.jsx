@@ -20,7 +20,7 @@ const ViewStock = () => {
   const fetchStocks = async () => {
     try {
       const response = await api.get('/stocks');
-	  console.log(response);
+
       if (response.data.status === 'success') {
         setStocks(response.data.data);
         setFilteredStocks(response.data.data);

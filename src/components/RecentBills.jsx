@@ -5,12 +5,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import useAuthStore from '../stores/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const RecentBills = ({ onClose, onCartSelect }) => {
+const RecentBills = ({ setShowSidebar, onCartSelect }) => {
   const [carts, setCarts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
   const user = useAuthStore((state) => state.user);
+  const [deletingCartIds, setDeletingCartIds] = useState([]);
 
   useEffect(() => {
     fetchCarts();
@@ -37,14 +38,25 @@ const RecentBills = ({ onClose, onCartSelect }) => {
     }
   };
 
-  const handleDeleteCart = async (cartId) => {
-    try {
-      await api.delete(`/cart/${cartId}`);
-      fetchCarts();
-    } catch (err) {
-      setError('Failed to delete cart');
-    }
-  };
+const handleDeleteCart = async (cartId) => {
+  try {
+    setDeletingCartIds(prev => [...prev, cartId]);
+    
+    // Hide cart immediately
+    setCarts(prev => prev.filter(c => c.id !== cartId));
+    
+    // Send delete request
+    await api.delete(`/cart/${cartId}`);
+    toast.success('Cart deleted successfully');
+    
+  } catch (err) {
+    // Restore cart if request fails
+    setCarts(prev => [...prev, carts.find(c => c.id === cartId)]);
+    toast.error('Failed to delete cart');
+  } finally {
+    setDeletingCartIds(prev => prev.filter(id => id !== cartId));
+  }
+};
 
   const handleCreateCart = async () => {
     setCreateLoading(true);
@@ -109,7 +121,7 @@ const RecentBills = ({ onClose, onCartSelect }) => {
         </div>
         <button
           className="rounded-full flex justify-center items-center h-full pr-5 lg:hidden"
-          onClick={onClose}
+          onClick={() => setShowSidebar(prev => !prev)}
         >
           <img
             src="./images/close.svg"
@@ -129,7 +141,7 @@ const RecentBills = ({ onClose, onCartSelect }) => {
           <div className="text-red-500 text-center py-4">{error}</div>
         ) : Array.isArray(carts) && carts.length > 0 ? (
           <AnimatePresence>
-            {carts.map((cart, index) => (
+            {carts.filter(cart => !deletingCartIds.includes(cart.id)).map((cart, index) => (
               <motion.div
                 key={cart.id}
                 initial={{ opacity: 0, y: 20 }}

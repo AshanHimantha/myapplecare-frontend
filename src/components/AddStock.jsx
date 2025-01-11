@@ -30,7 +30,7 @@ const AddStock = () => {
     cost_price: "",
     color: "",
   });
-  const [priceError, setPriceError] = useState('');
+  const [priceError, setPriceError] = useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -65,20 +65,20 @@ const AddStock = () => {
 
   const validatePrices = (cost, selling) => {
     if (parseFloat(cost) >= parseFloat(selling)) {
-      setPriceError('Cost price must be less than selling price');
+      setPriceError("Cost price must be less than selling price");
       return false;
     }
-    setPriceError('');
+    setPriceError("");
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validatePrices(formData.cost_price, formData.selling_price)) {
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -144,8 +144,18 @@ const AddStock = () => {
                         />
                       ) : (
                         <div className="h-12 w-12 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
-                          <svg className="w-6 h-6 text-[#86868B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-6 h-6 text-[#86868B]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                         </div>
                       )}
@@ -153,7 +163,8 @@ const AddStock = () => {
                     <div>
                       <div className="font-medium">{product.name}</div>
                       <div className="text-sm text-[#86868B]">
-                        {product.device_category?.name} - {product.device_subcategory?.name}
+                        {product.device_category?.name} -{" "}
+                        {product.device_subcategory?.name}
                       </div>
                     </div>
                   </div>
@@ -204,15 +215,18 @@ const AddStock = () => {
                 <input
                   type="number"
                   min="1"
+                  disabled={selectedProduct?.device_category_id === 1}
                   value={formData.quantity}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      quantity: e.target.value,
+                      quantity:
+                        selectedProduct?.device_category_id === 1
+                          ? 1
+                          : e.target.value,
                     }))
                   }
                   className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
-                  required
                 />
               </div>
 
@@ -226,14 +240,17 @@ const AddStock = () => {
                   step="0.01"
                   value={formData.cost_price}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, cost_price: e.target.value }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      cost_price: e.target.value,
+                    }));
                     if (formData.selling_price) {
                       validatePrices(e.target.value, formData.selling_price);
                     }
                   }}
                   className={`w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 
                             focus:ring-2 focus:ring-[#0071E3] 
-                            ${priceError ? 'ring-2 ring-red-500' : ''}`}
+                            ${priceError ? "ring-2 ring-red-500" : ""}`}
                   placeholder="Enter cost price"
                   required
                 />
@@ -249,14 +266,17 @@ const AddStock = () => {
                   step="0.01"
                   value={formData.selling_price}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, selling_price: e.target.value }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      selling_price: e.target.value,
+                    }));
                     if (formData.cost_price) {
                       validatePrices(formData.cost_price, e.target.value);
                     }
                   }}
                   className={`w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 
                             focus:ring-2 focus:ring-[#0071E3]
-                            ${priceError ? 'ring-2 ring-red-500' : ''}`}
+                            ${priceError ? "ring-2 ring-red-500" : ""}`}
                   placeholder="Enter selling price"
                   required
                 />
@@ -336,7 +356,7 @@ const AddStock = () => {
             </div>
           </div>
 
-		   <div className="text-red-500">{error}</div>
+          <div className="text-red-500">{error}</div>
           {/* Submit Button */}
           <button
             type="submit"

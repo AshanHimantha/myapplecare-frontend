@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SalesOutletNav from "./components/SalesOutletNav";
 import SegmentedPicker from "./components/SegmentedPicker";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "./components/ProductCard";
 import RecentBills from "./components/RecentBills";
 import Cart from "./components/Cart";
@@ -17,70 +17,87 @@ const SalesOutlet = () => {
   const [changeCart, setChangeCart] = useState(false);
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Phones");
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 
-const handleSearch = (e) => {
-  const term = e.target.value.toLowerCase();
-  setSearchTerm(term);
-  
-  const categoryId = selectedCategory === "Phones" ? 1 : 2;
-  
-  // If search is empty, only show category filtered items
-  const filtered = term === '' ? 
-    stocks.filter(stock => stock.product?.device_category_id === categoryId) :
-    stocks.filter(stock => {
-      const productName = stock.product?.name.toLowerCase();
-      const serialNumber = stock.serial_number?.toLowerCase();
-      const matchesSearch = productName?.includes(term) || serialNumber?.includes(term);
-      const matchesCategory = stock.product?.device_category_id === categoryId;
-      return matchesSearch && matchesCategory;
-    });
-  
-  setFilteredStocks(filtered);
-};
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+
+    const categoryId = selectedCategory === "Phones" ? 1 : 2;
+
+    // If search is empty, only show category filtered items
+    const filtered =
+      term === ""
+        ? stocks.filter(
+            (stock) => stock.product?.device_category_id === categoryId
+          )
+        : stocks.filter((stock) => {
+            const productName = stock.product?.name.toLowerCase();
+            const serialNumber = stock.serial_number?.toLowerCase();
+            const matchesSearch =
+              productName?.includes(term) || serialNumber?.includes(term);
+            const matchesCategory =
+              stock.product?.device_category_id === categoryId;
+            return matchesSearch && matchesCategory;
+          });
+
+    setFilteredStocks(filtered);
+  };
 
   const handleSegmentChange = (option) => {
     setSelectedCategory(option);
   };
 
   const handleAddToCart = async (stockId) => {
-    if (!selectedCartId) {
-      toast.error("Please select a Cart or Create new one");
-      return;
-    }
-
     try {
-      console.log("Adding item to cart:", stockId);
-      const response = await api.post("/cart/add", {
-        cart_id: selectedCartId,
-        stock_id: stockId,
-        quantity: 1,
-        price: 0
-      });
-
-      setChangeCart(!changeCart);
-
-      if (response.data.status == "success") {
-        toast.success("Item added to cart");
-              
+      if (!selectedCartId) {
+        // Create new cart first
+        const cartResponse = await api.post("/cart/create");
+        if (cartResponse.data.status === "success") {
+          const newCartId = cartResponse.data.data.id;
+          setSelectedCartId(newCartId);
+          
+          // Add item to new cart
+          const response = await api.post("/cart/add", {
+            cart_id: newCartId,
+            stock_id: stockId,
+            quantity: 1,
+            price: 0, 
+          });
+  
+          if (response.data.status === "success") {
+            setChangeCart(!changeCart);
+        
+          }
+        }
       } else {
-        toast.error(response.data.message || "Failed to add item");
+        // Add to existing cart
+        const response = await api.post("/cart/add", {
+          cart_id: selectedCartId,
+          stock_id: stockId,
+          quantity: 1,
+          price: 0
+        });
+  
+        if (response.data.status === "success") {
+          setChangeCart(!changeCart);
+          toast.success("Item added to cart");
+        }
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add item to cart");
-      console.error("Failed to add item to cart:", err);
     }
   };
 
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await api.get("/stocks");
+        const response = await api.get("/stocks/available");
         if (response.data.status === "success") {
           setStocks(response.data.data);
-
-
-        }     
+        }
       } catch (err) {
         console.error("Failed to fetch stocks:", err);
       }
@@ -88,25 +105,58 @@ const handleSearch = (e) => {
     fetchStocks();
   }, []);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get("/categories");
+        if (response.data.status === "success") {
+          setCategories(response.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
+  const getSubcategories = () => {
+    const category = categories.find(
+      (c) => c.name.toLowerCase() === selectedCategory.toLowerCase()
+    );
+    return category?.device_subcategories || [];
+  };
 
   useEffect(() => {
-    if (selectedCategory === 'Phones') {
-      const phoneStocks = stocks.filter(stock => 
-        stock.product?.device_category_id === 1
+    if (selectedCategory === "Phones") {
+      const phoneStocks = stocks.filter(
+        (stock) => stock.product?.device_category_id === 1
       );
       setFilteredStocks(phoneStocks);
-    } else if (selectedCategory === 'Accessories') {
-      const accessoryStocks = stocks.filter(stock => 
-        stock.product?.device_category_id === 2
+    } else if (selectedCategory === "Accessories") {
+      const accessoryStocks = stocks.filter(
+        (stock) => stock.product?.device_category_id === 2
       );
       setFilteredStocks(accessoryStocks);
     }
   }, [selectedCategory, stocks]);
 
+  useEffect(() => {
+    if (selectedSubcategory) {
+      const filtered = stocks.filter(
+        (stock) => stock.product?.device_subcategory_id === selectedSubcategory
+      );
+      setFilteredStocks(filtered);
+    } else if (selectedCategory === "Accessories") {
+      const accessoryStocks = stocks.filter(
+        (stock) => stock.product?.device_category_id === 2
+      );
+      setFilteredStocks(accessoryStocks);
+    }
+  }, [selectedSubcategory, stocks, selectedCategory]);
+
   return (
-    <div className="w-full h-screen flex flex-col">
-      <SalesOutletNav />
+    <div className="w-full h-screen flex flex-col overflow-hidden">
+      <SalesOutletNav setShowSidebar={setShowSidebar} />
       <div className="w-full flex overflow-hidden ">
         <ToastContainer
           position="top-right"
@@ -137,7 +187,9 @@ const handleSearch = (e) => {
                   type="text"
                   value={searchTerm}
                   onChange={handleSearch}
-                  onBlur={()=>{if(searchTerm === '') setSearchTerm(null)}}
+                  onBlur={() => {
+                    if (searchTerm === "") setSearchTerm(null);
+                  }}
                   className="flex overflow-hidden duration-100 h-8 focus:outline-none justify-between px-2 py-1 text-sm rounded-md border border-solid  border-opacity-10 text-black "
                   placeholder="Search"
                 />
@@ -145,7 +197,40 @@ const handleSearch = (e) => {
             </div>
           </div>
 
-          <div className="w-full grid lg:grid-cols-4 xl:grid-cols-5 grid-cols-2 md:grid-cols-3 gap-4 lg:mt-10 mt-5 overflow-y-auto h-[calc(100vh-100px)] px-2 hide-scrollbar bottom-0">
+          <div className=" w-full self-center lg:px-20 px-10 justify-center md:flex hidden" >
+            <div className="w-full  justify-center">
+              {selectedCategory === "Accessories" && (
+                <div className="mt-4">
+                  <SegmentedPicker
+                    options={[
+                      "All",
+                      ...(categories
+                        .find((c) => c.name === "Accessories")
+                        ?.device_subcategories.map((sub) => sub.name) || []),
+                    ]}
+                    onChange={(subcategory) => {
+                      if (subcategory === "All") {
+                        setSelectedSubcategory(null);
+                        const accessoryStocks = stocks.filter(
+                          (stock) => stock.product?.device_category_id === 2
+                        );
+                        setFilteredStocks(accessoryStocks);
+                      } else {
+                        const subId = categories
+                          .find((c) => c.name === "Accessories")
+                          ?.device_subcategories.find(
+                            (sub) => sub.name === subcategory
+                          )?.id;
+                        setSelectedSubcategory(subId);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full grid lg:grid-cols-4 xl:grid-cols-5 grid-cols-2 md:grid-cols-3 gap-1 lg:mt-10 mt-5 overflow-y-auto h-[calc(100vh-100px)] px-2 hide-scrollbar bottom-0">
             {filteredStocks.map((stock) => (
               <ProductCard
                 key={stock.id}
@@ -161,23 +246,30 @@ const handleSearch = (e) => {
           </div>
         </div>
 
-        <div className="lg:w-1/4 pt-6 absolute right-0 h-full bg-white w-11/12 overflow-y-auto hide-scrollbar lg:shadow-none shadow-xl hidden lg:block">
+        <motion.div
+          initial={{ x: "100%" }}
+          animate={{
+            x: window.innerWidth >= 1024 ? 0 : showSidebar ? "100%" : 0,
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className={`lg:w-1/4 pt-6 absolute right-0 h-full bg-white w-11/12 overflow-y-auto 
+              hide-scrollbar lg:shadow-none shadow-xl lg:relative`}
+        >
           <AnimatePresence>
             {selectedCartId == null ? (
               <RecentBills
                 onCartSelect={(id) => setSelectedCartId(id)}
-                onClose={() => setShowSidebar(false)}
+                setShowSidebar={setShowSidebar}
               />
             ) : (
               <Cart
                 cartId={selectedCartId}
-                onClose={() => setSelectedCartId(null)} 
+                onClose={() => setSelectedCartId(null)}
                 change={changeCart}
-                   
               />
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
