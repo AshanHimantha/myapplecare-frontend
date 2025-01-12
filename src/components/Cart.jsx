@@ -5,7 +5,7 @@ import api from "../api/axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
-import { SidebarClose } from "lucide-react";
+
 
 const Cart = ({ cartId, onClose, change }) => {
   const [cartLoading, setCartLoading] = useState(false);
@@ -23,6 +23,7 @@ const Cart = ({ cartId, onClose, change }) => {
   const [discount, setDiscount] = useState("");
   const [removingItems, setRemovingItems] = useState([]);
   const [print, setPrint] = useState(true);
+  const [invoiceId, setInvoiceId] = useState(null);
 
 
   const showToast = (message, type = "success") => {
@@ -171,10 +172,9 @@ const Cart = ({ cartId, onClose, change }) => {
       const response = await api.post("/cart/checkout", checkoutData);
 
       if (response.data.status === "success") {
-       if(print){
+        
+        setInvoiceId(response.data.data.invoice.id);
         setShowPrintModal(true);
-        onClose();
-       }
       }
     } catch (err) {
       showToast(err.response?.data?.message || "Checkout failed", "error");
@@ -442,14 +442,11 @@ const Cart = ({ cartId, onClose, change }) => {
         </div>
       )}
 
-      <PrintInvoice
-        isOpen={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        cartItems={cartItems}
-        onUpdatePrice={handleUpdatePrice}
-        customerDetails={customerDetails}
-        total={total}
-      />
+<PrintInvoice 
+  isOpen={showPrintModal}
+  onClose={() => setShowPrintModal(false)}
+  invoiceId={invoiceId}
+/>
     </>
   );
 };
