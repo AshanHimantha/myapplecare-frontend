@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 
 const Cart = ({ cartId, onClose, change }) => {
-  const [cartLoading, setCartLoading] = useState(false);
+
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cartError, setCartError] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -21,8 +21,6 @@ const Cart = ({ cartId, onClose, change }) => {
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [discount, setDiscount] = useState("");
-  const [removingItems, setRemovingItems] = useState([]);
-  const [print, setPrint] = useState(true);
   const [invoiceId, setInvoiceId] = useState(null);
 
 
@@ -43,7 +41,7 @@ const Cart = ({ cartId, onClose, change }) => {
   }, [change]);
 
   const fetchCartItems = async () => {
-    setCartLoading(true);
+    
     try {
       const response = await api.get(`/cart/${cartId}`);
       if (response.data.status === "success") {
@@ -52,9 +50,7 @@ const Cart = ({ cartId, onClose, change }) => {
     } catch (err) {
       setCartError(err.response?.data?.message || "Failed to load cart");
       showToast("Failed to load cart details", "error");
-    } finally {
-      setCartLoading(false);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -63,7 +59,7 @@ const Cart = ({ cartId, onClose, change }) => {
 
   const handleUpdateQuantity = async (itemId, newQuantity) => {
     try {
-      const response = await api.put(`/cart/items/${itemId}`, {
+       await api.put(`/cart/items/${itemId}`, {
         quantity: newQuantity,
       });
 
@@ -75,7 +71,7 @@ const Cart = ({ cartId, onClose, change }) => {
 
   const handleRemoveItem = async (itemId) => {
     try {
-      setRemovingItems((prev) => [...prev, itemId]);
+     
       // Remove item from UI immediately
       setCartItems((prev) => prev.filter((item) => item.id !== itemId));
 
@@ -87,8 +83,6 @@ const Cart = ({ cartId, onClose, change }) => {
         cartItems.find((item) => item.id === itemId),
       ]);
       showToast("Failed to remove item", "error");
-    } finally {
-      setRemovingItems((prev) => prev.filter((id) => id !== itemId));
     }
   };
 
@@ -386,7 +380,7 @@ const Cart = ({ cartId, onClose, change }) => {
             </div>
 
             <button
-              onClick={()=>{handleCheckout(); setPrint(true); }}
+              onClick={handleCheckout}
               className="flex gap-4 justify-center  py-2 mt-5 w-full text-lg font-medium text-white rounded-lg bg-zinc-800 text-center"
             >
               <div>Print Bill</div>
@@ -397,7 +391,7 @@ const Cart = ({ cartId, onClose, change }) => {
               />
             </button>
             <button className="mt-5 text-base text-neutral-400 mb-5 bottom-0"
-             onClick={()=>{handleCheckout(); setPrint(false); }}
+             onClick={handleCheckout}
             >
               Checkout Without Bill
             </button>

@@ -14,7 +14,6 @@ import EditProduct from "./components/editProduct";
 import AddStock from "./components/AddStock";
 import ViewStock from "./components/ViewStock";
 import EditStock from "./components/EditStock";
-import api from "./api/axios";
 import PrintInvoice from "./components/PrintInvoice";
 
 
@@ -117,7 +116,7 @@ const App = () => {
         <Route
           path="/invoice"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute accessType={["admin", "cashier"]}>
               <Invoice />
             </ProtectedRoute>
           }

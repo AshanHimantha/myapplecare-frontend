@@ -34,7 +34,7 @@ const ProductCard = ({
         className="flex justify-center items-center w-32 h-32 rounded-md bg-gray-50 bg-opacity-5"
       >
         {image ? (
-          <img src={image} className="w-10/12 object-contain" alt={name} />
+          <img src={image} className="w-10/12 object-contain rounded-md" alt={name} />
         ) : (
           <svg
             className="w-16 h-16 text-[#86868B]"
