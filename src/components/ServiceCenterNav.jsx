@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ServiceCenterNav = () => {
+const ServiceCenterNav = ({setVisible}) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -65,7 +65,7 @@ const ServiceCenterNav = () => {
               )}
             </AnimatePresence>
           </div>
-          <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" />
+          <img src="/images/cart.svg " alt="Profile" className="w-4 h-4 cursor-pointer lg:hidden block" onClick={setVisible}/>
           <span className="text-xs font-semibold lg:block hidden">
             {formatDateTime(currentTime)}
           </span>

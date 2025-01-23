@@ -137,7 +137,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           Customer Details
         </h3>
 
-        <label htmlFor="first_name" className="self-start mt-6">
+        <label htmlFor="first_name" className="self-start mt-4">
           First Name
         </label>
         <input
@@ -228,7 +228,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           Device Details
         </h3>
 
-        <fieldset className="border-0 p-0 mt-2.5">
+        <fieldset className="border-0 p-0 mt-2">
           <legend className="self-start">Device Category</legend>
           <div className="grid grid-cols-3 gap-1 mt-1.5 justify-center items-center">
             {[

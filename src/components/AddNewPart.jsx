@@ -1,40 +1,73 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Alert from './Alert';
+import api from '../api/axios';
 
-const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
+const AddNewPart = ({ isOpen, onClose }) => {
   const [partDetails, setPartDetails] = useState({
-    image: null,
-    name: '',
+    part_name: '',
+    part_image: null,
     quantity: '',
-    unitPrice: '',
-    sellingPrice: '',
-    category: '',
+    unit_price: '',
+    selling_price: '',
+    device_category: '',
     grade: '',
     description: ''
   });
   const [showAlert, setShowAlert] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPartDetails({ ...partDetails, image: file });
+      setPartDetails({ ...partDetails, part_image: file });
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     try {
-      await onSubmit(partDetails);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        onClose();
-      }, 2000);
+      const formData = new FormData();
+      formData.append('part_name', partDetails.part_name);
+      formData.append('part_image', partDetails.part_image);
+      formData.append('quantity', partDetails.quantity);
+      formData.append('unit_price', partDetails.unit_price);
+      formData.append('selling_price', partDetails.selling_price);
+      formData.append('device_category', partDetails.device_category.toLowerCase());
+      formData.append('grade', partDetails.grade.toLowerCase());
+      formData.append('description', partDetails.description);
+
+      const response = await api.post('/parts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.status === 'success') {
+        setShowAlert(true);
+        setPartDetails({
+          part_name: '',
+          part_image: null,
+          quantity: '',
+          unit_price: '',
+          selling_price: '',
+          device_category: '',
+          grade: '',
+          description: ''
+        });
+        setTimeout(() => {
+          setShowAlert(false);
+          onClose();
+        }, 2000);
+      }
     } catch (error) {
       console.error('Error adding part:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,8 +130,8 @@ const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
                   <label className="block text-sm font-semibold text-gray-700">Part Name</label>
                   <input
                     type="text"
-                    value={partDetails.name}
-                    onChange={(e) => setPartDetails({...partDetails, name: e.target.value})}
+                    value={partDetails.part_name}
+                    onChange={(e) => setPartDetails({...partDetails, part_name: e.target.value})}
                     className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
                     required
                   />
@@ -119,8 +152,8 @@ const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
                     <label className="block text-sm font-semibold text-gray-700">Unit Price</label>
                     <input
                       type="number"
-                      value={partDetails.unitPrice}
-                      onChange={(e) => setPartDetails({...partDetails, unitPrice: e.target.value})}
+                      value={partDetails.unit_price}
+                      onChange={(e) => setPartDetails({...partDetails, unit_price: e.target.value})}
                       className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
                       required
                     />
@@ -131,8 +164,8 @@ const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
                   <label className="block text-sm font-semibold text-gray-700">Selling Price</label>
                   <input
                     type="number"
-                    value={partDetails.sellingPrice}
-                    onChange={(e) => setPartDetails({...partDetails, sellingPrice: e.target.value})}
+                    value={partDetails.selling_price}
+                    onChange={(e) => setPartDetails({...partDetails, selling_price: e.target.value})}
                     className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
                     required
                   />
@@ -149,15 +182,15 @@ const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
                       <label
                         key={category.name}
                         className={`flex justify-center items-center gap-2 p-2 border rounded-md cursor-pointer ${
-                          partDetails.category === category.name ? 'border-black border-2' : 'border-gray-200'
+                          partDetails.device_category === category.name ? 'border-black border-2' : 'border-gray-200'
                         }`}
                       >
                         <input
                           type="radio"
                           name="category"
                           value={category.name}
-                          checked={partDetails.category === category.name}
-                          onChange={(e) => setPartDetails({...partDetails, category: e.target.value})}
+                          checked={partDetails.device_category === category.name}
+                          onChange={(e) => setPartDetails({...partDetails, device_category: e.target.value})}
                           className="sr-only"
                           required
                         />
@@ -212,9 +245,10 @@ const AddNewPart = ({ isOpen, onClose, onSubmit }) => {
 
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800"
+                  className="w-full px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50"
+                  disabled={loading}
                 >
-                  Add Part
+                  {loading ? 'Adding...' : 'Add Part'}
                 </button>
               </form>
             </motion.div>

@@ -40,3 +40,7 @@ body {
     transform: rotate(360deg);
   }
 }
+
+hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
