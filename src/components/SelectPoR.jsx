@@ -23,7 +23,7 @@ const SelectPoR = ({ onSelect, selectedItem }) => {
             }`}
           >
             <img
-              src="./images/part.svg"
+              src="../images/part.svg"
               alt="part"
               className="w-5 h-5"
             />
@@ -37,7 +37,7 @@ const SelectPoR = ({ onSelect, selectedItem }) => {
             }`}
           >
             <img
-              src="./images/repair.svg"
+              src="../images/repair.svg"
               alt="repair"
               className="w-5 h-5"
             />
@@ -49,7 +49,7 @@ const SelectPoR = ({ onSelect, selectedItem }) => {
             className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 cursor-pointer`}
           >
             <img
-              src="./images/scharge.svg"
+              src="../images/scharge.svg"
               alt="service"
               className="w-5 h-5"
             />

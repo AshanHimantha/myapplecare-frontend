@@ -135,7 +135,7 @@ const ServiceCenter = () => {
         <div 
           ref={containerRef}
           onScroll={handleScroll}
-          className="lg:w-3/4 w-full h-full overflow-auto hide-scrollbar flex flex-col items-center"
+          className="lg:w-3/4 w-full h-full overflow-auto hide-scrollbar flex flex-col items-center "
         >
           <div className="w-11/12 overflow-auto hide-scrollbar">
             <div className=" w-full flex justify-between bg-white border border-gray-200 rounded-md mt-10">

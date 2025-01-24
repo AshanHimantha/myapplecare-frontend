@@ -24,7 +24,7 @@ const Parts = ({onBack}) => {
   const fetchParts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/parts');
+      const response = await api.get('/parts-search');
       if (response.data.status === 'success') {
         setParts(response.data.data);
       }
@@ -64,7 +64,7 @@ const Parts = ({onBack}) => {
             onClick={onBack}
             className="flex items-center gap-2 text-sm font-medium mb-4 hover:opacity-70"
           >
-            <img src="./images/arrow-left.svg" alt="back" className="w-4 h-4" />
+            <img src="../images/arrow-left.svg" alt="back" className="w-4 h-4" />
             <span>Back</span>
           </button>
           <div className="flex justify-between items-center p-5 pt-1 text-white  ">
@@ -82,13 +82,14 @@ const Parts = ({onBack}) => {
           </div>
 
           <div className="grid gap-4 mt-4">
+            {loading && <div className="text-center">Loading...</div>}
             {parts.map(part => (
               <div key={part.id} className="border border-gray-200 rounded-md flex p-2 items-center justify-between gap-2">
                 <div className="flex gap-2">
-                  <div className="w-16 h-16 rounded border-4 border-gray-200 flex justify-center items-center overflow-hidden ">
+                  <div className="w-16 h-16 rounded border-4 border-gray-100 flex justify-center items-center overflow-hidden ">
                     <img 
-                      src={"http://localhost:8000/api/part-images/"+part.part_image} 
-                      className="w-14  object-cover rounded-md" 
+                    src={part.part_image==null?"../images/Apple-ID.png":"http://localhost:8000/api/part-images/"+part.part_image} 
+                      className=" object-cover rounded-md" 
                       alt={part.part_name} 
                     />
                   </div>
@@ -107,7 +108,7 @@ const Parts = ({onBack}) => {
                   className="w-8 h-8 rounded-full border border-gray-200 flex justify-center items-center mr-3 cursor-pointer"
                   onClick={() => setIsSerialModalOpen(true)}
                 >
-                  <img src="./images/add.svg" className="w-4" alt="add" />
+                  <img src="../images/add.svg" className="w-4" alt="add" />
                 </div>
               </div>
             ))}

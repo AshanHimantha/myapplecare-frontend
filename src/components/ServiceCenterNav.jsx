@@ -40,6 +40,7 @@ const ServiceCenterNav = ({setVisible}) => {
       {/* Right side */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
+          <img src="/images/refresh.svg" alt="Notification" className="w-3 h-3 cursor-pointer" onClick={()=>window.location.reload()} />
           <div className="relative">
             <img 
               src="/images/profile-circle.svg" 

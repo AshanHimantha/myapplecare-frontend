@@ -123,7 +123,7 @@ const App = () => {
         />
 
         <Route
-          path="/view-ticket"
+          path="/view-ticket/:id"
           element={
             <ProtectedRoute accessType="technician">
               <ViewTicket />

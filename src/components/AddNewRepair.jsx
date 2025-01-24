@@ -1,27 +1,49 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Alert from './Alert';
+import api from "../api/axios";
 
 const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
   const [repairDetails, setRepairDetails] = useState({
-    name: '',
+    repair_name: '',
+    device_category: '',
     cost: '',
-    category: '',
     description: ''
   });
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      await onSubmit(repairDetails);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        onClose();
-      }, 2000);
+      setLoading(true);
+      const formattedData = {
+        repair_name: repairDetails.repair_name,
+        device_category: repairDetails.device_category.toLowerCase(),
+        cost: parseFloat(repairDetails.cost),
+        description: repairDetails.description
+      };
+
+      const response = await api.post('/repairs', formattedData);
+
+      if (response.data.status === 'success') {
+        setShowAlert(true);
+        setRepairDetails({
+          repair_name: '',
+          device_category: '',
+          cost: '',
+          description: ''
+        });
+        setTimeout(() => {
+          setShowAlert(false);
+          onClose();
+        }, 2000);
+      }
     } catch (error) {
       console.error('Error adding repair:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,7 +72,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Add New Repair</h3>
                 <button onClick={onClose}>
-                  <img src="./images/close2.svg" alt="close" className="w-3 h-3" />
+                  <img src="../images/close2.svg" alt="close" className="w-3 h-3" />
                 </button>
               </div>
 
@@ -59,8 +81,8 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                   <label className="block text-sm font-semibold text-gray-700">Repair Name</label>
                   <input
                     type="text"
-                    value={repairDetails.name}
-                    onChange={(e) => setRepairDetails({...repairDetails, name: e.target.value})}
+                    value={repairDetails.repair_name}
+                    onChange={(e) => setRepairDetails({...repairDetails, repair_name: e.target.value})}
                     className="mt-1 w-full px-3 py-1 border border-gray-200 rounded-md placeholder:text-gray-300 placeholder:text-xs"
                     placeholder="Enter Repair Name"
                     required
@@ -78,7 +100,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                       <label
                         key={category.name}
                         className={`flex justify-center items-center gap-2 p-2 border rounded-md cursor-pointer ${
-                          repairDetails.category === category.name 
+                          repairDetails.device_category === category.name 
                             ? 'border-black border-2' 
                             : 'border-gray-200'
                         }`}
@@ -87,8 +109,8 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                           type="radio"
                           name="category"
                           value={category.name}
-                          checked={repairDetails.category === category.name}
-                          onChange={(e) => setRepairDetails({...repairDetails, category: e.target.value})}
+                          checked={repairDetails.device_category === category.name}
+                          onChange={(e) => setRepairDetails({...repairDetails, device_category: e.target.value})}
                           className="sr-only"
                           required
                         />
@@ -125,7 +147,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                     className="mt-1 w-full px-3 py-1 border border-gray-200 rounded-md placeholder:text-gray-300 placeholder:text-xs"
                     rows="3"
                     placeholder="Enter Description"
-                    required
+                    
                   />
                 </div>
 
