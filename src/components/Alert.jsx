@@ -25,7 +25,7 @@ const Alert = ({ isVisible, onClose, message, type = 'success' }) => {
             <div className="w-full flex justify-end">
               <button onClick={onClose}>
                 <img
-                  src="./images/close2.svg"
+                  src="../images/close2.svg"
                   alt="Close"
                   className="w-3 h-3 m-4 hover:opacity-70 transition-opacity"
                 />

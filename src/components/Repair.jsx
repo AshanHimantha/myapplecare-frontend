@@ -2,14 +2,14 @@ import React, { useState, useCallback, useEffect } from "react";
 import AddNewRepair from "./AddNewRepair";
 import debounce from "lodash/debounce";
 import api from "../api/axios";
+import { useParams } from "react-router-dom";
 
-const Repair = ({ onBack, onRepairSelect }) => {
+const Repair = ({ onBack, onRepairAdd }) => {
   const [isAddRepairOpen, setIsAddRepairOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [repairs, setRepairs] = useState([]);
-  const [selectedRepair, setSelectedRepair] = useState(null);
-
+  const { id } = useParams(); // Get ticketId from URL params
 
   const fetchRepairs = async () => {
     try {
@@ -63,10 +63,21 @@ const Repair = ({ onBack, onRepairSelect }) => {
 
 
 
-  const handleAddRepair = (repair) => {
-    setSelectedRepair(repair);
-    // If you need to pass to parent component
-    onRepairSelect?.(repair);
+  const handleAddRepair = async (repair) => {
+    try {
+      const response = await api.post('/ticket-items', {
+        ticket_id: parseInt(id), // from useParams
+        type: 'repair',
+        repair_id: repair.id
+      });
+
+      if (response.data.status === 'success') {
+        onRepairAdd(true);
+       
+      }
+    } catch (error) {
+      console.error('Failed to add repair:', error);
+    }
   };
 
   return (

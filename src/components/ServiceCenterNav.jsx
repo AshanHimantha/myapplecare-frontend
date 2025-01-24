@@ -27,7 +27,7 @@ const ServiceCenterNav = ({setVisible}) => {
   };
 
   return (
-    <div className="flex justify-between items-center h-6 bg-gray-100 text-black px-4">
+    <div className="flex justify-between items-center lg:h-6 h-10 bg-gray-100 text-black px-4">
       {/* Left side */}
       <div className="flex items-center space-x-4">
         <img src="/images/apple-logo.svg" alt="Logo" className="lg:w-4 lg:h-4 w-3 h-3" />
@@ -40,6 +40,7 @@ const ServiceCenterNav = ({setVisible}) => {
       {/* Right side */}
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-2">
+        <img src="/images/arrow-left.svg" alt="back" className="w-4 h-4 cursor-pointer" onClick={()=>window.history.back()} />
           <img src="/images/refresh.svg" alt="Notification" className="w-3 h-3 cursor-pointer" onClick={()=>window.location.reload()} />
           <div className="relative">
             <img 

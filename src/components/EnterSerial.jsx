@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import api from '../api/axios';
-import { useParams } from 'react-router-dom';
+import api from "../api/axios";
+import { useParams } from "react-router-dom";
 
-const EnterSerial = ({ isOpen, part, onClose }) => {
+const EnterSerial = ({ isOpen, part, onClose, onSuccess }) => {
   const { id } = useParams(); // Get ticketId from URL params
   const [serialNumber, setSerialNumber] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const handleSubmit = async () => {
     setError(null);
     try {
       setLoading(true);
       const payload = {
         ticket_id: parseInt(id),
-        type: 'part',
+        type: "part",
         part_id: part.id,
-        quantity: quantity
+        quantity: quantity,
       };
 
       // Only add serial if it exists and not empty
@@ -26,15 +26,15 @@ const EnterSerial = ({ isOpen, part, onClose }) => {
         payload.serial = serialNumber; // Changed from serial_number to serial
       }
 
-      const response = await api.post('/ticket-items', payload);
-
-      if (response.data.status === 'success') {
+      const response = await api.post("/ticket-items", payload);
+console.log('response',response)
+      if (response.data.status === "success") {
         onClose();
       } else {
         setError(response.data.message);
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to add part');
+      setError(error.response?.data?.message || "Failed to add part");
     } finally {
       setLoading(false);
     }
@@ -123,18 +123,18 @@ const EnterSerial = ({ isOpen, part, onClose }) => {
                 </button>
               </div>
             </div>
-{error && (
-  <div className="text-red-500 text-xs mt-2 text-center">
-    {error}
-  </div>
-)}
+            {error && (
+              <div className="text-red-500 text-xs mt-2 text-center">
+                {error}
+              </div>
+            )}
             <div className="flex justify-end mt-4 space-x-2">
               <button
                 onClick={handleSubmit}
                 disabled={loading}
                 className="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800 w-full disabled:opacity-50"
               >
-                {loading ? 'Adding...' : 'Submit'}
+                {loading ? "Adding..." : "Submit"}
               </button>
             </div>
           </motion.div>

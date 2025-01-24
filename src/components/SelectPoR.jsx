@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import ServiceCharge from './ServiceCharge';
 
-const SelectPoR = ({ onSelect, selectedItem }) => {
+const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit }) => {
   const [isServiceChargeOpen, setIsServiceChargeOpen] = useState(false);
 
-  const handleServiceSubmit = (serviceDetails) => {
-    console.log('Service details:', serviceDetails);
-    // Handle the service submission
-  };
+
 
   return (
     <>

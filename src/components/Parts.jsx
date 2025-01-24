@@ -3,8 +3,10 @@ import EnterSerial from './EnterSerial';
 import AddNewPart from './AddNewPart';
 import debounce from 'lodash.debounce';
 import api from '../api/axios';
+import { use } from 'framer-motion/client';
 
-const Parts = ({onBack}) => {
+
+const Parts = ({onBack,onPartAdd}) => {
   const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
   const [isAddPartModalOpen, setIsAddPartModalOpen] = useState(false);
   const [parts, setParts] = useState([]);
@@ -12,14 +14,11 @@ const Parts = ({onBack}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPart, setSelectedPart] = useState(null);
 
-  const handleSerialSubmit = (serialNumber) => {
-    console.log('Serial number submitted:', serialNumber);
-    // Handle the serial number submission
-  };
 
-  const handlePartSubmit = (partDetails) => {
-    console.log('Part details:', partDetails);
-    // Handle the part submission
+
+
+  const handlePartSubmit = () => {
+    onPartAdd(true);
   };
 
   const fetchParts = async () => {
@@ -88,10 +87,17 @@ const Parts = ({onBack}) => {
               <div key={part.id} className="border border-gray-200 rounded-md flex p-2 items-center justify-between gap-2">
                 <div className="flex gap-2">
                   <div className="w-16 h-16 rounded border-4 border-gray-100 flex justify-center items-center overflow-hidden ">
-                    <img 
-                    src={part.part_image==null?"../images/Apple-ID.png":"http://localhost:8000/api/part-images/"+part.part_image} 
-                      className=" object-cover rounded-md" 
-                      alt={part.part_name} 
+                                       <img 
+                      src={
+                        !part.part_image || part.part_image === "not available" 
+                          ? "../images/Apple-ID.png" 
+                          : `http://localhost:8000/api/part-images/${part.part_image}`
+                      }
+                      onError={(e) => {
+                        e.target.src = "../images/Apple-ID.png";
+                      }}
+                      className="object-cover rounded-md"
+                      alt={part.part_name || "Part image"}
                     />
                   </div>
                   <div>
@@ -135,8 +141,9 @@ const Parts = ({onBack}) => {
         onClose={() => {
           setIsSerialModalOpen(false);
           setSelectedPart(null);
+          onPartAdd(true);
         }}
-        onSubmit={handleSerialSubmit}
+       
         part={selectedPart}
       />
 

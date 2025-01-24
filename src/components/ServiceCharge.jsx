@@ -1,37 +1,40 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Alert from './Alert';
+import { useParams } from 'react-router-dom';
+import api from '../api/axios';
 
 const ServiceCharge = ({ isOpen, onClose, onSubmit }) => {
-  const [serviceDetails, setServiceDetails] = useState({
-    type: '',
-    description: '',
-    cost: ''
-  });
-  const [showAlert, setShowAlert] = useState(false);
+  const { id } = useParams();
+  const [cost, setCost] = useState('');
+  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     try {
-      await onSubmit(serviceDetails);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
+      const response = await api.put(`/tickets/${id}`, {
+        service_charge: parseFloat(cost),
+        "status": "in_progress",
+      });
+
+      if (response.data.status === 'success') {
+        onSubmit();
         onClose();
-      }, 2000);
+        
+      }
     } catch (error) {
       console.error('Error adding service charge:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <Alert 
-        isVisible={showAlert}
-        onClose={() => setShowAlert(false)}
-        message="Service Charge Added Successfully"
-        type="success"
-      />
+    
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -49,52 +52,29 @@ const ServiceCharge = ({ isOpen, onClose, onSubmit }) => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Add Service Charge</h3>
                 <button onClick={onClose}>
-                  <img src="./images/close2.svg" alt="close" className="w-3 h-3" />
+                  <img src="../images/close2.svg" alt="close" className="w-3 h-3" />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700">Service Type</label>
-                  <input
-                    type="text"
-                    value={serviceDetails.type}
-                    onChange={(e) => setServiceDetails({...serviceDetails, type: e.target.value})}
-                    className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
-                    placeholder="Enter Service Type"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700">Cost</label>
+                  <label className="block text-sm font-semibold text-gray-700">Service Charge</label>
                   <input
                     type="number"
-                    value={serviceDetails.cost}
-                    onChange={(e) => setServiceDetails({...serviceDetails, cost: e.target.value})}
+                    value={cost}
+                    onChange={(e) => setCost(e.target.value)}
                     className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
-                    placeholder="Enter Cost"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700">Description</label>
-                  <textarea
-                    value={serviceDetails.description}
-                    onChange={(e) => setServiceDetails({...serviceDetails, description: e.target.value})}
-                    className="mt-1 w-full px-3 py-2 border border-gray-200 rounded-md"
-                    rows="3"
-                    placeholder="Enter Description"
+                    placeholder="Enter Service Charge"
                     required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800"
+                  disabled={loading}
+                  className="w-full px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50"
                 >
-                  Add Service Charge
+                  {loading ? 'Adding...' : 'Add Service Charge'}
                 </button>
               </form>
             </motion.div>

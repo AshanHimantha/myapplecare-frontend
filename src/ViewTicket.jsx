@@ -6,6 +6,7 @@ import SelectPoR from "./components/SelectPoR";
 import Parts from "./components/Parts";
 import Repair from "./components/Repair";
 import TicketItem from "./components/TicketItem";
+import StatusButton from "./components/StatusButton";
 
 const ViewTicket = () => {
   const { id } = useParams();
@@ -14,6 +15,30 @@ const ViewTicket = () => {
   const [loading, setLoading] = useState(true);
   const [ticketItems, setTicketItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
+  const [itemChanged, setItemChanged] = useState(false);
+  const [serviceChanged, setServiceChanged] = useState(false);
+
+  useEffect(() => {
+    const fetchTicketDetails = async () => {
+      try {
+        const response = await api.get(`/tickets/${id}`);
+        if (response.data.status === "success") {
+          setTicket(response.data.data);
+          setServiceChanged(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch ticket:", err);
+      }
+    };
+
+    if (serviceChanged) {
+      fetchTicketDetails();
+    }
+  }, [serviceChanged]);
+
+  const handleServiceSubmit = () => {
+    setServiceChanged(true);
+  };
 
   useEffect(() => {
     const fetchTicketDetails = async () => {
@@ -39,7 +64,7 @@ const ViewTicket = () => {
         const response = await api.get(`/tickets/${id}/items`);
         if (response.data.status === "success") {
           setTicketItems(response.data.data);
-          console.log(response.data.data);
+          setItemChanged(false);
         }
       } catch (err) {
         console.error("Failed to fetch ticket items:", err);
@@ -49,12 +74,13 @@ const ViewTicket = () => {
       }
     };
 
-    if (id) {
+    if (id || itemChanged) {
       fetchTicketItems();
     }
-  }, [id]);
+  }, [id, itemChanged]);
 
   const handleDeleteItem = async (itemId) => {
+    console.log("Deleting item:", itemId);
     try {
       const response = await api.delete(`/ticket-items/${itemId}`);
       if (response.data.status === "success") {
@@ -106,8 +132,8 @@ const ViewTicket = () => {
     <>
       <ServiceCenterNav />
 
-      <div className="w-full lg:h-screen h-full flex justify-center bg-slate-50">
-        <div className="lg:w-10/12 w-11/12 flex flex-col items-center">
+      <div className="w-full lg:h-screen h-full pb-10 flex justify-center bg-slate-50">
+        <div className="md:w-11/12 w-11/12 flex flex-col items-center">
           <div className="w-full flex justify-between bg-white border border-gray-200 rounded-md mt-10">
             <div className="flex p-2 px-5 text-black lg:text-xl text-sm font-medium flex-col items-start justify-center">
               <div className="text-start">Ticket #{id}</div>
@@ -128,30 +154,51 @@ const ViewTicket = () => {
           <div className="w-full flex lg:flex-row flex-col bg-white border border-gray-200 rounded-md p-5 mt-2 gap-5">
             <div className="lg:w-4/12 w-full">
               {addItem === "parts" ? (
-                <Parts onBack={() => setAddItem(null)} />
+                <Parts
+                  onBack={() => setAddItem(null)}
+                  onPartAdd={() => setItemChanged(true)}
+                />
               ) : addItem === "repair" ? (
-                <Repair onBack={() => setAddItem(null)} />
+                <Repair
+                  onBack={() => setAddItem(null)}
+                  onRepairAdd={() => setItemChanged(true)}
+                />
               ) : (
-                <SelectPoR onSelect={setAddItem} selectedItem={addItem} />
+                <SelectPoR
+                  onSelect={setAddItem}
+                  selectedItem={addItem}
+                  handleServiceSubmit={handleServiceSubmit}
+                />
               )}
             </div>
 
             <div className="lg:w-8/12 w-full">
-              <div className="text-start w-full font-medium text-lg">
-                Recent Invoices
+              <div className="text-start w-full font-medium text-lg flex justify-between">
+                <div>Recent Invoices</div>
+                <div className="flex items-center gap-2">
+                  <StatusButton
+                    id={ticket?.id}
+                    currentStatus={ticket?.status}
+                    onChange={() => setServiceChanged(true)}
+                  />
+
+                  <button className="text-xs bg-blue-500 text-white px-2 py-1 rounded-md">
+                    Print{" "}
+                  </button>
+                </div>
               </div>
               <div className="w-full mx-auto mt-5 overflow-x-auto">
                 <div className="min-w-[600px] border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
-                    <div className="w-3/12">Item</div>
-                    <div className="w-3/12 text-center">Qty</div>
+                    <div className="w-5/12">Item</div>
+                    <div className="w-1/12 text-center">Type</div>
                     <div className="w-3/12 text-center">Price</div>
                     <div className="w-2/12 text-center">Total</div>
                     <div className="w-1/12 text-center"></div>
                   </div>
 
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
-                 
+
                   {ticketItems.map((item) => (
                     <TicketItem
                       key={item.id}
@@ -159,16 +206,12 @@ const ViewTicket = () => {
                       onDelete={handleDeleteItem}
                     />
                   ))}
-
-               
                 </div>
-               
-              
               </div>
 
               <div className="text-start w-full font-medium text-lg mt-5 mb-2">
-                  Total
-                </div>
+                Total
+              </div>
               {calculateTotal()}
             </div>
           </div>
