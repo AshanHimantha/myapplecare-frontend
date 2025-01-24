@@ -107,7 +107,7 @@ const ViewTicket = () => {
       <ServiceCenterNav />
 
       <div className="w-full lg:h-screen h-full flex justify-center bg-slate-50">
-        <div className="w-10/12 flex flex-col items-center">
+        <div className="lg:w-10/12 w-11/12 flex flex-col items-center">
           <div className="w-full flex justify-between bg-white border border-gray-200 rounded-md mt-10">
             <div className="flex p-2 px-5 text-black lg:text-xl text-sm font-medium flex-col items-start justify-center">
               <div className="text-start">Ticket #{id}</div>
@@ -151,7 +151,7 @@ const ViewTicket = () => {
                   </div>
 
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
-                  {/* Example row */}
+                 
                   {ticketItems.map((item) => (
                     <TicketItem
                       key={item.id}
@@ -160,13 +160,16 @@ const ViewTicket = () => {
                     />
                   ))}
 
-                  {/* Add more rows as needed */}
+               
                 </div>
-                <div className="text-start w-full font-medium text-lg mt-5 mb-2">
+               
+              
+              </div>
+
+              <div className="text-start w-full font-medium text-lg mt-5 mb-2">
                   Total
                 </div>
-                {calculateTotal()}
-              </div>
+              {calculateTotal()}
             </div>
           </div>
         </div>

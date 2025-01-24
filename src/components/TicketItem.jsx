@@ -23,7 +23,12 @@ const TicketItem = ({ item, onDelete }) => {
   return (
     <div className="flex border-b p-3 text-sm">
       <div className="w-3/12 font-medium">
-        {name}
+        <div className="text-sm">{name}</div>
+        {item?.serial && (
+          <div className="text-[9px] text-gray-400 mt-0.5">
+           ({item.serial})
+          </div>
+        )}
       </div>
       <div className="w-3/12 text-gray-400 text-center">
         {type}

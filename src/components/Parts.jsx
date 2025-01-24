@@ -10,6 +10,7 @@ const Parts = ({onBack}) => {
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPart, setSelectedPart] = useState(null);
 
   const handleSerialSubmit = (serialNumber) => {
     console.log('Serial number submitted:', serialNumber);
@@ -96,17 +97,21 @@ const Parts = ({onBack}) => {
                   <div>
                     <div className="font-medium text-sm">{part.part_name}</div>
                     <div className="text-gray-400 text-xs mt-0.5">
-                      <span>Available Stock : {part.quantity}</span>
-                      <span className="text-white bg-black px-4 rounded-sm text-[10px] py-0.5 mx-2 font-medium">
+                      <span>Available: {part.quantity}</span>
+                      <span className="text-white bg-black px-2 rounded-sm text-[10px] py-0.5 mx-2 font-medium">
                         {part.device_category}
                       </span>
                     </div>
                     <div className="text-xs mt-0.5">{part.selling_price} LKR</div>
                   </div>
                 </div>
+                
                 <div 
                   className="w-8 h-8 rounded-full border border-gray-200 flex justify-center items-center mr-3 cursor-pointer"
-                  onClick={() => setIsSerialModalOpen(true)}
+                  onClick={() => {
+                    setSelectedPart(part);
+                    setIsSerialModalOpen(true);
+                  }}
                 >
                   <img src="../images/add.svg" className="w-4" alt="add" />
                 </div>
@@ -127,8 +132,12 @@ const Parts = ({onBack}) => {
 
       <EnterSerial
         isOpen={isSerialModalOpen}
-        onClose={() => setIsSerialModalOpen(false)}
+        onClose={() => {
+          setIsSerialModalOpen(false);
+          setSelectedPart(null);
+        }}
         onSubmit={handleSerialSubmit}
+        part={selectedPart}
       />
 
       <AddNewPart
