@@ -42,7 +42,7 @@ const Repair = ({ onBack, onRepairAdd }) => {
       try {
         setLoading(true);
         const response = await api.get("/repairs-search", {
-          params: { search: term },
+          params: { search: term }
         });
 
         if (response.data.status === "success") {
@@ -54,7 +54,7 @@ const Repair = ({ onBack, onRepairAdd }) => {
         setLoading(false);
       }
     }, 500),
-    []
+    [fetchRepairs, setLoading, setRepairs] // Add dependencies
   );
 
   useEffect(() => {

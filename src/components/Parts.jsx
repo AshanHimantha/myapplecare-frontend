@@ -3,7 +3,7 @@ import EnterSerial from './EnterSerial';
 import AddNewPart from './AddNewPart';
 import debounce from 'lodash.debounce';
 import api from '../api/axios';
-import { use } from 'framer-motion/client';
+
 
 
 const Parts = ({onBack,onPartAdd}) => {

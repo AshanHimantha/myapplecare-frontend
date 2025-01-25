@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import CreateTicketForm from "./components/CreateTicketForm";
 import SegmentedPicker from "./components/SegmentedPicker";
 import ServiceCenterNav from "./components/ServiceCenterNav";
-import Alert from './components/Alert';
+import Alert from "./components/Alert";
 import api from "./api/axios";
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
 
 const ServiceCenter = () => {
   const [isCreateTicketVisible, setIsCreateTicketVisible] = useState(true);
@@ -14,18 +14,18 @@ const ServiceCenter = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [status, setStatus] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef(null);
   const PER_PAGE = 20;
 
   const displayStatusOptions = ["All", "Pending", "Ongoing", "Completed"];
 
   const statusMapping = {
-    'Pending': 'open',
-    'Ongoing': 'in_progress',
-    'Completed': 'completed',
-    'All': 'all'
+    Pending: "open",
+    Ongoing: "in_progress",
+    Completed: "completed",
+    All: "all",
   };
 
   const handleCreateTicketClick = () => {
@@ -39,31 +39,34 @@ const ServiceCenter = () => {
     setTickets([]); // Clear existing tickets
   };
 
-  const fetchTickets = useCallback(async (pageNum) => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/tickets-filter`, {
-        params: {
-          page: pageNum,
-          per_page: PER_PAGE,
-          status: status === 'all' ? '' : status
-        }
-      });
+  const fetchTickets = useCallback(
+    async (pageNum) => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/tickets-filter`, {
+          params: {
+            page: pageNum,
+            per_page: PER_PAGE,
+            status: status === "all" ? "" : status,
+          },
+        });
 
-      if (response.data.status === 'success') {
-        if (pageNum === 1) {
-          setTickets(response.data.data);
-        } else {
-          setTickets(prev => [...prev, ...response.data.data]);
+        if (response.data.status === "success") {
+          if (pageNum === 1) {
+            setTickets(response.data.data);
+          } else {
+            setTickets((prev) => [...prev, ...response.data.data]);
+          }
+          setHasMore(response.data.data.length === PER_PAGE);
         }
-        setHasMore(response.data.data.length === PER_PAGE);
+      } catch (err) {
+        console.error("Failed to fetch tickets:", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to fetch tickets:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [status]); // Add status as dependency
+    },
+    [status]
+  ); // Add status as dependency
 
   const handleSearch = useCallback(
     debounce(async (term) => {
@@ -74,19 +77,19 @@ const ServiceCenter = () => {
 
       try {
         setLoading(true);
-        const response = await api.get('/tickets-search', {
-          params: { 
+        const response = await api.get("/tickets-search", {
+          params: {
             search: term,
-            status: status === 'all' ? '' : status
-          }
+            status: status === "all" ? "" : status,
+          },
         });
 
-        if (response.data.status === 'success') {
+        if (response.data.status === "success") {
           setTickets(response.data.data);
           setHasMore(false);
         }
       } catch (err) {
-        console.error('Search failed:', err);
+        console.error("Search failed:", err);
       } finally {
         setLoading(false);
       }
@@ -98,6 +101,24 @@ const ServiceCenter = () => {
     const term = e.target.value;
     setSearchTerm(term);
     handleSearch(term);
+  };
+
+  const handleDeleteTicket = async (ticketId) => {
+    // Using window.confirm explicitly to avoid ESLint warning
+    if (!window.confirm('Are you sure you want to delete this ticket?')) {
+      return;
+    }
+  
+    try {
+      const response = await api.delete(`/tickets/${ticketId}`);
+      if (response.data.status === 'success') {
+        setTickets(prevTickets => 
+          prevTickets.filter(ticket => ticket.id !== ticketId)
+        );
+      }
+    } catch (err) {
+      console.error('Failed to delete ticket:', err);
+    }
   };
 
   useEffect(() => {
@@ -114,7 +135,7 @@ const ServiceCenter = () => {
   const handleScroll = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;
     if (scrollHeight - scrollTop <= clientHeight * 1.5 && !loading && hasMore) {
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
     }
   };
 
@@ -125,14 +146,14 @@ const ServiceCenter = () => {
   return (
     <>
       <ServiceCenterNav setVisible={handleCreateTicketClick} />
-      <Alert 
+      <Alert
         isVisible={showAlert}
         onClose={() => setShowAlert(false)}
         message="Ticket Created Successfully"
         type="success"
       />
       <div className="w-full lg:h-screen flex justify-center  overflow-hidden hide-scrollbar">
-        <div 
+        <div
           ref={containerRef}
           onScroll={handleScroll}
           className="lg:w-3/4 w-full h-full overflow-auto hide-scrollbar flex flex-col items-center "
@@ -169,33 +190,109 @@ const ServiceCenter = () => {
                     <div className="w-2/12">Customer</div>
                     <div className="w-1/12 text-center">Priority</div>
                     <div className="w-2/12 text-center">Contact No</div>
-                    <div className="w-2/12 text-center">Category</div>
+                    <div className="w-1/12 text-center">Category</div>
                     <div className="w-1/12 text-center">Status</div>
                     <div className="w-1/12 text-center"></div>
                   </div>
 
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
-                  {tickets.map(ticket => (
+                  {tickets.map((ticket) => (
                     <div key={ticket.id} className="flex border-b p-3 text-sm">
-                      <div className="w-3/12 font-medium">{ticket.device_model}</div>
-                      <div className="w-2/12 text-gray-600">{ticket.first_name} {ticket.last_name}</div>
-                      <div className={`w-1/12 text-center font-semibold ${
-                        ticket.priority === 'high' ? 'text-red-500' :
-                        ticket.priority === 'medium' ? 'text-yellow-500' : 'text-green-500'
-                      }`}>
-                        {ticket.priority}
+                      <div className="w-3/12 font-medium">
+                        {ticket.device_model}
                       </div>
-                      <div className="w-2/12 text-center text-gray-600">{ticket.contact_number}</div>
-                      <div className="w-2/12 text-center text-gray-600">{ticket.device_category}</div>
-                      <div className="w-1/12 text-center">{ticket.status}</div>
+                      <div className="w-2/12 text-gray-600">
+                        {ticket.first_name} {ticket.last_name}
+                      </div>
+                      <div
+                        className={`w-1/12 text-center font-semibold ${
+                          ticket.priority === "high"
+                            ? "text-red-500"
+                            : ticket.priority === "medium"
+                            ? "text-yellow-500"
+                            : "text-green-500"
+                        }`}
+                      >
+                        {ticket.priority
+                          ? ticket.priority.charAt(0).toUpperCase() +
+                            ticket.priority.slice(1)
+                          : "N/A"}
+                      </div>
+                      <div className="w-2/12 text-center text-gray-600">
+                        {ticket.contact_number}
+                      </div>
+                      <div className="w-1/12 text-center text-gray-600">
+                        {ticket.device_category}
+                      </div>
                       <div className="w-1/12 text-center">
-                        <a href={`/view-ticket/${ticket.id}`} className="text-blue-500">View</a>
+                        <span
+                          className={`
+    inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+    ${
+      ticket.status === "open"
+        ? "bg-yellow-100 text-yellow-800"
+        : ticket.status === "in_progress"
+        ? "bg-blue-100 text-blue-800"
+        : ticket.status === "completed"
+        ? "bg-green-100 text-green-800"
+        : "bg-red-100 text-red-800"
+    }
+  `}
+                        >
+                          <span
+                            className={`
+      w-2 h-2 mr-1.5 rounded-full
+      ${
+        ticket.status === "open"
+          ? "bg-yellow-400"
+          : ticket.status === "in_progress"
+          ? "bg-blue-400"
+          : ticket.status === "completed"
+          ? "bg-green-400"
+          : "bg-red-400"
+      }
+    `}
+                          />
+                          {ticket.status === "open"
+                            ? "Open"
+                            : ticket.status === "in_progress"
+                            ? "OnGoing"
+                            : ticket.status === "completed"
+                            ? "Completed"
+                            : "Cancelled"}
+                        </span>
+                      </div>
+                      <div className="w-1/12 text-end pr-1">
+                        <a
+                          href={`/view-ticket/${ticket.id}`}
+                          className="text-blue-500"
+                        >
+                          View
+                        </a>
+                      </div>
+
+                      <div className="w-1/12 flex justify-center">
+                        {(ticket.status === "open" ||
+                          ticket.status === "in_progress") && (
+                          <button
+                            onClick={() => handleDeleteTicket(ticket.id)}
+                            className="text-blue-500 text-center text-xs"
+                          >
+                            <img
+                              src="/images/bin.svg"
+                              alt="delete"
+                              className="h-5 w-5"
+                            />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
 
                   {loading && (
-                    <div className="text-center py-4">Loading more tickets...</div>
+                    <div className="text-center py-4">
+                      Loading more tickets...
+                    </div>
                   )}
                 </div>
               </div>
@@ -212,7 +309,7 @@ const ServiceCenter = () => {
               variants={drawerVariants}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <CreateTicketForm 
+              <CreateTicketForm
                 onClose={() => setIsCreateTicketVisible(false)}
                 onSuccess={() => setShowAlert(true)}
               />

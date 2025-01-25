@@ -64,13 +64,12 @@ const ViewTicket = () => {
         const response = await api.get(`/tickets/${id}/items`);
         if (response.data.status === "success") {
           setTicketItems(response.data.data);
-          setItemChanged(false);
         }
       } catch (err) {
-        console.error("Failed to fetch ticket items:", err);
-        setTicketItems([]);
+        console.error("Failed to fetch items:", err);
       } finally {
         setItemsLoading(false);
+        setItemChanged(false);
       }
     };
 
@@ -136,9 +135,20 @@ const ViewTicket = () => {
         <div className="md:w-11/12 w-11/12 flex flex-col items-center">
           <div className="w-full flex justify-between bg-white border border-gray-200 rounded-md mt-10">
             <div className="flex p-2 px-5 text-black lg:text-xl text-sm font-medium flex-col items-start justify-center">
-              <div className="text-start">Ticket #{id}</div>
-              <div className="text-start font-normal text-xs">
-                {new Date(ticket?.created_at).toLocaleString()}
+              <div className="flex">
+                <img
+                  src="/images/arrow-left.svg"
+                  alt="back"
+                  className="w-6 h-6 cursor-pointer m-auto mr-5"
+                  onClick={() => window.history.back()}
+                />
+                <div>
+                <div className="text-start">Ticket #{id}</div>
+                <div className="text-start font-normal text-xs">
+                  {new Date(ticket?.created_at).toLocaleString()}
+                </div>
+                </div>
+
               </div>
             </div>
             <div className="flex p-2 px-5 text-black lg:text-xl text-sm font-medium flex-col items-end justify-center">
@@ -199,13 +209,19 @@ const ViewTicket = () => {
 
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
 
-                  {ticketItems.map((item) => (
-                    <TicketItem
-                      key={item.id}
-                      item={item}
-                      onDelete={handleDeleteItem}
-                    />
-                  ))}
+                  {itemsLoading ? (
+                    <div className="flex justify-center items-center p-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    </div>
+                  ) : (
+                    ticketItems.map((item) => (
+                      <TicketItem
+                        key={item.id}
+                        item={item}
+                        onDelete={handleDeleteItem}
+                      />
+                    ))
+                  )}
                 </div>
               </div>
 

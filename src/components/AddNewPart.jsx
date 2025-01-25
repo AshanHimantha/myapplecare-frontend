@@ -27,16 +27,7 @@ const AddNewPart = ({ isOpen, onClose }) => {
     }
   };
 
-  const validatePrices = () => {
-    if (parseFloat(partDetails.selling_price) <= parseFloat(partDetails.unit_price)) {
-      setErrors(prev => ({
-        ...prev,
-        pricing: 'Selling price must be higher than unit price'
-      }));
-      return false;
-    }
-    return true;
-  };
+
 
   const validateForm = () => {
     const newErrors = {};

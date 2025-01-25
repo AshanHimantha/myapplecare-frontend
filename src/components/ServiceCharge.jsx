@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Alert from './Alert';
 import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 

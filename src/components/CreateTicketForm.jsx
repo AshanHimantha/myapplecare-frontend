@@ -84,7 +84,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
         });
 
         onSuccess();
-        onClose();
+        
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create ticket");

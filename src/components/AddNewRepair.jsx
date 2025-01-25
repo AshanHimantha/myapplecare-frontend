@@ -11,13 +11,13 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
     description: ''
   });
   const [showAlert, setShowAlert] = useState(false);
-  const [loading, setLoading] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      setLoading(true);
+     
       const formattedData = {
         repair_name: repairDetails.repair_name,
         device_category: repairDetails.device_category.toLowerCase(),
@@ -43,7 +43,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
     } catch (error) {
       console.error('Error adding repair:', error);
     } finally {
-      setLoading(false);
+     
     }
   };
 
