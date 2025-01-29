@@ -34,7 +34,7 @@ const AddProduct = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/categories');
+      const response = await api.post('/categories');
       const result = await response.json();
       
       if (result.status === 'success') {
@@ -206,7 +206,7 @@ const AddProduct = () => {
         .replace(/^-+/, '')             // Trim - from start
         .replace(/-+$/, '');            // Trim - from end
   
-      const response = await api.post('/device-categories', {
+      const response = await api.post('/categories', {
         name: name,
         slug: slug
       });
@@ -238,7 +238,7 @@ const AddProduct = () => {
         .replace(/^-+/, '')
         .replace(/-+$/, '');
 
-      const response = await api.post('/device-subcategories', {
+      const response = await api.post('/categories', {
         name,
         slug,
         device_category_id: newSubCategory.device_category_id
