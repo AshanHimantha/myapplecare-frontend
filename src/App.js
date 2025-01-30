@@ -15,6 +15,7 @@ import AddStock from "./components/AddStock";
 import ViewStock from "./components/ViewStock";
 import EditStock from "./components/EditStock";
 import PrintInvoice from "./components/PrintInvoice";
+import OutletReturn from "./OutletReturn";
 
 
 
@@ -31,6 +32,9 @@ const App = () => {
         <Route path="/" element={<Login />} />
 
         <Route path="/inv" element={<PrintInvoice />} />
+
+
+        <Route path="/sales-return" element={<OutletReturn/>} />
 
         <Route
           path="/AddStock"
