@@ -16,6 +16,7 @@ import ViewStock from "./components/ViewStock";
 import EditStock from "./components/EditStock";
 import PrintInvoice from "./components/PrintInvoice";
 import OutletReturn from "./OutletReturn";
+import ViewInvoice from "./components/ViewInvoice";
 
 
 
@@ -36,6 +37,7 @@ const App = () => {
 
         <Route path="/sales-return" element={<OutletReturn/>} />
 
+        <Route path="/view-invoice/:id" element={<ViewInvoice/>} />
         <Route
           path="/AddStock"
           element={

@@ -105,9 +105,9 @@ const Invoice = () => {
                         {parseFloat(invoice.total_amount).toLocaleString()} LKR
                       </div>
                       <div className="w-2/12 text-center">
-                        <button className="text-blue-600 hover:text-blue-800">
+                        <a className="text-blue-600 hover:text-blue-800" href={`/view-invoice/${invoice.id}`}>
                           View
-                        </button>
+                        </a>
                       </div>
                     </div>
                   ))}
