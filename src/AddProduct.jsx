@@ -5,6 +5,8 @@ import api from './api/axios';
 const AddProduct = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [subcategories, setSubcategories] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -34,17 +36,21 @@ const AddProduct = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.post('/categories');
-      const result = await response.json();
-      
-      if (result.status === 'success') {
-        setCategories(result.data);
+      const response = await api.get('/categories');
+      if (response.data.status === 'success') {
+        setCategories(response.data.data);
       }
-    } catch (err) {
-      setError('Failed to load categories');
-      console.error(err);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
   };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const category = categories.find(cat => cat.id === parseInt(selectedCategory));
+      setSubcategories(category?.device_subcategories || []);
+    }
+  }, [selectedCategory, categories]);
 
   const validateField = (name, value) => {
     switch (name) {
@@ -66,23 +72,15 @@ const AddProduct = () => {
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
-    const selectedCategory = categories.find(cat => cat.id.toString() === categoryId);
-    
     setFormData(prev => ({
       ...prev,
       device_category_id: categoryId,
-      category: selectedCategory?.name || '',
-      device_subcategory_id: '',
-      subCategory: ''
+      device_subcategory_id: '' // Reset subcategory
     }));
-    
-    // Validate category
-    const error = validateField('device_category_id', categoryId);
-    setValidationErrors(prev => ({
-      ...prev,
-      device_category_id: error,
-      device_subcategory_id: '' // Clear subcategory error
-    }));
+
+    // Find selected category and its subcategories
+    const selectedCat = categories.find(cat => cat.id === parseInt(categoryId));
+    setSubcategories(selectedCat?.device_subcategories || []);
   };
 
   const handleSubCategoryChange = (e) => {
@@ -170,13 +168,12 @@ const AddProduct = () => {
         }
       });
 
-  
-
       if (response.data.status === 'success') {
         navigate('/products');
       } else {
         setError(response.data.message || 'Failed to create product');
       }
+      
     } catch (err) {
       setError('Failed to create product');
       console.error(err);
@@ -213,6 +210,7 @@ const AddProduct = () => {
   
       if (response.data.status === 'success') {
         await fetchCategories(); // Refresh categories
+        
         setIsModalOpen(false);
         setNewCategory({ name: '' });
       }
@@ -308,18 +306,17 @@ const AddProduct = () => {
         
         </div>
         <select
-          name="device_category_id"
-          value={formData.device_category_id}
-          onChange={handleCategoryChange}
-          className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7]  border focus:ring-2 focus:ring-[#0071E3] "
-        >
-          <option value="">Select Category</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+        value={formData.device_category_id}
+        onChange={handleCategoryChange}
+        className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 border focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md"
+      >
+        <option value="">Select Category</option>
+        {categories.map((category) => (
+          <option key={category.id} value={category.id}>
+            {category.name}
+          </option>
+        ))}
+      </select>
         {validationErrors.device_category_id && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.device_category_id}</p>
         )}
@@ -340,21 +337,18 @@ const AddProduct = () => {
         
         </div>
         <select
-          name="device_subcategory_id"
-          value={formData.device_subcategory_id}
-          onChange={handleSubCategoryChange}
-          disabled={!formData.device_category_id}
-          className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7]  border focus:ring-2 focus:ring-[#0071E3] disabled:opacity-50"
-        >
-          <option value="">Select Sub Category</option>
-          {formData.device_category_id && categories
-            .find(cat => cat.id.toString() === formData.device_category_id)
-            ?.device_subcategories.map((sub) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name}
-              </option>
-            ))}
-        </select>
+        value={formData.device_subcategory_id}
+        onChange={(e) => setFormData({ ...formData, device_subcategory_id: e.target.value })}
+        className="block w-full pl-3 pr-10 py-2 text-base border-gray-200  border focus:outline-none focus:ring-black focus:border-black sm:text-sm rounded-md"
+        disabled={!formData.device_category_id}
+      >
+        <option value="">Select Subcategory</option>
+        {subcategories.map((sub) => (
+          <option key={sub.id} value={sub.id}>
+            {sub.name}
+          </option>
+        ))}
+      </select>
         {validationErrors.device_subcategory_id && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.device_subcategory_id}</p>
         )}
