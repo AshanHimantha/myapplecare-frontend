@@ -9,6 +9,17 @@ import PrintInvoice from "./components/PrintInvoice";
 import api from "./api/axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useDebounce from './hooks/useDebounce';
+
+const toastConfig = {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
 
 const SalesOutlet = () => {
   const [stocks, setStocks] = useState([]);
@@ -20,74 +31,80 @@ const SalesOutlet = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
+    setSearchTerm(e.target.value);
+  };
 
-    const categoryId = selectedCategory === "Phones" ? 1 : 2;
+  useEffect(() => {
+    if (debouncedSearchTerm !== null) {
+      const term = debouncedSearchTerm.toLowerCase();
+      const categoryId = selectedCategory === "Phones" ? 1 : 2;
 
-    // If search is empty, only show category filtered items
-    const filtered =
-      term === ""
-        ? stocks.filter(
-            (stock) => stock.product?.device_category_id === categoryId
-          )
-        : stocks.filter((stock) => {
+      const filtered = term === "" 
+        ? stocks.filter(stock => stock.product?.device_category_id === categoryId)
+        : stocks.filter(stock => {
             const productName = stock.product?.name.toLowerCase();
             const serialNumber = stock.serial_number?.toLowerCase();
-            const matchesSearch =
-              productName?.includes(term) || serialNumber?.includes(term);
-            const matchesCategory =
-              stock.product?.device_category_id === categoryId;
+            const matchesSearch = productName?.includes(term) || serialNumber?.includes(term);
+            const matchesCategory = stock.product?.device_category_id === categoryId;
             return matchesSearch && matchesCategory;
           });
 
-    setFilteredStocks(filtered);
-  };
+      setFilteredStocks(filtered);
+      setIsSearching(false);
+    }
+  }, [debouncedSearchTerm, selectedCategory, stocks]);
 
   const handleSegmentChange = (option) => {
     setSelectedCategory(option);
+    // Reset subcategory when Phones is selected
+    if (option === "Phones") {
+      setSelectedSubcategory(null);
+    }
   };
 
   const handleAddToCart = async (stockId) => {
+    if (!stockId) return;
+    
     try {
       if (!selectedCartId) {
-        // Create new cart first
         const cartResponse = await api.post("/cart/create");
         if (cartResponse.data.status === "success") {
           const newCartId = cartResponse.data.data.id;
           setSelectedCartId(newCartId);
           
-          // Add item to new cart
+          await new Promise(resolve => setTimeout(resolve, 300)); // Add small delay
+
           const response = await api.post("/cart/add", {
             cart_id: newCartId,
             stock_id: stockId,
             quantity: 1,
-            price: 0, 
+            price: 0
           });
-  
+
           if (response.data.status === "success") {
-            setChangeCart(!changeCart);
-        
+            setChangeCart(prev => !prev);
+            toast.success("Item added to cart", toastConfig);
           }
         }
       } else {
-        // Add to existing cart
         const response = await api.post("/cart/add", {
           cart_id: selectedCartId,
           stock_id: stockId,
           quantity: 1,
           price: 0
         });
-  
+
         if (response.data.status === "success") {
-          setChangeCart(!changeCart);
-          toast.success("Item added to cart");
+          setChangeCart(prev => !prev);
+          toast.success("Item added to cart", toastConfig);
         }
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to add item to cart");
+      toast.error(err.response?.data?.message || "Failed to add item to cart", toastConfig);
     }
   };
 
@@ -133,26 +150,19 @@ const SalesOutlet = () => {
       );
       setFilteredStocks(phoneStocks);
     } else if (selectedCategory === "Accessories") {
-      const accessoryStocks = stocks.filter(
-        (stock) => stock.product?.device_category_id === 2
-      );
-      setFilteredStocks(accessoryStocks);
+      if (selectedSubcategory) {
+        const filtered = stocks.filter(
+          (stock) => stock.product?.device_subcategory_id === selectedSubcategory
+        );
+        setFilteredStocks(filtered);
+      } else {
+        const accessoryStocks = stocks.filter(
+          (stock) => stock.product?.device_category_id === 2
+        );
+        setFilteredStocks(accessoryStocks);
+      }
     }
-  }, [selectedCategory, stocks]);
-
-  useEffect(() => {
-    if (selectedSubcategory) {
-      const filtered = stocks.filter(
-        (stock) => stock.product?.device_subcategory_id === selectedSubcategory
-      );
-      setFilteredStocks(filtered);
-    } else if (selectedCategory === "Accessories") {
-      const accessoryStocks = stocks.filter(
-        (stock) => stock.product?.device_category_id === 2
-      );
-      setFilteredStocks(accessoryStocks);
-    }
-  }, [selectedSubcategory, stocks, selectedCategory]);
+  }, [selectedCategory, selectedSubcategory, stocks]);
 
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden">
@@ -162,13 +172,14 @@ const SalesOutlet = () => {
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
-          newestOnTop={false}
+          newestOnTop
           closeOnClick
           rtl={false}
           pauseOnFocusLoss
           draggable
           pauseOnHover
           theme="light"
+          limit={3}
         />
         <div className="lg:w-3/4 w-full h-full justify-center mt-10 ">
           <div className="w-full flex ">
@@ -187,18 +198,16 @@ const SalesOutlet = () => {
                   type="text"
                   value={searchTerm}
                   onChange={handleSearch}
-                  onBlur={() => {
-                    if (searchTerm === "") setSearchTerm(null);
-                  }}
-                  className="flex overflow-hidden duration-100 h-8 focus:outline-none justify-between px-2 py-1 text-sm rounded-md border border-solid  border-opacity-10 text-black "
-                  placeholder="Search"
+                  className="flex overflow-hidden duration-100 h-8 focus:outline-none justify-between px-2 py-1 text-sm rounded-md border border-solid border-opacity-10 text-black"
+                  placeholder={isSearching ? "Searching..." : "Search"}
+                  disabled={isSearching}
                 />
               </div>
             </div>
           </div>
 
-          <div className=" w-full self-center lg:px-20 px-10 justify-center md:flex hidden" >
-            <div className="w-full  justify-center">
+          <div className="w-full self-center lg:px-20 px-10 justify-center md:flex hidden">
+            <div className="w-full justify-center">
               {selectedCategory === "Accessories" && (
                 <div className="mt-4">
                   <SegmentedPicker
