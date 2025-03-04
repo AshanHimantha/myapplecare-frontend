@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import CartItem from "./CartItem";
 import PrintInvoice from "./PrintInvoice";
 import api from "../api/axios";
@@ -6,9 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 
-
 const Cart = ({ cartId, onClose, change }) => {
-
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cartError, setCartError] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -23,7 +21,6 @@ const Cart = ({ cartId, onClose, change }) => {
   const [discount, setDiscount] = useState("");
   const [invoiceId, setInvoiceId] = useState(null);
 
-
   const showToast = (message, type = "success") => {
     toast[type](message, {
       position: "top-right",
@@ -36,12 +33,7 @@ const Cart = ({ cartId, onClose, change }) => {
     });
   };
 
-  useEffect(() => {
-    fetchCartItems();
-  }, [change]);
-
-  const fetchCartItems = async () => {
-    
+  const fetchCartItems = useCallback(async () => {
     try {
       const response = await api.get(`/cart/${cartId}`);
       if (response.data.status === "success") {
@@ -50,16 +42,20 @@ const Cart = ({ cartId, onClose, change }) => {
     } catch (err) {
       setCartError(err.response?.data?.message || "Failed to load cart");
       showToast("Failed to load cart details", "error");
-    } 
-  };
+    }
+  }, [cartId, showToast]);
 
   useEffect(() => {
     fetchCartItems();
-  }, [cartId]);
+  }, [fetchCartItems, change]);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [fetchCartItems]);
 
   const handleUpdateQuantity = async (itemId, newQuantity) => {
     try {
-       await api.put(`/cart/items/${itemId}`, {
+      await api.put(`/cart/items/${itemId}`, {
         quantity: newQuantity,
       });
 
@@ -71,7 +67,6 @@ const Cart = ({ cartId, onClose, change }) => {
 
   const handleRemoveItem = async (itemId) => {
     try {
-     
       // Remove item from UI immediately
       setCartItems((prev) => prev.filter((item) => item.id !== itemId));
 
@@ -166,7 +161,6 @@ const Cart = ({ cartId, onClose, change }) => {
       const response = await api.post("/cart/checkout", checkoutData);
 
       if (response.data.status === "success") {
-        
         setInvoiceId(response.data.data.invoice.id);
         setShowPrintModal(true);
       }
@@ -250,7 +244,7 @@ const Cart = ({ cartId, onClose, change }) => {
             <div className="shrink-0 self-stretch  h-px border border-solid border-zinc-100 mb-2" />
 
             <div className="w-full p-2">
-              <div className="flex gap-4 w-full text-xs text-zinc-700 text-opacity-30">
+              <div className="flex gap-4 w-full text-xs text-opacity-30">
                 <div className="flex-1">
                   <label htmlFor="firstName" className="sr-only">
                     First Name
@@ -328,7 +322,8 @@ const Cart = ({ cartId, onClose, change }) => {
                     <img
                       src="/images/cash.svg"
                       alt="Cash"
-                      className="w-5 aspect-[0.95] object-contain"
+                      className={`w-5 aspect-[0.95] object-contain transition-opacity
+                        ${paymentMethod === "cash" ? "opacity-100" : "opacity-30"}`}
                     />
                   </label>
 
@@ -352,7 +347,8 @@ const Cart = ({ cartId, onClose, change }) => {
                     <img
                       src="/images/card.svg"
                       alt="Card"
-                      className="w-5 aspect-[0.95] object-contain"
+                      className={`w-5 aspect-[0.95] object-contain transition-opacity
+                        ${paymentMethod === "card" ? "opacity-100" : "opacity-30"}`}
                     />
                   </label>
                 </div>
@@ -390,8 +386,9 @@ const Cart = ({ cartId, onClose, change }) => {
                 className="object-contain shrink-0 w-7 aspect-square"
               />
             </button>
-            <button className="mt-5 text-base text-neutral-400 mb-5 bottom-0"
-             onClick={handleCheckout}
+            <button
+              className="mt-5 text-base text-neutral-400 mb-5 bottom-0"
+              onClick={handleCheckout}
             >
               Checkout Without Bill
             </button>
@@ -436,11 +433,11 @@ const Cart = ({ cartId, onClose, change }) => {
         </div>
       )}
 
-<PrintInvoice 
-  isOpen={showPrintModal}
-  onClose={() => setShowPrintModal(false)}
-  invoiceId={invoiceId}
-/>
+      <PrintInvoice
+        isOpen={showPrintModal}
+        onClose={() => setShowPrintModal(false)}
+        invoiceId={invoiceId}
+      />
     </>
   );
 };
