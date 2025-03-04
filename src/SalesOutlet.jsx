@@ -5,21 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "./components/ProductCard";
 import RecentBills from "./components/RecentBills";
 import Cart from "./components/Cart";
-import PrintInvoice from "./components/PrintInvoice";
 import api from "./api/axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import useDebounce from './hooks/useDebounce';
-
-const toastConfig = {
-  position: "top-right",
-  autoClose: 3000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-};
 
 const SalesOutlet = () => {
   const [stocks, setStocks] = useState([]);
@@ -76,8 +63,6 @@ const SalesOutlet = () => {
           const newCartId = cartResponse.data.data.id;
           setSelectedCartId(newCartId);
           
-          await new Promise(resolve => setTimeout(resolve, 300)); // Add small delay
-
           const response = await api.post("/cart/add", {
             cart_id: newCartId,
             stock_id: stockId,
@@ -87,7 +72,6 @@ const SalesOutlet = () => {
 
           if (response.data.status === "success") {
             setChangeCart(prev => !prev);
-            toast.success("Item added to cart", toastConfig);
           }
         }
       } else {
@@ -100,11 +84,10 @@ const SalesOutlet = () => {
 
         if (response.data.status === "success") {
           setChangeCart(prev => !prev);
-          toast.success("Item added to cart", toastConfig);
         }
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to add item to cart", toastConfig);
+      console.error("Failed to add item to cart:", err);
     }
   };
 
@@ -136,12 +119,7 @@ const SalesOutlet = () => {
     fetchCategories();
   }, []);
 
-  const getSubcategories = () => {
-    const category = categories.find(
-      (c) => c.name.toLowerCase() === selectedCategory.toLowerCase()
-    );
-    return category?.device_subcategories || [];
-  };
+
 
   useEffect(() => {
     if (selectedCategory === "Phones") {
@@ -168,19 +146,6 @@ const SalesOutlet = () => {
     <div className="w-full h-screen flex flex-col overflow-hidden">
       <SalesOutletNav setShowSidebar={setShowSidebar} />
       <div className="w-full flex overflow-hidden ">
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          limit={3}
-        />
         <div className="lg:w-3/4 w-full h-full justify-center mt-10 ">
           <div className="w-full flex ">
             <div className="w-full lg:flex lg:flex-row flex-col items-center justify-center">

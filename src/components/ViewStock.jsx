@@ -4,8 +4,6 @@ import api from '../api/axios';
 
 const ViewStock = () => {
   const [stocks, setStocks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
@@ -26,9 +24,9 @@ const ViewStock = () => {
         setFilteredStocks(response.data.data);
       }
     } catch (err) {
-      setError('Failed to load stocks');
+
     } finally {
-      setLoading(false);
+     
     }
   };
 
@@ -41,7 +39,7 @@ const ViewStock = () => {
         setShowDeleteModal(false);
       }
     } catch (err) {
-      setError('Failed to delete stock');
+    
     } finally {
       setDeleteLoading(false);
       setDeleteId(null);
@@ -238,7 +236,7 @@ const ViewStock = () => {
                 </div>
                 <div className="col-span-2">
                   <p className="text-[#86868B]">Price</p>
-                  <p className="font-medium">${stock.selling_price}</p>
+                  <p className="font-medium">Rs.{stock.selling_price}</p>
                 </div>
               </div>
 

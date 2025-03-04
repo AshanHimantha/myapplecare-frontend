@@ -301,7 +301,7 @@ const AddStock = () => {
                   }))
                 }
                 className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
-                required
+                
               />
             </div>
 
