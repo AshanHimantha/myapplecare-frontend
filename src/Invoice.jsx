@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ServiceCenterNav from "./components/ServiceCenterNav";
 import api from "./api/axios";
+import SalesOutletNav from "./components/SalesOutletNav";
 
 const Invoice = () => {
   const [invoices, setInvoices] = useState([]);
@@ -53,7 +53,7 @@ const Invoice = () => {
 
   return (
     <>
-      <ServiceCenterNav />
+      <SalesOutletNav />
       <div className="w-full lg:h-screen h-full flex justify-center">
         <div className="w-8/12">
           <div className=" w-full flex justify-between bg-white border border-gray-200 rounded-md mt-10">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from './api/axios';
 import SalesOutletNav from './components/SalesOutletNav';
 
@@ -7,18 +7,22 @@ const OutletReturn = () => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [returnQuantities, setReturnQuantities] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
+  const [recentInvoices, setRecentInvoices] = useState([]);
+  const [loadingRecent, setLoadingRecent] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  // Modify the handleSearch function to accept an optional invoice ID
+  const handleSearch = async (e, invoiceId = null) => {
+    e?.preventDefault(); // Make preventDefault optional
     setError(null);
     setLoading(true);
 
     try {
-      const response = await api.get(`/invoices/${searchTerm}`);
+      // Use either the passed invoiceId or searchTerm
+      const searchId = invoiceId || searchTerm;
+      const response = await api.get(`/invoices/${searchId}`);
       if (response.data.status === 'success') {
         setInvoice(response.data.data);
       }
@@ -83,10 +87,28 @@ const OutletReturn = () => {
     }
   };
 
+  const fetchRecentInvoices = async () => {
+    setLoadingRecent(true);
+    try {
+      const response = await api.get('/invoices');
+      if (response.data.status === 'success') {
+        setRecentInvoices(response.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch recent invoices');
+    } finally {
+      setLoadingRecent(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentInvoices();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
 		<SalesOutletNav />
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-5">
         <h1 className="text-2xl font-semibold mb-6">Product Return</h1>
         
         {/* Search Form */}
@@ -234,6 +256,39 @@ Qty : {item.quantity}
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {!invoice && (
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">Recent Invoices</h2>
+            {loadingRecent ? (
+              <div className="text-center py-4">Loading...</div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {recentInvoices.map((inv) => (
+                  <div
+                    key={inv.id}
+                    className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={(e) => {
+                      setSearchTerm(inv.id);
+                      handleSearch(e, inv.id);
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium">Invoice #{inv.id}</h3>
+                        <p className="text-sm text-gray-600">{inv.first_name} {inv.last_name}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(inv.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <p className="font-medium">{parseFloat(inv.total_amount).toLocaleString()} LKR</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

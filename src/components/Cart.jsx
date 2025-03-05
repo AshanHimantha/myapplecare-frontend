@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import CartItem from "./CartItem";
 import PrintInvoice from "./PrintInvoice";
 import api from "../api/axios";
@@ -6,7 +6,19 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Move debounce utility to a separate utils file
+const debounce = (func, wait) => {
+  let timeout;
+  const debouncedFunc = (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+  debouncedFunc.cancel = () => clearTimeout(timeout);
+  return debouncedFunc;
+};
+
 const Cart = ({ cartId, onClose, change }) => {
+  const isMounted = useRef(true);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [cartError, setCartError] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -21,47 +33,66 @@ const Cart = ({ cartId, onClose, change }) => {
   const [discount, setDiscount] = useState("");
   const [invoiceId, setInvoiceId] = useState(null);
 
-  const showToast = (message, type = "success") => {
-    toast[type](message, {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-
-  const fetchCartItems = useCallback(async () => {
-    try {
-      const response = await api.get(`/cart/${cartId}`);
-      if (response.data.status === "success") {
-        setCartItems(response.data.data.items || []);
-      }
-    } catch (err) {
-      setCartError(err.response?.data?.message || "Failed to load cart");
-      showToast("Failed to load cart details", "error");
+  // Memoize showToast function
+  const showToast = useCallback((message, type = "success") => {
+    if (!toast.isActive(message)) {  // Prevent duplicate toasts
+      toast[type](message, {
+        toastId: message,
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
-  }, [cartId, showToast]);
+  }, []); // Empty dependency array since toast is stable
 
-  useEffect(() => {
-    fetchCartItems();
-  }, [fetchCartItems, change]);
+  // Create fetch function with inline function in useCallback
+  const debouncedFetchCartItems = useCallback(
+    () => {
+      const fetchItems = async () => {
+        if (!cartId || !isMounted.current) return;
+        
+        try {
+          const response = await api.get(`/cart/${cartId}`);
+          if (response.data.status === "success" && isMounted.current) {
+            setCartItems(response.data.data.items || []);
+          }
+        } catch (err) {
+          if (isMounted.current) {
+            setCartError(err.response?.data?.message || "Failed to load cart");
+            showToast("Failed to load cart details", "error");
+          }
+        }
+      };
 
+      return debounce(fetchItems, 300);
+    },
+    [cartId, isMounted, showToast]
+  );
+
+  // Update useEffect
   useEffect(() => {
-    fetchCartItems();
-  }, [fetchCartItems]);
+    const fetchItems = debouncedFetchCartItems();
+    fetchItems();
+    return () => fetchItems.cancel();
+  }, [debouncedFetchCartItems, change]);
 
   const handleUpdateQuantity = async (itemId, newQuantity) => {
     try {
-      await api.put(`/cart/items/${itemId}`, {
-        quantity: newQuantity,
-      });
+      // Update local state immediately
+      setCartItems(prev => prev.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
 
-      fetchCartItems();
+      await api.put(`/cart/items/${itemId}`, { quantity: newQuantity });
     } catch (err) {
-      showToast("Failed to update quantity", "error");
+      // Revert on failure
+      debouncedFetchCartItems();
+      if (isMounted.current) {
+        showToast("Failed to update quantity", "error");
+      }
     }
   };
 
@@ -83,18 +114,23 @@ const Cart = ({ cartId, onClose, change }) => {
 
   const handleUpdatePrice = async (itemId, price) => {
     try {
-      const response = await api.put(`/cart/items/${itemId}`, {
-        price: price,
-      });
+      // Update local state immediately
+      setCartItems(prev => prev.map(item => 
+        item.id === itemId ? { ...item, price } : item
+      ));
+
+      const response = await api.put(`/cart/items/${itemId}`, { price });
 
       if (response.data.status === "success") {
-        fetchCartItems();
         setShowDiscountModal(false);
         setDiscount("");
-      } else if (response.data.status === "error") {
+      } else {
+        // Revert on failure
+        debouncedFetchCartItems();
         showToast("Failed to update price", "error");
       }
     } catch (err) {
+      debouncedFetchCartItems();
       setCartError("Discount higher than the original price or invalid price");
     }
   };
