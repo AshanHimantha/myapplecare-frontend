@@ -137,6 +137,7 @@ const ProductList = () => {
                         >
                           Edit
                         </button>
+                       
                       </div>
                     </td>
                   </tr>
@@ -183,8 +184,11 @@ const ProductList = () => {
                   >
                     Edit
                   </button>
-                  <button className="text-red-500 hover:text-red-600 text-sm hidden">
-                    Delete
+                  <button 
+                    onClick={() => navigate(`/stocks/${product.id}/edit`)}
+                    className="text-green-600 hover:text-green-700 text-sm"
+                  >
+                    Add Stock
                   </button>
                 </div>
               </div>

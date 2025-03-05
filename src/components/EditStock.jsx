@@ -25,7 +25,7 @@ const EditStock = () => {
   const fetchStock = async () => {
     try {
       const response = await api.get(`/stocks/${id}`);
-	  console.log(response);
+      console.log(response);
       if (response.data.status === 'success') {
         const stock = response.data.data;
         setFormData({
@@ -39,7 +39,28 @@ const EditStock = () => {
         setProduct(stock.product);
       }
     } catch (err) {
-      setError('Failed to load stock');
+      if (err.response?.status === 404) {
+        // If stock not found, attempt to create it
+        try {
+          const createResponse = await api.post('/stocks', { id });
+          if (createResponse.data.status === 'success') {
+            const newStock = createResponse.data.data;
+            setFormData({
+              serial_number: newStock.serial_number || '',
+              quantity: newStock.quantity || 1,
+              selling_price: newStock.selling_price || '',
+              cost_price: newStock.cost_price || '',
+              color: newStock.color || '',
+              condition: newStock.condition || 'new'
+            });
+            setProduct(newStock.product);
+          }
+        } catch (createErr) {
+          setError('Failed to create new stock');
+        }
+      } else {
+        setError('Failed to load stock');
+      }
     } finally {
       setLoading(false);
     }
@@ -93,7 +114,7 @@ const EditStock = () => {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Product Info (Non-editable) */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="bg-white border border-gray-200 rounded-xl  p-6">
               <div className="flex items-center space-x-4">
                 <div className="h-16 w-16 rounded-lg bg-[#F5F5F7]">
                   {product?.image && (
@@ -112,7 +133,7 @@ const EditStock = () => {
             </div>
 
             {/* Stock Details */}
-            <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Serial Number */}
                 <div>
@@ -125,7 +146,7 @@ const EditStock = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, serial_number: e.target.value }))}
                     className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
                     placeholder="Enter IMEI or Serial Number"
-                    required
+                    
                   />
                 </div>
 
@@ -143,7 +164,7 @@ const EditStock = () => {
                       placeholder="#000000"
                       pattern="^#([A-Fa-f0-9]{6})$"
                       className="flex-1 px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
-                      required
+                      
                     />
                     <input
                       type="color"

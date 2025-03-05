@@ -48,8 +48,8 @@ const ViewStock = () => {
 
   useEffect(() => {
     const filtered = stocks.filter(stock => 
-      stock.product?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stock.serial_number.toLowerCase().includes(searchTerm.toLowerCase())
+      (stock.product?.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (stock.serial_number?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
     setFilteredStocks(filtered);
   }, [searchTerm, stocks]);
