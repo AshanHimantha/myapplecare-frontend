@@ -137,7 +137,12 @@ const ProductList = () => {
                         >
                           Edit
                         </button>
-                       
+                        <button 
+                          onClick={() => navigate(`/AddStock?s=${product.name}`)}
+                          className="text-green-600 hover:text-green-700 px-2 py-1"
+                        >
+                          Add Stock
+                        </button>
                       </div>
                     </td>
                   </tr>

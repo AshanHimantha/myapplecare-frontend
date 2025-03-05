@@ -147,7 +147,7 @@ const ViewStock = () => {
                       {stock.quantity}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
-                      ${stock.selling_price}
+                    Rs.{stock.selling_price}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                       <div className="flex justify-end space-x-3">

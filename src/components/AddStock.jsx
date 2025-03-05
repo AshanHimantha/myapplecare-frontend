@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
 
 const COLORS = [
@@ -15,6 +15,7 @@ const COLORS = [
 
 const AddStock = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
@@ -49,19 +50,24 @@ const AddStock = () => {
   };
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      const filtered = products.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.device_category?.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+    if (searchTerm) {
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.device_category?.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredProducts(filtered);
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
+    } else {
+      setFilteredProducts([]);
+    }
   }, [searchTerm, products]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const searchQuery = searchParams.get('s');
+    if (searchQuery) {
+      setSearchTerm(searchQuery);
+    }
+  }, [location]);
 
   const validatePrices = (cost, selling) => {
     if (parseFloat(cost) >= parseFloat(selling)) {
@@ -108,83 +114,136 @@ const AddStock = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Product Search and Selection */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <label className="block text-sm font-medium text-[#1D1D1F] mb-2">
-              Search Product
-            </label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
-              placeholder="Search by product name or category"
-            />
-
-            {searchTerm && (
-              <div className="mt-2 max-h-60 overflow-y-auto bg-white rounded-lg border">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setFormData((prev) => ({
-                        ...prev,
-                        product_id: product.id,
-                      }));
-                      setSearchTerm("");
-                    }}
-                    className="p-3 hover:bg-[#F5F5F7] cursor-pointer flex items-center space-x-3"
-                  >
-                    <div className="h-12 w-12 rounded-lg bg-[#F5F5F7] flex-shrink-0">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="h-12 w-12 rounded-lg object-cover"
-                        />
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            {!selectedProduct ? (
+              <>
+                <label className="block text-sm font-medium text-[#1D1D1F] mb-2">
+                  Search Product
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
+                    placeholder="Search by product name or category"
+                  />
+                  
+                  <div className={`absolute z-10 w-full mt-2 ${!searchTerm && 'hidden'}`}>
+                    <div className="bg-white rounded-lg border shadow-lg">
+                      {filteredProducts.length > 0 ? (
+                        <div className="max-h-60 overflow-y-auto">
+                          {filteredProducts.map((product) => (
+                            <div
+                              key={product.id}
+                              onClick={() => {
+                                setSelectedProduct(product);
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  product_id: product.id,
+                                }));
+                                setSearchTerm("");
+                                navigate(`/AddStock?s=${encodeURIComponent(product.name)}`);
+                              }}
+                              className="p-3 hover:bg-[#F5F5F7] cursor-pointer flex items-center space-x-3 border-b last:border-b-0"
+                            >
+                              <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] flex-shrink-0 flex items-center justify-center">
+                                {product.image ? (
+                                  <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="h-10 w-10 rounded-lg object-cover"
+                                  />
+                                ) : (
+                                  <svg
+                                    className="w-6 h-6 text-[#86868B]"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-medium text-sm">{product.name}</div>
+                                <div className="text-xs text-[#86868B]">
+                                  {product.device_category?.name} -{" "}
+                                  {product.device_subcategory?.name}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       ) : (
-                        <div className="h-12 w-12 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
-                          <svg
-                            className="w-6 h-6 text-[#86868B]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
+                        <div className="p-4 text-[#86868B] text-sm">
+                          No products found
                         </div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-[#86868B]">
-                        {product.device_category?.name} -{" "}
-                        {product.device_subcategory?.name}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <div className="h-12 w-12 rounded-lg bg-[#F5F5F7] flex-shrink-0">
+                    {selectedProduct.image ? (
+                      <img
+                        src={selectedProduct.image}
+                        alt={selectedProduct.name}
+                        className="h-12 w-12 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-[#86868B]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
                       </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-medium">{selectedProduct.name}</div>
+                    <div className="text-sm text-[#86868B]">
+                      {selectedProduct.device_category?.name} -{" "}
+                      {selectedProduct.device_subcategory?.name}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {selectedProduct && (
-              <div className="mt-4 p-4 bg-[#F5F5F7] rounded-lg">
-                <div className="font-medium">{selectedProduct.name}</div>
-                <div className="text-sm text-[#86868B]">
-                  {selectedProduct.device_category?.name} -{" "}
-                  {selectedProduct.device_subcategory?.name}
                 </div>
+                <button
+                  onClick={() => {
+                    setSelectedProduct(null);
+                    setFormData((prev) => ({
+                      ...prev,
+                      product_id: "",
+                    }));
+                    navigate("/AddStock");
+                  }}
+                  className="text-[#0071E3] hover:text-[#0077ED]"
+                >
+                  Change Product
+                </button>
               </div>
             )}
           </div>
 
           {/* Stock Details */}
-          <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Condition */}
               <div>
