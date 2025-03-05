@@ -17,15 +17,9 @@ import EditStock from "./components/EditStock";
 import PrintInvoice from "./components/PrintInvoice";
 import OutletReturn from "./OutletReturn";
 import ViewInvoice from "./components/ViewInvoice";
-
-
-
- 
-
+import AdminDashboard from "./components/AdminDashboard";
 
 const App = () => {
-
-
   return (
     <Router>
       <Routes>
@@ -34,10 +28,9 @@ const App = () => {
 
         <Route path="/inv" element={<PrintInvoice />} />
 
+        <Route path="/sales-return" element={<OutletReturn />} />
 
-        <Route path="/sales-return" element={<OutletReturn/>} />
-
-        <Route path="/view-invoice/:id" element={<ViewInvoice/>} />
+        <Route path="/view-invoice/:id" element={<ViewInvoice />} />
         <Route
           path="/AddStock"
           element={
@@ -46,6 +39,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+<Route path="/admin/*" element={<AdminDashboard />} />
 
         <Route
           path="/stocks/:id/edit"

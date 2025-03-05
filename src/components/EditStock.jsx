@@ -85,7 +85,7 @@ const EditStock = () => {
     try {
       const response = await api.put(`/stocks/${id}`, formData);
       if (response.data.status === 'success') {
-        navigate('/viewStock');
+        navigate('/admin/stock');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update stock');
@@ -100,7 +100,7 @@ const EditStock = () => {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-semibold text-[#1D1D1F]">Edit Stock</h1>
           <button
-            onClick={() => navigate('/viewStock')}
+            onClick={() => navigate('/admin/stock')}
             className="text-[#0071E3] hover:text-[#0077ED]"
           >
             Cancel

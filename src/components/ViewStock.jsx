@@ -57,8 +57,15 @@ const ViewStock = () => {
   return (
     <div className="min-h-screen bg-[#FBFBFD] p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-semibold text-[#1D1D1F]">Stock Inventory</h1>
+
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by product name or serial number..."
+            className="flex-1 px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
+          />
           <button
             onClick={() => navigate('/AddStock')}
             className="px-4 py-2 bg-[#0071E3] text-white rounded-lg hover:bg-[#0077ED]"
@@ -67,98 +74,88 @@ const ViewStock = () => {
           </button>
         </div>
 
-        <div className="mb-6">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by product name or serial number..."
-            className="w-full px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
-          />
-        </div>
-
         {/* Desktop Table (hidden on mobile) */}
-        <div className="hidden md:block">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#F5F5F7]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Product</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Serial Number</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Color</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Condition</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Quantity</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Price</th>
-                  <th className="px-6 py-3 text-end text-xs font-medium text-[#86868B] uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredStocks.map((stock) => (
-                  <tr key={stock.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] mr-3">
-                          {stock.product?.image ? (
-                            <img
-                              src={stock.product.image}
-                              alt={stock.product?.name}
-                              className="h-10 w-10 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
-                              <svg className="w-6 h-6 text-[#86868B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-medium text-[#1D1D1F]">{stock.product?.name}</div>
-                          <div className="text-sm text-[#86868B]">
-                            {stock.product?.device_category?.name}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
-                      {stock.serial_number}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div 
-                          className="h-6 w-6 rounded-full mr-2"
-                          style={{ backgroundColor: stock.color }}
-                        />
-                       
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        stock.condition === 'new' 
-                          ? 'bg-green-100 text-green-800'
-                          : stock.condition === 'used'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {stock.condition}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
-                      {stock.quantity}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
-                    Rs.{stock.selling_price}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
-                      <div className="flex justify-end space-x-3">
-                        <button 
-                          onClick={() => navigate(`/stocks/${stock.id}/edit`)}
-                          className="text-[#0071E3] hover:text-[#0077ED]"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => {
+          <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-[#F5F5F7]">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Product</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Serial Number</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Color</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Condition</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Quantity</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-[#86868B] uppercase">Price</th>
+              <th className="px-6 py-3 text-end text-xs font-medium text-[#86868B] uppercase">Actions</th>
+            </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+            {filteredStocks.map((stock) => (
+              <tr key={stock.id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+              <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] mr-3">
+                {stock.product?.image ? (
+                  <img
+                    src={stock.product.image}
+                    alt={stock.product?.name}
+                    className="h-10 w-10 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#86868B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="font-medium text-[#1D1D1F]">{stock.product?.name}</div>
+                <div className="text-sm text-[#86868B]">
+                  {stock.product?.device_category?.name}
+                </div>
+              </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
+                  {stock.serial_number}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+              <div 
+                className="h-6 w-6 rounded-full mr-2"
+                style={{ backgroundColor: stock.color }}
+              />
+                   
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+              stock.condition === 'new' 
+                ? 'bg-green-100 text-green-800'
+                : stock.condition === 'used'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-blue-100 text-blue-800'
+                  }`}>
+              {stock.condition.charAt(0).toUpperCase() + stock.condition.slice(1)}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F] text-center">
+                  {stock.quantity}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1D1D1F]">
+                Rs.{stock.selling_price}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                  <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => navigate(`/stocks/${stock.id}/edit`)}
+                className="text-[#0071E3] hover:text-[#0077ED]"
+              >
+                Edit
+              </button>
+              <button 
+                onClick={() => {
                             setDeleteId(stock.id);
                             setShowDeleteModal(true);
                           }}
