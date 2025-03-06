@@ -18,6 +18,10 @@ const ViewTicket = () => {
   const [itemChanged, setItemChanged] = useState(false);
   const [serviceChanged, setServiceChanged] = useState(false);
 
+  const isTicketModifiable = () => {
+    return ticket?.status !== "completed";
+  };
+
   useEffect(() => {
     const fetchTicketDetails = async () => {
       try {
@@ -163,22 +167,33 @@ const ViewTicket = () => {
 
           <div className="w-full flex lg:flex-row flex-col bg-white border border-gray-200 rounded-md p-5 mt-2 gap-5">
             <div className="lg:w-4/12 w-full">
-              {addItem === "parts" ? (
+              {addItem === "parts" && isTicketModifiable() ? (
                 <Parts
                   onBack={() => setAddItem(null)}
                   onPartAdd={() => setItemChanged(true)}
                 />
-              ) : addItem === "repair" ? (
+              ) : addItem === "repair" && isTicketModifiable() ? (
                 <Repair
                   onBack={() => setAddItem(null)}
                   onRepairAdd={() => setItemChanged(true)}
                 />
               ) : (
                 <SelectPoR
-                  onSelect={setAddItem}
+                  onSelect={(item) => {
+                    if (isTicketModifiable()) {
+                      setAddItem(item);
+                    }
+                  }}
                   selectedItem={addItem}
-                  handleServiceSubmit={handleServiceSubmit}
+                  handleServiceSubmit={isTicketModifiable() ? handleServiceSubmit : null}
+                  disabled={!isTicketModifiable()}
                 />
+              )}
+              
+              {ticket?.status === "completed" && (
+                <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 rounded-md text-sm">
+                  This ticket is marked as completed. Adding parts, repairs, or service charges is disabled.
+                </div>
               )}
             </div>
 
@@ -218,7 +233,7 @@ const ViewTicket = () => {
                       <TicketItem
                         key={item.id}
                         item={item}
-                        onDelete={handleDeleteItem}
+                        onDelete={isTicketModifiable() ? handleDeleteItem : null}
                       />
                     ))
                   )}

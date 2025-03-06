@@ -52,7 +52,7 @@ const ServiceCenterNav = ({ setVisible }) => {
         <div className="flex space-x-4 text-xs font-semibold">
           <a
             className="hover:text-gray-600  px-2 py-0.5 rounded cursor-pointer"
-            href="/invoice"
+            href="/"
           >
             Invoice
           </a>

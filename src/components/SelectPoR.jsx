@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import ServiceCharge from './ServiceCharge';
 
-const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit }) => {
+const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit, disabled = false }) => {
   const [isServiceChargeOpen, setIsServiceChargeOpen] = useState(false);
-
-
 
   return (
     <>
       <div className="text-start w-full font-medium text-lg">
-        Add Part or Repair
+        Add Parts or Repair
       </div>
       <div className="w-full mx-auto mt-5 overflow-x-auto">
         <div className="border border-gray-200 rounded-md flex flex-col justify-center p-5 gap-2">
-          <div 
+          <button
             onClick={() => onSelect('parts')}
-            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 cursor-pointer ${
+            disabled={disabled}
+            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 ${
               selectedItem === 'parts' ? 'border-black border-2' : ''
-            }`}
+            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <img
               src="../images/part.svg"
@@ -25,13 +24,14 @@ const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit }) => {
               className="w-5 h-5"
             />
             <span>Part</span>
-          </div>
+          </button>
 
-          <div 
+          <button
             onClick={() => onSelect('repair')}
-            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 cursor-pointer ${
+            disabled={disabled}
+            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 ${
               selectedItem === 'repair' ? 'border-black border-2' : ''
-            }`}
+            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <img
               src="../images/repair.svg"
@@ -39,11 +39,13 @@ const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit }) => {
               className="w-5 h-5"
             />
             <span>Repair</span>
-          </div>
+          </button>
 
-          <div 
+          <button
             onClick={() => setIsServiceChargeOpen(true)}
-            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 cursor-pointer`}
+            disabled={disabled}
+            className={`border-gray-200 border rounded-md flex justify-center items-center h-12 font-semibold gap-1 ${
+              disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             <img
               src="../images/scharge.svg"
@@ -51,7 +53,7 @@ const SelectPoR = ({ onSelect, selectedItem, handleServiceSubmit }) => {
               className="w-5 h-5"
             />
             <span>Service Charge</span>
-          </div>
+          </button>
         </div>
       </div>
 
