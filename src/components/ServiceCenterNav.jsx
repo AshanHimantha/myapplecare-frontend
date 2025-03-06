@@ -50,12 +50,12 @@ const ServiceCenterNav = ({ setVisible }) => {
           Service Center
         </a>
         <div className="flex space-x-4 text-xs font-semibold">
-          <a
+          {/* <a
             className="hover:text-gray-600  px-2 py-0.5 rounded cursor-pointer"
             href="/"
           >
             Invoice
-          </a>
+          </a> */}
         </div>
       </div>
 

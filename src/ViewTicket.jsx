@@ -207,9 +207,9 @@ const ViewTicket = () => {
                     onChange={() => setServiceChanged(true)}
                   />
 
-                  <button className="text-xs bg-blue-500 text-white px-2 py-1 rounded-md">
+                  {/* <button className="text-xs bg-blue-500 text-white px-2 py-1 rounded-md">
                     Print{" "}
-                  </button>
+                  </button> */}
                 </div>
               </div>
               <div className="w-full mx-auto mt-5 overflow-x-auto">
