@@ -8,13 +8,18 @@ const SalesOutletNav = ({setShowSidebar}) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const logout = useAuthStore(state => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const roles = useAuthStore((state) => state.roles);
+  
+  // Check if user is admin
+  const isAdmin = user && roles.includes("admin");
 
   useEffect(() => {
-	const timer = setInterval(() => {
-	  setCurrentTime(new Date());
-	}, 60000); // Update every minute
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
   
-	return () => clearInterval(timer);
+    return () => clearInterval(timer);
   }, []);
 
   const formatDateTime = (date) => {
@@ -64,6 +69,14 @@ const SalesOutletNav = ({setShowSidebar}) => {
 			
 			{showDropdown && (
 			  <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2 z-50">
+				{isAdmin && (
+				  <a
+					href="/admin"
+					className="block w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-gray-100"
+				  >
+					Admin Panel
+				  </a>
+				)}
 				<button
 				  onClick={handleLogout}
 				  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"

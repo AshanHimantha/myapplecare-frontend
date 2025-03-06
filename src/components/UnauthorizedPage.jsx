@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../stores/authStore';
 
 const UnauthorizedPage = () => {
   const navigate = useNavigate();
-  const logout = useAuthStore(state => state.logout);
+
 
   const handleBackToLogin = () => {
 

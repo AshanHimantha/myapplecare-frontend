@@ -6,6 +6,14 @@ const ServiceCenterNav = ({ setVisible }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const roles = useAuthStore((state) => state.roles);
+  
+  // Check if user is admin
+  const isAdmin = user && roles.includes("admin");
+
+
+  console.log(roles);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -90,6 +98,14 @@ const ServiceCenterNav = ({ setVisible }) => {
                   className="absolute -right-20 mt-2 w-40 bg-white rounded-md shadow-lg z-50"
                 >
                   <div className="py-1">
+                    {isAdmin && (
+                      <a
+                        href="/admin"
+                        className="block w-full text-left px-3 py-1.5 text-xs text-blue-600 hover:bg-gray-100"
+                      >
+                        Admin Panel
+                      </a>
+                    )}
                     <button
                       className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-gray-100"
                       onClick={handleLogout}
