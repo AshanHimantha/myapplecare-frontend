@@ -98,6 +98,7 @@ const ServicesAndParts = () => {
 
   return (
     <div className="space-y-6">
+    
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <p>Error: {error}</p>
@@ -110,32 +111,48 @@ const ServicesAndParts = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0071E3]"></div>
         </div>
       ) : (
-        <>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Repair Services</h2>
+        <div className="grid grid-cols-1 gap-8">
+          {/* SERVICES SECTION */}
+          <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-500">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Repair Services</h2>
+              <button 
+                className="bg-[#0071E3] text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center"
+                onClick={handleOpenAddRepairModal}
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add New Repair Service
+              </button>
+            </div>
+            
             <table className="min-w-full divide-y divide-gray-200">
-              <thead>
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Repair Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Device Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Cost</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Description</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Repair Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {services.length > 0 ? (
                   services.map((service) => (
-                    <tr key={service.id}>
+                    <tr key={service.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">{service.repair_name}</td>
-                      <td className="px-4 py-3">{service.device_category}</td>
+                      <td className="px-4 py-3 capitalize">{service.device_category}</td>
                       <td className="px-4 py-3">Rs.{service.cost}</td>
                       <td className="px-4 py-3">{service.description || 'N/A'}</td>
                       <td className="px-4 py-3">
                         <button 
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 flex items-center"
                           onClick={() => handleOpenEditRepairModal(service)}
                         >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                           Edit
                         </button>
                       </td>
@@ -143,40 +160,44 @@ const ServicesAndParts = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="px-4 py-3 text-center">No repair services found</td>
+                    <td colSpan="5" className="px-4 py-3 text-center text-gray-500">No repair services found</td>
                   </tr>
                 )}
               </tbody>
             </table>
-            
-            <div className="mt-4">
-              <button 
-                className="bg-[#0071E3] text-white px-4 py-2 rounded hover:bg-blue-700"
-                onClick={handleOpenAddRepairModal}
-              >
-                Add New Repair Service
-              </button>
-            </div>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Parts</h2>
+          {/* PARTS SECTION */}
+          <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Parts Inventory</h2>
+              <button 
+                className="bg-[#0071E3] text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center"
+                onClick={handleOpenAddPartModal}
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add New Part
+              </button>
+            </div>
+            
             <table className="min-w-full divide-y divide-gray-200">
-              <thead>
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Part Name</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Image</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Device Category</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Quantity</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Selling Price</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Grade</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Part Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selling Price</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {parts.length > 0 ? (
                   parts.map((part) => (
-                    <tr key={part.id}>
+                    <tr key={part.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">{part.part_name}</td>
                       <td className="px-4 py-3">
                         {part.part_image && (
@@ -193,9 +214,12 @@ const ServicesAndParts = () => {
                       <td className="px-4 py-3 uppercase">{part.grade}</td>
                       <td className="px-4 py-3">
                         <button 
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 flex items-center"
                           onClick={() => handleOpenEditPartModal(part)}
                         >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                           Edit
                         </button>
                       </td>
@@ -203,22 +227,13 @@ const ServicesAndParts = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="px-4 py-3 text-center">No parts found</td>
+                    <td colSpan="7" className="px-4 py-3 text-center text-gray-500">No parts found</td>
                   </tr>
                 )}
               </tbody>
             </table>
-            
-            <div className="mt-4">
-              <button 
-                className="bg-[#0071E3] text-white px-4 py-2 rounded hover:bg-blue-700"
-                onClick={handleOpenAddPartModal}
-              >
-                Add New Part
-              </button>
-            </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* Add modal components */}

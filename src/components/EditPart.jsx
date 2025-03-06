@@ -143,11 +143,8 @@ const EditPart = ({ isOpen, onClose, part }) => {
               >
                 <option value="">Select Category</option>
                 <option value="iphone">iPhone</option>
-                <option value="ipad">iPad</option>
-                <option value="macbook">MacBook</option>
-                <option value="imac">iMac</option>
-                <option value="watch">Apple Watch</option>
-                <option value="airpods">AirPods</option>
+                <option value="android">Android</option>
+                <option value="other">Other</option>
               </select>
               {errors.device_category && <p className="text-red-500 text-xs mt-1">{errors.device_category}</p>}
             </div>

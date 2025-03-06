@@ -72,7 +72,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Add New Repair</h3>
                 <button onClick={onClose}>
-                  <img src="../images/close2.svg" alt="close" className="w-3 h-3" />
+                  <img src="http://localhost:3000/images/close2.svg" alt="close" className="w-3 h-3" />
                 </button>
               </div>
 
@@ -116,7 +116,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                         />
                         {category.icon && (
                           <img
-                            src={`./images/${category.icon}`}
+                            src={`http://localhost:3000/images/${category.icon}`}
                             className="w-4 h-4 object-contain"
                             alt=""
                           />

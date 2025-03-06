@@ -240,7 +240,7 @@ const AddNewPart = ({ isOpen, onClose }) => {
                         />
                         {category.icon && (
                           <img
-                            src={`/images/${category.icon}`}
+                            src={`http://localhost:3000/images/${category.icon}`}
                             className="w-4 h-4"
                             alt=""
                           />
