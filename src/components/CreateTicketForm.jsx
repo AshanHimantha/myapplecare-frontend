@@ -83,6 +83,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           issue: "",
         });
 
+        window.location.reload();
         onSuccess();
         
       }

@@ -40,7 +40,13 @@ const App = () => {
           }
         />
 
-<Route path="/admin/*" element={<AdminDashboard />} />
+<Route path="/admin/*" element={
+  
+  <ProtectedRoute accessType="admin">
+             <AdminDashboard />
+            </ProtectedRoute>
+  
+} />
 
         <Route
           path="/stocks/:id/edit"
