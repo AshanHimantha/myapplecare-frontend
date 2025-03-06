@@ -5,6 +5,7 @@ import ViewStock from './ViewStock';
 import DashboardHome from './DashboardHome';
 import UsersManagement from './UsersManagement';
 import Settings from './Settings';
+import ServicesAndParts from './ServicesAndParts'; // Add this import
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -37,6 +38,16 @@ const AdminDashboard = () => {
         </svg>
       ),
       path: '/admin/stock',
+    },
+    // Add the new Services & Parts menu item
+    {
+      title: 'Services & Parts',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+      ),
+      path: '/admin/services-parts',
     },
     {
       title: 'Users',
@@ -147,6 +158,7 @@ const AdminDashboard = () => {
             <Route path="/" element={<DashboardHome />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/stock" element={<ViewStock />} />
+            <Route path="/services-parts" element={<ServicesAndParts />} /> {/* Add this route */}
             <Route path="/users" element={<UsersManagement />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
