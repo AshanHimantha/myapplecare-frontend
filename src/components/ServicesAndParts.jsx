@@ -202,7 +202,7 @@ const ServicesAndParts = () => {
                       <td className="px-4 py-3">
                         {part.part_image && (
                           <img 
-                            src={`http://localhost:8000/api/part-images/${part.part_image}`} 
+                            src={`https://applecareapi.ashanhimantha.com/api/part-images/${part.part_image}`} 
                             alt={part.part_name} 
                             className="h-10 w-10 object-cover rounded"
                           />

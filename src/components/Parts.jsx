@@ -91,7 +91,7 @@ const Parts = ({onBack,onPartAdd}) => {
                       src={
                         !part.part_image || part.part_image === "not available" 
                           ? "../images/Apple-ID.png" 
-                          : `http://localhost:8000/api/part-images/${part.part_image}`
+                          : `https://applecareapi.ashanhimantha.com/api/part-images/${part.part_image}`
                       }
                       onError={(e) => {
                         e.target.src = "../images/Apple-ID.png";
