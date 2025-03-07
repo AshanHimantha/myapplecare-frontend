@@ -1,15 +1,45 @@
-import React, { useState } from 'react';
-import { Link, useLocation, Routes, Route } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, Routes, Route, useNavigate } from 'react-router-dom';
 import ProductList from './ProductList';
 import ViewStock from './ViewStock';
 import DashboardHome from './DashboardHome';
 import UsersManagement from './UsersManagement';
 import Settings from './Settings';
-import ServicesAndParts from './ServicesAndParts'; // Add this import
+import ServicesAndParts from './ServicesAndParts'; 
+import ReturnedItems from './ReturnedItems'; // Add this import
+import useAuthStore from "../stores/authStore";
+
 
 const AdminDashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    logout();
+    window.location.href = "/";
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+
+
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const menuItems = [
     {
@@ -43,11 +73,21 @@ const AdminDashboard = () => {
     {
       title: 'Services & Parts',
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
       ),
       path: '/admin/services-parts',
+    },
+    // Add the new Returned Items menu item
+    {
+      title: 'Returned Items',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
+        </svg>
+      ),
+      path: '/admin/returned-items',
     },
     {
       title: 'Users',
@@ -139,15 +179,60 @@ const AdminDashboard = () => {
               {menuItems.find((item) => item.path === location.pathname)?.title || 'Dashboard'}
             </h2>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              {/* Admin dropdown menu */}
+              <div className="relative" ref={dropdownRef}>
+                <button 
+                  className="flex items-center space-x-2 text-[#1D1D1F] hover:text-[#0071E3]"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <img
+                    src="/images/Apple-ID.png"
+                    alt="Admin"
+                    className="w-8 h-8 rounded-full bg-[#F5F5F7]"
+                  />
+                  <span className="hidden lg:inline text-sm font-medium">Admin</span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown menu */}
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    <button
+                      onClick={() => {
+                        navigate('/service-center');
+                        setIsDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Service Center
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate('/sales-outlet');
+                        setIsDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Sales Outlet
+                    </button >
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+onClick={handleLogout}
 
-              <button className="flex items-center space-x-2 text-[#1D1D1F] hover:text-[#0071E3]">
-                <img
-                  src="/images/Apple-ID.png"
-                  alt="Admin"
-                  className="w-8 h-8 rounded-full bg-[#F5F5F7]"
-                />
-                <span className="hidden lg:inline text-sm font-medium">Admin</span>
-              </button>
+                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -158,7 +243,9 @@ const AdminDashboard = () => {
             <Route path="/" element={<DashboardHome />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/stock" element={<ViewStock />} />
-            <Route path="/services-parts" element={<ServicesAndParts />} /> {/* Add this route */}
+            <Route path="/services-parts" element={<ServicesAndParts />} /> 
+            <Route path="/returned-items" element={<ReturnedItems />} />
+          
             <Route path="/users" element={<UsersManagement />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
