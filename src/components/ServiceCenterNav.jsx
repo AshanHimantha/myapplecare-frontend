@@ -12,6 +12,8 @@ const ServiceCenterNav = ({ setVisible }) => {
   // Check if user is admin
   const isAdmin = user && roles.includes("admin");
 
+  // Check if user has sales outlet access
+  const hasSalesAccess = roles.some(role => ['cashier', 'admin'].includes(role));
 
   console.log(roles);
 
@@ -104,6 +106,14 @@ const ServiceCenterNav = ({ setVisible }) => {
                         className="block w-full text-left px-3 py-1.5 text-xs text-blue-600 hover:bg-gray-100"
                       >
                         Admin Panel
+                      </a>
+                    )}
+                    {hasSalesAccess && (
+                      <a
+                        href="/sales-outlet"
+                        className="block w-full text-left px-3 py-1.5 text-xs text-blue-600 hover:bg-gray-100"
+                      >
+                        Sales Outlet
                       </a>
                     )}
                     <button

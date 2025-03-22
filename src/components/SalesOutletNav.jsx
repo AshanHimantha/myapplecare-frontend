@@ -14,6 +14,9 @@ const SalesOutletNav = ({setShowSidebar}) => {
   // Check if user is admin
   const isAdmin = user && roles.includes("admin");
 
+  // Check if user has service center access
+  const hasServiceAccess = roles.some(role => ['cashier', 'technician'].includes(role));
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -68,13 +71,21 @@ const SalesOutletNav = ({setShowSidebar}) => {
 			/>
 			
 			{showDropdown && (
-			  <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2 z-50">
+			  <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg py-2 z-50">
 				{isAdmin && (
 				  <a
 					href="/admin"
 					className="block w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-gray-100"
 				  >
 					Admin Panel
+				  </a>
+				)}
+				{hasServiceAccess && (
+				  <a
+					href="/service-center"
+					className="block w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-gray-100"
+				  >
+					Service Center
 				  </a>
 				)}
 				<button
