@@ -302,7 +302,7 @@ const ServiceCenter = () => {
         <AnimatePresence>
           {isCreateTicketVisible && (
             <motion.div
-              className="lg:w-1/4 w-10/12 bg-gray-300 h-full absolute right-0 lg:relative"
+              className="xl:w-1/4 w-10/12 md:w-5/12 bg-gray-300 h-full absolute right-0 lg:relative"
               initial="hidden"
               animate="visible"
               exit="hidden"
