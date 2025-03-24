@@ -15,7 +15,6 @@ const ServiceCenterNav = ({ setVisible }) => {
   // Check if user has sales outlet access
   const hasSalesAccess = roles.some(role => ['cashier', 'admin'].includes(role));
 
-  console.log(roles);
 
   useEffect(() => {
     const timer = setInterval(() => {

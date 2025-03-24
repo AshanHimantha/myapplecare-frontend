@@ -28,7 +28,7 @@ const Repair = ({ onBack, onRepairAdd }) => {
   };
 
   const handleRepairSubmit = (repairDetails) => {
-    console.log("Repair details:", repairDetails);
+
     // Handle the repair submission
   };
 

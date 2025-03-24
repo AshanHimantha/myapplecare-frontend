@@ -68,7 +68,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
 
     setWaiting(true);
     try {
-      console.log(formData);
+
       const response = await api.post("/tickets", formData);
       if (response.data.status === "success") {
         toast.success("Ticket created successfully");

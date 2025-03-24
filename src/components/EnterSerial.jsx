@@ -27,7 +27,7 @@ const EnterSerial = ({ isOpen, part, onClose, onSuccess }) => {
       }
 
       const response = await api.post("/ticket-items", payload);
-console.log('response',response)
+
       if (response.data.status === "success") {
         onClose();
       } else {

@@ -30,10 +30,7 @@ const ServicesAndParts = () => {
       
       const servicesRes = await api.get('/repairs');
       const partsRes = await api.get('/parts');
-      
-      console.log('Services data:', servicesRes.data);
-      console.log('Parts data:', partsRes.data);
-      
+
       // The services data is nested with data.data.data
       setServices(servicesRes.data.data?.data || []);
       

@@ -93,7 +93,7 @@ const Invoice = () => {
                   </div>
 
                   {(searchTerm ? filteredInvoices : invoices).map((invoice) => (
-                    <div key={invoice.id} className="flex text-xs p-3 border-t">
+                    <div key={invoice.id} className="flex text-xs p-3 border-t hover:bg-gray-50">
                       <div className="w-2/12">#{invoice.id}</div>
                       <div className="w-3/12 text-center">
                         {invoice.first_name} {invoice.last_name}
@@ -102,10 +102,19 @@ const Invoice = () => {
                         {new Date(invoice.created_at).toLocaleDateString()}
                       </div>
                       <div className="w-2/12 text-center">
-                        {parseFloat(invoice.total_amount).toLocaleString()} LKR
+                        {parseFloat(invoice.total_amount) === 0 ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Returned
+                          </span>
+                        ) : (
+                          `${parseFloat(invoice.total_amount).toLocaleString()} LKR`
+                        )}
                       </div>
                       <div className="w-2/12 text-center">
-                        <a className="text-blue-600 hover:text-blue-800" href={`/view-invoice/${invoice.id}`}>
+                        <a 
+                          className="text-blue-600 hover:text-blue-800" 
+                          href={`/view-invoice/${invoice.id}`}
+                        >
                           View
                         </a>
                       </div>

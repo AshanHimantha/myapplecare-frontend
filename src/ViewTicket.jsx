@@ -7,6 +7,7 @@ import Parts from "./components/Parts";
 import Repair from "./components/Repair";
 import TicketItem from "./components/TicketItem";
 import StatusButton from "./components/StatusButton";
+import ThermalPrintTicket from "./components/ThermalPrintTicket";
 
 const ViewTicket = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const ViewTicket = () => {
   const [itemsLoading, setItemsLoading] = useState(true);
   const [itemChanged, setItemChanged] = useState(false);
   const [serviceChanged, setServiceChanged] = useState(false);
+  const [printModalOpen, setPrintModalOpen] = useState(false);
 
   const isTicketModifiable = () => {
     return ticket?.status !== "completed";
@@ -50,6 +52,7 @@ const ViewTicket = () => {
         const response = await api.get(`/tickets/${id}`);
         if (response.data.status === "success") {
           setTicket(response.data.data);
+          
         }
       } catch (err) {
         console.error("Failed to fetch ticket:", err);
@@ -66,6 +69,7 @@ const ViewTicket = () => {
       try {
         setItemsLoading(true);
         const response = await api.get(`/tickets/${id}/items`);
+      
         if (response.data.status === "success") {
           setTicketItems(response.data.data);
         }
@@ -83,7 +87,7 @@ const ViewTicket = () => {
   }, [id, itemChanged]);
 
   const handleDeleteItem = async (itemId) => {
-    console.log("Deleting item:", itemId);
+
     try {
       const response = await api.delete(`/ticket-items/${itemId}`);
       if (response.data.status === "success") {
@@ -134,6 +138,12 @@ const ViewTicket = () => {
   return (
     <>
       <ServiceCenterNav />
+      <ThermalPrintTicket 
+        isOpen={printModalOpen}
+        onClose={() => setPrintModalOpen(false)}
+        ticket={ticket}
+        ticketItems={ticketItems}
+      />
 
       <div className="w-full lg:h-screen h-full pb-10 flex justify-center bg-slate-50">
         <div className="md:w-11/12 w-11/12 flex flex-col items-center">
@@ -207,9 +217,12 @@ const ViewTicket = () => {
                     onChange={() => setServiceChanged(true)}
                   />
 
-                  {/* <button className="text-xs bg-blue-500 text-white px-2 py-1 rounded-md">
-                    Print{" "}
-                  </button> */}
+                  <button 
+                    className="text-xs macBlueButton text-white px-2 py-1 rounded-md"
+                    onClick={() => setPrintModalOpen(true)}
+                  >
+                    Print
+                  </button>
                 </div>
               </div>
               <div className="w-full mx-auto mt-5 overflow-x-auto">

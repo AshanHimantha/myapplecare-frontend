@@ -25,7 +25,7 @@ const EditStock = () => {
   const fetchStock = async () => {
     try {
       const response = await api.get(`/stocks/${id}`);
-      console.log(response);
+
       if (response.data.status === 'success') {
         const stock = response.data.data;
         setFormData({

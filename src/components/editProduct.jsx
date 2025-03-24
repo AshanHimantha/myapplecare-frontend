@@ -62,9 +62,7 @@ const EditProduct = () => {
       const formPayload = new FormData();
       formPayload.append('_method', 'PUT'); // Simulate PUT request
       
-      // Log FormData for debugging
-      console.log('Form Data:', formData);
-      
+
       // Append form data
       Object.keys(formData).forEach(key => {
         if (formData[key] !== null && formData[key] !== undefined) {
@@ -75,11 +73,6 @@ const EditProduct = () => {
       // Append image if exists
       if (image) {
         formPayload.append('image', image);
-      }
-  
-      // Log final payload
-      for (let pair of formPayload.entries()) {
-        console.log(pair[0], pair[1]);
       }
   
       const response = await api.post(`/products/${id}`, formPayload, {

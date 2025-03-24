@@ -67,13 +67,9 @@ const OutletReturn = () => {
         ]
       };
 
-      // Log request body before sending
-      console.log('Return Request Body:', requestBody);
 
       const response = await api.post("/invoices/return", requestBody);
 
-      // Log response data
-      console.log('Return Response:', response.data);
 
       if (response.data.status === "success") {
         setIsConfirmModalOpen(false);
