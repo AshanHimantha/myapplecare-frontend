@@ -16,7 +16,7 @@ const EditPart = ({ isOpen, onClose, part }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [imagePreview, setImagePreview] = useState(
-    part.part_image ? `https://applecareapi.ashanhimantha.com/api/part-images/${part.part_image}` : null
+    part.part_image ? `http://localhost:8000/api/part-images/${part.part_image}` : null
   );
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});

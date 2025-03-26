@@ -73,7 +73,7 @@ const EnterSerial = ({ isOpen, part, onClose, onSuccess }) => {
               <img
                 src={
                   part?.part_image
-                    ? `https://applecareapi.ashanhimantha.com/api/part-images/${part.part_image}`
+                    ? `http://localhost:8000/api/part-images/${part.part_image}`
                     : "../images/Apple-ID.png"
                 }
                 alt={part?.part_name || "display"}

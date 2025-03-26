@@ -1,35 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import { ArrowUpIcon, ArrowDownIcon, TicketIcon, CurrencyDollarIcon, ShoppingBagIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import ServiceCenterDashboard from './ServiceCenterDashboard';
+import SalesOutletDashboard from './SalesOutletDashboard';
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
 const DashboardHome = () => {
   const [dashboardData, setDashboardData] = useState(null);
-  const [chartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeChart, setActiveChart] = useState('daily');
+  const [view, setView] = useState('main'); // 'main', 'serviceCenter', or 'salesOutlet'
 
   useEffect(() => {
-    // Function to fetch dashboard data
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
-        
-        // Fetch dashboard summary data using axios
-        const dashboardResponse = await api.get('/dashboard');
-        
-        // Fetch chart data using axios
-        const chartResponse = await api.get('/dashboard/charts');
-        
-        // Update state with fetched data
-        // Axios automatically parses JSON and puts result in response.data
-        setDashboardData(dashboardResponse.data.data);
-        setChartData(chartResponse.data.data);
+        const response = await api.get('/dashboard');
+        setDashboardData(response.data);
         setError(null);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -54,15 +46,91 @@ const DashboardHome = () => {
     </div>;
   }
 
+  if (view === 'serviceCenter') {
+    return <ServiceCenterDashboard />;
+  }
+
+  if (view === 'salesOutlet') {
+    return <SalesOutletDashboard />;
+  }
+
+  // Monthly Sales and Profits chart data
+  const monthlyFinancialData = {
+    labels: dashboardData.monthly_sales.map(item => item.month),
+    datasets: [
+      {
+        label: 'Sales',
+        data: dashboardData.monthly_sales.map(item => Number(item.sales)),
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgb(54, 162, 235)',
+        borderWidth: 1
+      },
+      {
+        label: 'Profits',
+        data: dashboardData.monthly_profits.map(item => Number(item.profit)),
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        borderColor: 'rgb(75, 192, 192)',
+        borderWidth: 1
+      }
+    ]
+  };
+
+  // Cost vs Profit breakdown
+  const financialBreakdownData = {
+    labels: ['Cost', 'Profit'],
+    datasets: [{
+      data: [
+        Number(dashboardData.total_cost || 0),
+        Number(dashboardData.total_profit || 0)
+      ],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.7)',  // red for cost
+        'rgba(75, 192, 192, 0.7)',   // teal for profit
+      ],
+      borderColor: [
+        'rgb(255, 99, 132)',
+        'rgb(75, 192, 192)',
+      ],
+      borderWidth: 1
+    }]
+  };
+
+  // Ticket status data
+  const ticketStatusData = {
+    labels: ['Open', 'In Progress', 'Completed'],
+    datasets: [{
+      data: [
+        dashboardData.open_tickets || 0,
+        dashboardData.in_progress_tickets || 0,
+        dashboardData.completed_tickets || 0
+      ],
+      backgroundColor: [
+        'rgba(255, 159, 64, 0.7)',   // orange
+        'rgba(54, 162, 235, 0.7)',    // blue
+        'rgba(75, 192, 192, 0.7)',    // green
+      ],
+      borderColor: [
+        'rgb(255, 159, 64)',
+        'rgb(54, 162, 235)',
+        'rgb(75, 192, 192)',
+      ],
+      borderWidth: 1
+    }]
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-[#1D1D1F]">Dashboard Overview</h3>
+        <h3 className="text-lg font-medium text-[#1D1D1F]">MyAppleCare Dashboard</h3>
         <div className="flex items-center space-x-2">
-          <select className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm">
-            <option>Last 30 days</option>
-            <option>Last week</option>
-            <option>Last year</option>
+          <select 
+            className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm"
+            value={view}
+            onChange={(e) => setView(e.target.value)}
+          >
+            <option value="main">Overview</option>
+            <option value="serviceCenter">Service Center</option>
+            <option value="salesOutlet">Sales Outlets</option>
           </select>
         </div>
       </div>
@@ -70,87 +138,91 @@ const DashboardHome = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
-          title="Today's Revenue" 
-          value={`$${dashboardData.invoices.today.total.toLocaleString()}`} 
+          title="Total Revenue" 
+          value={`$${Number(dashboardData.total_sales).toLocaleString()}`} 
           icon={<CurrencyDollarIcon className="h-6 w-6 text-blue-600" />}
-          change="+15.3%"
-          isPositive={true}
+          subtext={`$${Number(dashboardData.total_sales_month).toLocaleString()} this month`}
         />
         <SummaryCard 
-          title="Today's Invoices" 
-          value={dashboardData.invoices.today.count} 
-          icon={<ShoppingBagIcon className="h-6 w-6 text-green-600" />}
-          change="+8.2%"
-          isPositive={true}
+          title="Total Profit" 
+          value={`$${Number(dashboardData.total_profit).toLocaleString()}`}
+          icon={<ChartBarIcon className="h-6 w-6 text-green-600" />}
+          subtext={`${dashboardData.profit_margin.toFixed(1)}% margin`}
         />
         <SummaryCard 
-          title="Today's Tickets" 
-          value={dashboardData.tickets.today} 
+          title="Total Products" 
+          value={dashboardData.total_products} 
+          icon={<ShoppingBagIcon className="h-6 w-6 text-purple-600" />}
+          subtext={`${dashboardData.total_units_sold} units sold`}
+        />
+        <SummaryCard 
+          title="Total Invoices" 
+          value={dashboardData.total_invoices} 
           icon={<TicketIcon className="h-6 w-6 text-amber-600" />}
-          change="-2.5%"
-          isPositive={false}
-        />
-        <SummaryCard 
-          title="Monthly Revenue" 
-          value={`$${dashboardData.invoices.month.total.toLocaleString()}`} 
-          icon={<ChartBarIcon className="h-6 w-6 text-purple-600" />}
-          change="+23.1%"
-          isPositive={true}
+          subtext={`${dashboardData.total_returns} returns`}
         />
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue Chart */}
+        {/* Monthly Sales & Profit Chart */}
         <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h4 className="font-medium text-gray-700">Revenue Overview</h4>
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => setActiveChart('daily')}
-                className={`px-3 py-1 text-sm rounded-md ${activeChart === 'daily' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'}`}>
-                Daily
-              </button>
-              <button 
-                onClick={() => setActiveChart('monthly')}
-                className={`px-3 py-1 text-sm rounded-md ${activeChart === 'monthly' ? 'bg-blue-100 text-blue-700' : 'text-gray-600'}`}>
-                Monthly
-              </button>
-            </div>
+            <h4 className="font-medium text-gray-700">Monthly Performance</h4>
           </div>
           <div className="h-72">
-            {activeChart === 'daily' ? (
-              <Line 
-                data={chartData.daily_revenue}
-                options={{ 
-                  maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
-                  scales: { y: { beginAtZero: false } }
-                }} 
-              />
-            ) : (
-              <Bar
-                data={chartData.monthly_revenue}
-                options={{ 
-                  maintainAspectRatio: false,
-                  plugins: { legend: { display: false } },
-                  scales: { y: { beginAtZero: false } }
-                }} 
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Product Categories */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <h4 className="font-medium text-gray-700 mb-4">Product Categories</h4>
-          <div className="h-64 flex items-center justify-center">
-            <Doughnut 
-              data={chartData.category_distribution}
+            <Bar
+              data={monthlyFinancialData}
               options={{ 
                 maintainAspectRatio: false,
                 plugins: { 
-                  legend: { position: 'bottom' }
+                  legend: { display: true, position: 'top' },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                          label += ': ';
+                        }
+                        if (context.parsed.y !== null) {
+                          label += new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD'
+                          }).format(context.parsed.y);
+                        }
+                        return label;
+                      }
+                    }
+                  }
+                },
+                scales: { y: { beginAtZero: true } }
+              }} 
+            />
+          </div>
+        </div>
+
+        {/* Financial Breakdown Pie Chart */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Revenue Breakdown</h4>
+          <div className="h-64 flex items-center justify-center">
+            <Pie 
+              data={financialBreakdownData}
+              options={{ 
+                maintainAspectRatio: false,
+                plugins: { 
+                  legend: { position: 'bottom' },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round(value / total * 100);
+                        
+                        return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                      }
+                    }
+                  }
                 }
               }} 
             />
@@ -158,32 +230,120 @@ const DashboardHome = () => {
         </div>
       </div>
 
-      {/* Top Products */}
-      <div className="bg-white p-4 rounded-lg shadow-sm">
-        <h4 className="font-medium text-gray-700 mb-4">Top Selling Products</h4>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Units Sold</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {dashboardData.top_products.map((product, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.total_sold}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(product.total_sold / 24) * 100}%` }}></div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Quick Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Sales Overview */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Sales Overview</h4>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Today</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_today).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Last 7 Days</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_last_7_days).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Last 30 Days</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_last_30_days).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Profit Overview */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Profit Overview</h4>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Total Cost</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_cost).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Total Profit</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_profit).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Profit Margin</span>
+              <p className="text-xl font-semibold mt-1">{dashboardData.profit_margin.toFixed(1)}%</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Service & Support */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Service & Support</h4>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Total Tickets</span>
+              <p className="text-xl font-semibold mt-1">{dashboardData.total_tickets}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Service Revenue</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.service_revenue).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Repair Revenue</span>
+              <p className="text-xl font-semibold mt-1">${Number(dashboardData.repair_revenue).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Dashboard Links */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Service Center */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="font-medium text-gray-700">Service Center</h4>
+            <button 
+              onClick={() => setView('serviceCenter')}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              View Dashboard
+            </button>
+          </div>
+          <div className="flex justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Tickets</p>
+              <p className="text-lg font-semibold mt-1">{dashboardData.total_tickets}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Completed</p>
+              <p className="text-lg font-semibold mt-1">{dashboardData.completed_tickets}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Revenue</p>
+              <p className="text-lg font-semibold mt-1">${Number(dashboardData.service_revenue + dashboardData.repair_revenue).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Sales Outlets */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="font-medium text-gray-700">Sales Outlets</h4>
+            <button 
+              onClick={() => setView('salesOutlet')}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              View Dashboard
+            </button>
+          </div>
+          <div className="flex justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Sales</p>
+              <p className="text-lg font-semibold mt-1">${Number(dashboardData.total_sales).toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Units Sold</p>
+              <p className="text-lg font-semibold mt-1">{dashboardData.total_units_sold}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Profit</p>
+              <p className="text-lg font-semibold mt-1">${Number(dashboardData.total_profit).toLocaleString()}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -191,7 +351,7 @@ const DashboardHome = () => {
 };
 
 // Summary card component
-const SummaryCard = ({ title, value, icon, change, isPositive }) => {
+const SummaryCard = ({ title, value, icon, subtext }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm">
       <div className="flex justify-between items-start">
@@ -203,12 +363,8 @@ const SummaryCard = ({ title, value, icon, change, isPositive }) => {
           {icon}
         </div>
       </div>
-      <div className={`flex items-center mt-2 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-        {isPositive ? 
-          <ArrowUpIcon className="h-4 w-4 mr-1" /> : 
-          <ArrowDownIcon className="h-4 w-4 mr-1" />
-        }
-        <span className="text-sm">{change} from yesterday</span>
+      <div className="mt-2">
+        <p className="text-xs text-gray-500">{subtext}</p>
       </div>
     </div>
   );
