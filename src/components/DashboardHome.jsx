@@ -127,7 +127,7 @@ const DashboardHome = () => {
         <h3 className="text-lg font-medium text-[#1D1D1F]">MyAppleCare Dashboard</h3>
         <div className="flex items-center space-x-2">
           <select 
-            className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm"
+            className="px-3 py-1 bg-white border border-gray-100 border rounded-md text-sm"
             value={view}
             onChange={(e) => setView(e.target.value)}
           >
@@ -169,7 +169,7 @@ const DashboardHome = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Sales & Profit Chart */}
-        <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">
+        <div className="lg:col-span-2 bg-white p-4 rounded-lg border-gray-100 border">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-medium text-gray-700">Monthly Performance</h4>
           </div>
@@ -202,7 +202,7 @@ const DashboardHome = () => {
         </div>
 
         {/* Financial Breakdown Pie Chart */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Revenue Breakdown</h4>
           <div className="h-64 flex items-center justify-center">
             <Pie 
@@ -231,9 +231,9 @@ const DashboardHome = () => {
       </div>
 
       {/* Quick Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Sales Overview */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Sales Overview</h4>
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
@@ -252,7 +252,7 @@ const DashboardHome = () => {
         </div>
         
         {/* Profit Overview */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Profit Overview</h4>
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
@@ -271,7 +271,7 @@ const DashboardHome = () => {
         </div>
         
         {/* Service & Support */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Service & Support</h4>
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
@@ -290,7 +290,7 @@ const DashboardHome = () => {
         </div>
 
         {/* Business Overview */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Business Overview</h4>
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
@@ -312,7 +312,7 @@ const DashboardHome = () => {
       {/* Dashboard Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Service Center */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-medium text-gray-700">Service Center</h4>
             <button 
@@ -339,7 +339,7 @@ const DashboardHome = () => {
         </div>
         
         {/* Sales Outlets */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-medium text-gray-700">Sales Outlets</h4>
             <button 
@@ -368,7 +368,7 @@ const DashboardHome = () => {
 
       {/* Recent Invoices and Tickets */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Recent Invoices</h4>
           {dashboardData.recent_invoices.length > 0 ? (
             <div className="divide-y">
@@ -389,7 +389,7 @@ const DashboardHome = () => {
           )}
         </div>
         
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="bg-white p-4 rounded-lg border-gray-100 border">
           <h4 className="font-medium text-gray-700 mb-4">Recent Tickets</h4>
           {dashboardData.recent_tickets.length > 0 ? (
             <div className="divide-y">
@@ -420,7 +420,7 @@ const DashboardHome = () => {
 // Summary card component
 const SummaryCard = ({ title, value, icon, subtext }) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm">
+    <div className="bg-white p-4 rounded-lg border-gray-100 border">
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm text-gray-500">{title}</p>
