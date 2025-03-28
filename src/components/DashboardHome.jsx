@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Pie } from 'react-chartjs-2';
-import { ArrowUpIcon, ArrowDownIcon, TicketIcon, CurrencyDollarIcon, ShoppingBagIcon, ChartBarIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import {TicketIcon, CurrencyDollarIcon, ShoppingBagIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+
 import api from '../api/axios';
 import ServiceCenterDashboard from './ServiceCenterDashboard';
 import SalesOutletDashboard from './SalesOutletDashboard';
@@ -56,18 +56,18 @@ const DashboardHome = () => {
 
   // Monthly Sales and Profits chart data
   const monthlyFinancialData = {
-    labels: dashboardData.monthly_sales.map(item => item.month),
+    labels: dashboardData.monthly_trends.map(item => item.month),
     datasets: [
       {
         label: 'Sales',
-        data: dashboardData.monthly_sales.map(item => Number(item.sales)),
+        data: dashboardData.monthly_trends.map(item => Number(item.sales)),
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         borderColor: 'rgb(54, 162, 235)',
         borderWidth: 1
       },
       {
-        label: 'Profits',
-        data: dashboardData.monthly_profits.map(item => Number(item.profit)),
+        label: 'Service Revenue',
+        data: dashboardData.monthly_trends.map(item => Number(item.service_revenue)),
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         borderColor: 'rgb(75, 192, 192)',
         borderWidth: 1
@@ -80,8 +80,8 @@ const DashboardHome = () => {
     labels: ['Cost', 'Profit'],
     datasets: [{
       data: [
-        Number(dashboardData.total_cost || 0),
-        Number(dashboardData.total_profit || 0)
+        Number(dashboardData.sales_metrics?.total_cost || dashboardData.total_cost || 0),
+        Number(dashboardData.sales_metrics?.total_profit || dashboardData.total_profit || 0)
       ],
       backgroundColor: [
         'rgba(255, 99, 132, 0.7)',  // red for cost
@@ -97,22 +97,25 @@ const DashboardHome = () => {
 
   // Ticket status data
   const ticketStatusData = {
-    labels: ['Open', 'In Progress', 'Completed'],
+    labels: ['Open', 'In Progress', 'Completed', 'Cancelled'],
     datasets: [{
       data: [
-        dashboardData.open_tickets || 0,
-        dashboardData.in_progress_tickets || 0,
-        dashboardData.completed_tickets || 0
+        dashboardData.ticket_status?.open || 0,
+        dashboardData.ticket_status?.in_progress || 0,
+        dashboardData.ticket_status?.completed || 0,
+        dashboardData.ticket_status?.cancelled || 0
       ],
       backgroundColor: [
         'rgba(255, 159, 64, 0.7)',   // orange
         'rgba(54, 162, 235, 0.7)',    // blue
         'rgba(75, 192, 192, 0.7)',    // green
+        'rgba(255, 99, 132, 0.7)',    // red
       ],
       borderColor: [
         'rgb(255, 159, 64)',
         'rgb(54, 162, 235)',
         'rgb(75, 192, 192)',
+        'rgb(255, 99, 132)',
       ],
       borderWidth: 1
     }]
@@ -139,15 +142,15 @@ const DashboardHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
           title="Total Revenue" 
-          value={`$${Number(dashboardData.total_sales).toLocaleString()}`} 
+          value={`Rs. ${Number(dashboardData.total_sales).toLocaleString()}`} 
           icon={<CurrencyDollarIcon className="h-6 w-6 text-blue-600" />}
-          subtext={`$${Number(dashboardData.total_sales_month).toLocaleString()} this month`}
+          subtext={`Rs. ${Number(dashboardData.total_sales_month).toLocaleString()} this month`}
         />
         <SummaryCard 
           title="Total Profit" 
-          value={`$${Number(dashboardData.total_profit).toLocaleString()}`}
+          value={`Rs. ${Number(dashboardData.sales_metrics?.total_profit || dashboardData.total_profit || 0).toLocaleString()}`}
           icon={<ChartBarIcon className="h-6 w-6 text-green-600" />}
-          subtext={`${dashboardData.profit_margin.toFixed(1)}% margin`}
+          subtext={`${(dashboardData.sales_metrics?.profit_margin || 0).toFixed(1)}% margin`}
         />
         <SummaryCard 
           title="Total Products" 
@@ -185,10 +188,7 @@ const DashboardHome = () => {
                           label += ': ';
                         }
                         if (context.parsed.y !== null) {
-                          label += new Intl.NumberFormat('en-US', {
-                            style: 'currency',
-                            currency: 'USD'
-                          }).format(context.parsed.y);
+                          label += `Rs. ${context.parsed.y.toLocaleString()}`;
                         }
                         return label;
                       }
@@ -238,15 +238,15 @@ const DashboardHome = () => {
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Today</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_today).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.total_sales_today).toLocaleString()}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Last 7 Days</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_last_7_days).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.total_sales_last_7_days).toLocaleString()}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Last 30 Days</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_sales_last_30_days).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.total_sales_last_30_days).toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -257,15 +257,15 @@ const DashboardHome = () => {
           <div className="space-y-4">
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Total Cost</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_cost).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.sales_metrics?.total_cost || dashboardData.total_cost || 0).toLocaleString()}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Total Profit</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.total_profit).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.sales_metrics?.total_profit || dashboardData.total_profit || 0).toLocaleString()}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Profit Margin</span>
-              <p className="text-xl font-semibold mt-1">{dashboardData.profit_margin.toFixed(1)}%</p>
+              <p className="text-xl font-semibold mt-1">{(dashboardData.sales_metrics?.profit_margin || 0).toFixed(1)}%</p>
             </div>
           </div>
         </div>
@@ -280,11 +280,30 @@ const DashboardHome = () => {
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Service Revenue</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.service_revenue).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.service_metrics?.total_service_revenue || 0).toLocaleString()}</p>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg">
               <span className="text-sm text-gray-500">Repair Revenue</span>
-              <p className="text-xl font-semibold mt-1">${Number(dashboardData.repair_revenue).toLocaleString()}</p>
+              <p className="text-xl font-semibold mt-1">Rs. {Number(dashboardData.service_metrics?.repair_revenue || 0).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Business Overview */}
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Business Overview</h4>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Total Business Revenue</span>
+              <p className="text-xl font-semibold mt-1">
+                Rs. {Number(dashboardData.business_totals?.total_revenue || 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <span className="text-sm text-gray-500">Overall Profit Margin</span>
+              <p className="text-xl font-semibold mt-1">
+                {(dashboardData.business_totals?.profit_margin || 0).toFixed(1)}%
+              </p>
             </div>
           </div>
         </div>
@@ -310,11 +329,11 @@ const DashboardHome = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Completed</p>
-              <p className="text-lg font-semibold mt-1">{dashboardData.completed_tickets}</p>
+              <p className="text-lg font-semibold mt-1">{dashboardData.ticket_status?.completed || 0}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Revenue</p>
-              <p className="text-lg font-semibold mt-1">${Number(dashboardData.service_revenue + dashboardData.repair_revenue).toLocaleString()}</p>
+              <p className="text-lg font-semibold mt-1">Rs. {Number(dashboardData.service_metrics?.total_service_revenue || 0).toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -333,7 +352,7 @@ const DashboardHome = () => {
           <div className="flex justify-between">
             <div>
               <p className="text-sm text-gray-500">Sales</p>
-              <p className="text-lg font-semibold mt-1">${Number(dashboardData.total_sales).toLocaleString()}</p>
+              <p className="text-lg font-semibold mt-1">Rs. {Number(dashboardData.total_sales).toLocaleString()}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Units Sold</p>
@@ -341,9 +360,57 @@ const DashboardHome = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Profit</p>
-              <p className="text-lg font-semibold mt-1">${Number(dashboardData.total_profit).toLocaleString()}</p>
+              <p className="text-lg font-semibold mt-1">Rs. {Number(dashboardData.total_profit).toLocaleString()}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Recent Invoices and Tickets */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Recent Invoices</h4>
+          {dashboardData.recent_invoices.length > 0 ? (
+            <div className="divide-y">
+              {dashboardData.recent_invoices.map(invoice => (
+                <div key={invoice.id} className="py-3">
+                  <div className="flex justify-between">
+                    <span>Invoice #{invoice.id}</span>
+                    <span className="font-medium">Rs. {Number(invoice.total_amount).toLocaleString()}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {new Date(invoice.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No recent invoices</p>
+          )}
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <h4 className="font-medium text-gray-700 mb-4">Recent Tickets</h4>
+          {dashboardData.recent_tickets.length > 0 ? (
+            <div className="divide-y">
+              {dashboardData.recent_tickets.map(ticket => (
+                <div key={ticket.id} className="py-3">
+                  <div className="flex justify-between">
+                    <span>{ticket.first_name} {ticket.last_name}</span>
+                    <span className="capitalize font-medium px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                      {ticket.status}
+                    </span>
+                  </div>
+                  <p className="text-sm">{ticket.device_model}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(ticket.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No recent tickets</p>
+          )}
         </div>
       </div>
     </div>
