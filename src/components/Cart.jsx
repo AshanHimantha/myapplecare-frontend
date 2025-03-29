@@ -339,7 +339,7 @@ const Cart = ({ cartId, onClose, change }) => {
               <div className="flex   w-full font-semibold p-2">
                 <div className="grid grid-cols-2 gap-4 items-start text-sm text-zinc-400 w-full">
                   <label
-                    className={`flex gap-3 items-center px-8 py-1.5 rounded-md border-2 cursor-pointer
+                    className={`flex gap-3 justify-center items-center px-8 py-1.5 rounded-md border-2 cursor-pointer
       ${
         paymentMethod === "cash"
           ? "border-black text-black"
@@ -364,7 +364,7 @@ const Cart = ({ cartId, onClose, change }) => {
                   </label>
 
                   <label
-                    className={`flex gap-3 items-center px-8 py-1.5 rounded-md border-2 cursor-pointer
+                    className={`flex gap-3 justify-center items-center px-8 py-1.5 rounded-md border-2 cursor-pointer
       ${
         paymentMethod === "card"
           ? "border-black text-black"

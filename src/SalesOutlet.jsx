@@ -204,7 +204,7 @@ const SalesOutlet = () => {
             </div>
           </div>
 
-          <div className="w-full  grid lg:grid-cols-4 xl:grid-cols-5 grid-cols-2 md:grid-cols-3 gap-1 lg:mt-10 mt-5 overflow-y-auto h-[calc(100vh-100px)] px-2 hide-scrollbar bottom-0">
+          <div className="w-full  grid lg:grid-cols-4 xl:grid-cols-5 grid-cols-2 md:grid-cols-3 gap-1 lg:mt-10 mt-5 overflow-y-auto px-2 hide-scrollbar bottom-0">
             {filteredStocks.map((stock) => (
               <ProductCard
                 key={stock.id}
