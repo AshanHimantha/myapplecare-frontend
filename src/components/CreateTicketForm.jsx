@@ -147,7 +147,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           name="first_name"
           value={formData.first_name}
           onChange={handleInputChange}
-          className="flex overflow-hidden px-1.5 py-2 mt-1 w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+          className="flex overflow-hidden px-1.5 py-2 mt-1 w-full rounded-md border border-solid border-black border-opacity-10  text-opacity-30"
           placeholder="First Name"
         />
         {errors.first_name && (
@@ -163,7 +163,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           name="last_name"
           value={formData.last_name}
           onChange={handleInputChange}
-          className="flex overflow-hidden px-1.5 py-2 mt-1 w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+          className="flex overflow-hidden px-1.5 py-2 mt-1 w-full rounded-md border border-solid border-black border-opacity-10  text-opacity-30"
           placeholder="Last Name"
         />
         {errors.last_name && (
@@ -179,7 +179,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           name="contact_number"
           value={formData.contact_number}
           onChange={handleInputChange}
-          className="flex overflow-hidden mt-1 px-1.5 py-2 w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+          className="flex overflow-hidden mt-1 px-1.5 py-2 w-full rounded-md border border-solid border-black border-opacity-10  text-opacity-30"
           placeholder="Contact Number"
         />
         {errors.contact_number && (
@@ -324,7 +324,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           name="imei"
           value={formData.imei}
           onChange={handleInputChange}
-          className="flex overflow-hidden px-1.5 py-2 mt-1 rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+          className="flex overflow-hidden px-1.5 py-2 mt-1 rounded-md border border-solid border-black border-opacity-10  text-opacity-30"
           placeholder="Enter IMEI Number"
         />
         {errors.imei && (
@@ -340,7 +340,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           value={formData.issue}
           rows={2}
           onChange={handleInputChange}
-          className="flex overflow-hidden px-1.5 pt-2 pb-5 mt-1 w-full whitespace-nowrap rounded-md border border-solid border-black border-opacity-10 min-h-[101px] text-zinc-700 "
+          className="flex overflow-hidden px-1.5 pt-2 pb-5 mt-1 w-full whitespace-nowrap rounded-md border border-solid border-black border-opacity-10 min-h-[101px]  "
           placeholder="Issue"
         />
         {errors.issue && (

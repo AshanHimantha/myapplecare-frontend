@@ -182,12 +182,7 @@ const AddProduct = () => {
     }
   };
 
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file && file.type.startsWith('image/')) {
-  //     setImage(file);
-  //   }
-  // };
+
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
@@ -265,7 +260,7 @@ const AddProduct = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Image Upload */}
-          <div className="apple-card p-8">
+          <div className="apple-card p-4">
             <div className="flex items-center justify-center w-full">
               <label className="relative flex flex-col items-center justify-center w-full h-64 border-2 border-[#86868B] border-dashed rounded-lg cursor-pointer hover:bg-gray-50 ">
                 {image ? (
@@ -293,7 +288,7 @@ const AddProduct = () => {
           </div>
 
           {/* Product Details */}
-          <div className="apple-card p-8 space-y-6">
+          <div className="apple-card p-4 space-y-6">
             {/* Categories */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
