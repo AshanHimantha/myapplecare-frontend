@@ -133,37 +133,42 @@ const AdminDashboard = () => {
       </button>
 
       {/* Sidebar */}
-      <div className={`
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0
-        fixed lg:static inset-y-0 left-0
-        w-64 bg-white border-r border-gray-200
-        transition-transform duration-300 ease-in-out
-        z-40 lg:z-auto
-      `}>
-        <div className="p-6">
-          <h1 className="text-xl font-semibold text-[#1D1D1F]">MyAppleCare</h1>
+        <div className={`
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0
+          fixed lg:static inset-y-0 left-0
+          w-64 bg-white border-r border-gray-200
+          transition-transform duration-300 ease-in-out
+          z-40 lg:z-auto
+        `}>
+          <div className="p-6 text-center flex justify-center items-center gap-2">
+            <img 
+          src="/images/apple-logo.svg" 
+          alt="MyAppleCare Logo" 
+          className=" h-7 w-auto mb-2"
+            />
+            <h1 className="text-xl font-semibold text-[#1D1D1F]">MyAppleCare</h1>
+          </div>
+          <nav className="mt-4">
+            {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center space-x-3 px-6 py-3 text-sm font-medium ${
+              location.pathname === item.path
+            ? 'bg-[#F5F5F7] text-[#0071E3]'
+            : 'text-[#1D1D1F] hover:bg-[#F5F5F7]'
+            }`}
+          >
+            {item.icon}
+            <span>{item.title}</span>
+          </Link>
+            ))}
+          </nav>
         </div>
-        <nav className="mt-4">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center space-x-3 px-6 py-3 text-sm font-medium ${
-                location.pathname === item.path
-                  ? 'bg-[#F5F5F7] text-[#0071E3]'
-                  : 'text-[#1D1D1F] hover:bg-[#F5F5F7]'
-              }`}
-            >
-              {item.icon}
-              <span>{item.title}</span>
-            </Link>
-          ))}
-        </nav>
-      </div>
 
-      {/* Overlay */}
+        {/* Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"

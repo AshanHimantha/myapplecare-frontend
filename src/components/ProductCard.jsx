@@ -25,13 +25,13 @@ const ProductCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.02 }}
-      className="m-auto rounded-md p-5 border border-gray-200 flex items-center flex-col text-center hover:shadow-lg transition-all"
+      className="m-auto rounded-md p-5 border mb-2 border-gray-200 min-w-48  flex items-center flex-col text-center hover:shadow-lg transition-all"
     >
       <motion.div
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex justify-center items-center w-32 h-32 rounded-md bg-gray-50 bg-opacity-5"
+        className="flex justify-center items-center w-32  h-32 rounded-md bg-gray-50 bg-opacity-5"
       >
         {image ? (
           <img src={image} className="w-10/12 object-contain rounded-md" alt={name} />
@@ -79,7 +79,7 @@ const ProductCard = ({
         transition={{ delay: 0.5 }}
         className="text-gray-400 text-xs"
       >
-        {serialNumber}
+        aa{serialNumber}
       </motion.div>
 
       <motion.div
