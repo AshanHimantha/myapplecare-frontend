@@ -110,7 +110,7 @@ const ServicesAndParts = () => {
       ) : (
         <div className="grid grid-cols-1 gap-8">
           {/* SERVICES SECTION */}
-          <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-blue-500">
+          <div className="bg-white p-6 rounded-lg border border-gray-200">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Repair Services</h2>
               <button 
@@ -124,7 +124,8 @@ const ServicesAndParts = () => {
               </button>
             </div>
             
-            <table className="min-w-full divide-y divide-gray-200">
+            <div className="rounded-md border border-gray-200  overflow-hidden">
+            <table className="min-w-full divide-y  ">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Repair Name</th>
@@ -162,10 +163,11 @@ const ServicesAndParts = () => {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           
           {/* PARTS SECTION */}
-          <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
+          <div className="bg-white p-6 rounded-lg  border border-gray-200">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Parts Inventory</h2>
               <button 
@@ -178,7 +180,7 @@ const ServicesAndParts = () => {
                 Add New Part
               </button>
             </div>
-            
+            <div className="rounded-md border border-gray-200  overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -229,6 +231,7 @@ const ServicesAndParts = () => {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

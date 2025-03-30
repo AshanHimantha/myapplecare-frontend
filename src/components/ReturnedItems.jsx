@@ -89,7 +89,7 @@ const ReturnedItems = () => {
     
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden border-gray-200">
+      <div className="bg-white rounded-md  overflow-hidden border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

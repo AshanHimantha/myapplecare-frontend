@@ -65,18 +65,18 @@ const UsersManagement = () => {
   );
 
   // Get role color based on role name
-  const getRoleBadgeClasses = (roleName) => {
-    switch(roleName) {
+  function getRoleBadgeClasses(roleName) {
+    switch (roleName) {
       case 'admin':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-red-100 text-red-800';
       case 'technician':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-orange-100 text-orange-800';
       case 'cashier':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-100 text-teal-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
+  }
 
   // Get formatted role label
   const getRoleLabel = (roleName) => {
@@ -147,7 +147,7 @@ const UsersManagement = () => {
       ) : error ? (
         <div className="text-red-500 text-center py-8">{error}</div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-[#F5F5F7]">
@@ -202,7 +202,7 @@ const UsersManagement = () => {
                         {user.roles && user.roles.map((role) => (
                           <span
                             key={role.id}
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeClasses(role.name)}`}
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${getRoleBadgeClasses(role.name)}`}
                           >
                             {getRoleLabel(role.name)}
                           </span>

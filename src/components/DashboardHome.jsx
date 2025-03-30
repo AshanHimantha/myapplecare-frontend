@@ -47,11 +47,11 @@ const DashboardHome = () => {
   }
 
   if (view === 'serviceCenter') {
-    return <ServiceCenterDashboard />;
+    return <ServiceCenterDashboard onBack={() => setView('main')} />;
   }
 
   if (view === 'salesOutlet') {
-    return <SalesOutletDashboard />;
+    return <SalesOutletDashboard onBack={() => setView('main')} />;
   }
 
   // Monthly Sales and Profits chart data
@@ -127,7 +127,7 @@ const DashboardHome = () => {
         <h3 className="text-lg font-medium text-[#1D1D1F]">MyAppleCare Dashboard</h3>
         <div className="flex items-center space-x-2">
           <select 
-            className="px-3 py-1 bg-white border border-gray-100 border rounded-md text-sm"
+            className="px-3 py-1 bg-white  border-gray-100 border rounded-md text-sm"
             value={view}
             onChange={(e) => setView(e.target.value)}
           >

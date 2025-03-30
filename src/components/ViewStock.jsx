@@ -64,19 +64,19 @@ const ViewStock = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by product name or serial number..."
-            className="flex-1 px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
+            className="flex-1 px-4 py-2 rounded-md bg-[#F5F5F7] border-0 focus:ring-2 focus:ring-[#0071E3]"
           />
           <button
             onClick={() => navigate('/AddStock')}
-            className="px-4 py-2 bg-[#0071E3] text-white rounded-lg hover:bg-[#0077ED]"
+            className="px-4 py-2 bg-[#0071E3] text-white rounded-md hover:bg-[#0077ED]"
           >
             Add Stock
           </button>
         </div>
 
         {/* Desktop Table (hidden on mobile) */}
-          <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="hidden md:block border border-gray-200 rounded-md overflow-hidden">
+            <div className="bg-white   overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-[#F5F5F7]">
             <tr>

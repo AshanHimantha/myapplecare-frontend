@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { CurrencyDollarIcon, ShoppingBagIcon, TicketIcon, ChartBarIcon, WrenchIcon } from '@heroicons/react/24/outline';
+import { CurrencyDollarIcon, ShoppingBagIcon, TicketIcon, ChartBarIcon, WrenchIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import api from '../api/axios';
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
-const SalesOutletDashboard = () => {
+const SalesOutletDashboard = ({ onBack }) => {
   const [salesData, setSalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -143,7 +143,16 @@ const SalesOutletDashboard = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-[#1D1D1F]">Sales Dashboard</h3>
+        <div className="flex items-center">
+          <button 
+            onClick={onBack} 
+            className="mr-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Go back to main dashboard"
+          >
+            <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+          </button>
+          <h3 className="text-lg font-medium text-[#1D1D1F]">Sales Dashboard</h3>
+        </div>
         <div className="flex items-center space-x-2">
           <select 
             className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm"
@@ -162,16 +171,16 @@ const SalesOutletDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard 
           title="Total Revenue" 
-          value={`Rs. ${getSalesByTimeframe().toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
+          value={`Rs. ${getSalesByTimeframe().toLocaleString('en-IN')}`} 
           icon={<CurrencyDollarIcon className="h-6 w-6 text-blue-600" />}
           change={`${salesData.profit_margin.toFixed(2)}% profit margin`}
           isPositive={salesData.profit_margin > 30}
         />
         <SummaryCard 
           title="Total Profit" 
-          value={`Rs. ${getProfitByTimeframe().toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={`Rs. ${getProfitByTimeframe().toLocaleString('en-IN')}`}
           icon={<ChartBarIcon className="h-6 w-6 text-green-600" />}
-          change={`Rs. ${Number(salesData.total_cost_month).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} cost`}
+          change={`Rs. ${Number(salesData.total_cost_month).toLocaleString('en-IN')} cost`}
           isPositive={getProfitByTimeframe() > 0}
         />
         <SummaryCard 
@@ -316,6 +325,17 @@ const SalesOutletDashboard = () => {
             />
           </div>
         </div>
+      </div>
+      
+      {/* Add Back Button */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={onBack}
+          className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
+        >
+          <ArrowLeftIcon className="h-4 w-4 mr-2" />
+          Back to Main Dashboard
+        </button>
       </div>
     </div>
   );

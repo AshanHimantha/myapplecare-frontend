@@ -49,19 +49,19 @@ const ProductList = () => {
     <div className="min-h-screen bg-[#FBFBFD] p-6">
       <div className="max-w-7xl mx-auto">
         {/* Search and Filter */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex items-center justify-between gap-4">
+        <div className="bg-white rounded-md border border-gray-200 p-4 mb-6 flex items-center justify-between gap-4">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search products..."
-            className="flex-1 px-4 py-2 rounded-lg bg-[#F5F5F7] border-0 
+            className="flex-1 px-4 py-2 rounded-md bg-[#F5F5F7] border-0 
                      focus:ring-2 focus:ring-[#0071E3]"
           />
 
           <button
             onClick={() => navigate("/add-product")}
-            className="px-4 py-2 bg-[#0071E3] text-white rounded-lg hover:bg-[#0077ED]"
+            className="px-4 py-2 bg-[#0071E3] text-white rounded-md hover:bg-[#0077ED]"
           >
             Add New Product
           </button>
@@ -69,7 +69,7 @@ const ProductList = () => {
 
         {/* Table for Desktop */}
         <div className="hidden md:block ">
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+          <div className="bg-white rounded-md shadow-sm overflow-hidden border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#F5F5F7]">
                 <tr>

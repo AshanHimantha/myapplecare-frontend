@@ -67,7 +67,7 @@ const Invoice = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex overflow-hidden duration-100 gap-5 justify-between px-2 py-1 text-sm w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700"
-                placeholder="Search by invoice ID or customer name"
+                placeholder="Search"
               />
             </div>
           </div>
@@ -93,7 +93,7 @@ const Invoice = () => {
                   </div>
 
                   {(searchTerm ? filteredInvoices : invoices).map((invoice) => (
-                    <div key={invoice.id} className="flex text-xs p-3 border-t hover:bg-gray-50">
+                    <div key={invoice.id} className="flex  p-3 border-t hover:bg-gray-50">
                       <div className="w-2/12">#{invoice.id}</div>
                       <div className="w-3/12 text-center">
                         {invoice.first_name} {invoice.last_name}
@@ -103,7 +103,7 @@ const Invoice = () => {
                       </div>
                       <div className="w-2/12 text-center">
                         {parseFloat(invoice.total_amount) === 0 ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full font-medium bg-red-100 text-red-800">
                             Returned
                           </span>
                         ) : (

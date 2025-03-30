@@ -177,7 +177,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto w-full">
+      <div className="flex-1 overflow-auto sc w-full" style={{ scrollbarWidth: 'none' }}>
         <header className="bg-white border-b border-gray-200">
           <div className="flex items-center justify-between px-4 lg:px-6 py-4">
             <h2 className="text-xl lg:text-2xl font-semibold text-[#1D1D1F] truncate">

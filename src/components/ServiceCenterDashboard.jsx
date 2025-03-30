@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Pie, Bar, Doughnut } from 'react-chartjs-2';
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/solid';
+import { ArrowUpIcon, ArrowDownIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { TicketIcon, CurrencyDollarIcon, ClockIcon, WrenchScrewdriverIcon, ShieldCheckIcon, CubeIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import api from '../api/axios';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const ServiceCenterDashboard = ({ centerId }) => {
+const ServiceCenterDashboard = ({ onBack, centerId }) => {
   const [metrics, setMetrics] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [timeframe, setTimeframe] = useState('month');
   
   useEffect(() => {
     const fetchServiceMetrics = async () => {
@@ -138,13 +139,26 @@ const ServiceCenterDashboard = ({ centerId }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-[#1D1D1F]">Service Center Dashboard</h3>
+        <div className="flex items-center">
+          <button 
+            onClick={onBack} 
+            className="mr-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Go back to main dashboard"
+          >
+            <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
+          </button>
+          <h3 className="text-lg font-medium text-[#1D1D1F]">Service Center Dashboard</h3>
+        </div>
         <div className="flex items-center space-x-2">
-          <select className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm">
-            <option>Last 30 days</option>
-            <option>Last week</option>
-            <option>This month</option>
-            <option>This year</option>
+          <select 
+            className="px-3 py-1 bg-white border border-gray-200 rounded-md text-sm"
+            value={timeframe}
+            onChange={(e) => setTimeframe(e.target.value)}
+          >
+            <option value="today">Today</option>
+            <option value="week">Last week</option>
+            <option value="month">Last 30 days</option>
+            <option value="year">This year</option>
           </select>
         </div>
       </div>
@@ -367,6 +381,17 @@ const ServiceCenterDashboard = ({ centerId }) => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Add Back Button at the bottom similar to SalesOutletDashboard */}
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={onBack}
+          className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors"
+        >
+          <ArrowLeftIcon className="h-4 w-4 mr-2" />
+          Back to Main Dashboard
+        </button>
       </div>
     </div>
   );
