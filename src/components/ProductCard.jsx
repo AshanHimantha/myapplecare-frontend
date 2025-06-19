@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, memo, useCallback } from "react";
 
-const ProductCard = ({
+const ProductCard = memo(({
   id,
   image,
   name,
@@ -12,12 +12,23 @@ const ProductCard = ({
   onAddClick,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     setIsLoading(true);
     await onAddClick(id);
     setTimeout(() => setIsLoading(false), 700);
-  };
+  }, [onAddClick, id]);
+
+  const handleImageLoad = useCallback(() => {
+    setImageLoaded(true);
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+    setImageLoaded(true);
+  }, []);
 
   return (
     <motion.div
@@ -25,16 +36,36 @@ const ProductCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.02 }}
-      className="m-auto rounded-md p-5 border mb-2 border-gray-200 min-w-48  flex items-center flex-col text-center hover:shadow-lg transition-all"
+      className="m-auto rounded-md p-5 border mb-2 border-gray-200 max-w-52 min-w-52 flex items-center flex-col text-center hover:shadow-lg transition-all"
     >
       <motion.div
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="flex justify-center items-center w-32  h-32 rounded-md bg-gray-50 bg-opacity-5"
+        transition={{ delay: 0.2 }}        className="flex justify-center items-center w-32  h-32 rounded-md bg-gray-50 bg-opacity-5 relative"
       >
-        {image ? (
-          <img src={image} className="w-10/12 object-contain rounded-md" alt={name} />
+        {image && !imageError ? (
+          <>
+            {!imageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="animate-pulse bg-gray-200 w-full h-full rounded-md"></div>
+              </div>
+            )}
+            <img 
+              src={image} 
+              className={`w-10/12 object-contain rounded-md transition-opacity duration-300 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              alt={name} 
+              loading="lazy"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              style={{
+                aspectRatio: '1',
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
+          </>
         ) : (
           <svg
             className="w-16 h-16 text-[#86868B]"
@@ -56,7 +87,7 @@ const ProductCard = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="font-semibold mt-3"
+        className="font-semibold mt-3 max-w-[98%] "
       >
         {name}
       </motion.div>
@@ -79,7 +110,7 @@ const ProductCard = ({
         transition={{ delay: 0.5 }}
         className="text-gray-400 text-xs"
       >
-        aa{serialNumber}
+    {serialNumber}
       </motion.div>
 
       <motion.div
@@ -89,7 +120,7 @@ const ProductCard = ({
         className="w-full flex gap-1 mt-2 justify-center"
       >
         <div
-          className={`text-[8px] px-4 py-1 rounded-md uppercase
+          className={`text-[8px] px-4 py-1 flex justify-center items-center rounded-md uppercase
           ${
             condition === "new"
               ? "macGreenButton text-white"
@@ -139,8 +170,10 @@ const ProductCard = ({
           </svg>
         )}
       </motion.button>
-    </motion.div>
-  );
-};
+    </motion.div>  );
+});
+
+// Add display name for better debugging
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;
