@@ -98,9 +98,9 @@ const ProductList = () => {
                         <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] mr-3">
                           {product.image ? (
                             <img
-                              src={product.image}
+                              src={`${process.env.REACT_APP_API_BASE_URL}/storage/${product.image}`}
                               alt={product.name}
-                              className="h-10 w-10 rounded-lg object-cover"
+                              className="h-10 w-10 rounded-md object-cover"
                             />
                           ) : (
                             <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] flex items-center justify-center">

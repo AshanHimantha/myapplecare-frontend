@@ -94,11 +94,12 @@ const ViewStock = () => {
               <tr key={stock.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-              <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] mr-3">                {stock.product?.image ? (
+              <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] mr-3">    
+                            {stock.product?.image ? (
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}/storage/products/${stock.product.image}`}
+                    src={`${process.env.REACT_APP_API_BASE_URL}/storage/${stock.product.image}`}
                     alt={stock.product?.name}
-                    className="h-10 w-10 rounded-lg object-cover"
+                    className="h-10 w-10 rounded-md object-cover"
                   />
                 ) : (
                   <div className="h-10 w-10 rounded-lg bg-[#F5F5F7] flex items-center justify-center">
