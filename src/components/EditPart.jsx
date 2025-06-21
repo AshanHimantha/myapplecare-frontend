@@ -14,9 +14,8 @@ const EditPart = ({ isOpen, onClose, part }) => {
     description: part.description || ''
   });
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [imagePreview, setImagePreview] = useState(
-    part.part_image ? `http://localhost:8000/api/part-images/${part.part_image}` : null
+  const [alertMessage, setAlertMessage] = useState('');  const [imagePreview, setImagePreview] = useState(
+    part.part_image ? `${process.env.REACT_APP_API_BASE_URL}/storage/parts/${part.part_image}` : null
   );
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});

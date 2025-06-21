@@ -70,10 +70,9 @@ const EnterSerial = ({ isOpen, part, onClose, onSuccess }) => {
             </div>
 
             <div className="justify-center items-center w-full flex flex-col">
-              <img
-                src={
+              <img                src={
                   part?.part_image
-                    ? `http://localhost:8000/api/part-images/${part.part_image}`
+                    ? `${process.env.REACT_APP_API_BASE_URL}/storage/parts/${part.part_image}`
                     : "../images/Apple-ID.png"
                 }
                 alt={part?.part_name || "display"}

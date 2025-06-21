@@ -2,19 +2,27 @@
 import axios from 'axios';
 import useAuthStore from '../stores/authStore';
 
+// Debug environment variables
+console.log('Environment variables debug:', {
+  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+  REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
+  NODE_ENV: process.env.NODE_ENV
+});
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://systemapi.1000dtechnology.com/api',
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',
   },
-  withCredentials: true
+ 
 });
 
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
+    // Try to get token from Zustand store first, fallback to localStorage
+    const token = useAuthStore.getState().token || localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,22 +39,11 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
+      localStorage.removeItem('token');
       window.location.href = '/';
     }
     return Promise.reject(error);
   }
 );
-
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  }
-)
-
 
 export default api;

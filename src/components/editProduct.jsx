@@ -39,7 +39,9 @@ const EditProduct = () => {
           category: product.device_category?.name,
           subCategory: product.device_subcategory?.name
         });
-        setCurrentImage(product.image);
+        setCurrentImage(product.image 
+          ? `${process.env.REACT_APP_API_BASE_URL}/storage/products/${product.image}`
+          : null);
       }
     } catch (err) {
       setError('Failed to load product');

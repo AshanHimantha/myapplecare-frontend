@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import api from '../api/axios';
 
 import AddNewPart from './AddNewPart';
@@ -198,10 +198,9 @@ const ServicesAndParts = () => {
                   parts.map((part) => (
                     <tr key={part.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">{part.part_name}</td>
-                      <td className="px-4 py-3">
-                        {part.part_image && (
+                      <td className="px-4 py-3">                        {part.part_image && (
                           <img 
-                            src={`http://localhost:8000/api/part-images/${part.part_image}`} 
+                            src={`${process.env.REACT_APP_API_BASE_URL}/storage/parts/${part.part_image}`} 
                             alt={part.part_name} 
                             className="h-10 w-10 object-cover rounded"
                           />

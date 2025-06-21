@@ -182,13 +182,14 @@ const SalesOutlet = () => {
       setSelectedSubcategory(subId);
     }
   }, [stocks, categories]);
-
   // Memoize ProductCard props to prevent unnecessary re-renders
   const memoizedProductCards = useMemo(() => {
     return filteredStocks.map((stock) => ({
       key: stock.id,
       id: stock.id,
-      image: stock.product?.image,
+      image: stock.product?.image 
+        ? `${process.env.REACT_APP_API_BASE_URL}/storage/${stock.product.image}`
+        : null,
       name: stock.product?.name,
       price: stock.selling_price,
       serialNumber: stock.serial_number,

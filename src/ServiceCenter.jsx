@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CreateTicketForm from "./components/CreateTicketForm";
 import SegmentedPicker from "./components/SegmentedPicker";
@@ -181,24 +181,22 @@ const ServiceCenter = () => {
                   options={displayStatusOptions}
                   onChange={handleSegmentChange}
                 />
-              </div>
-
-              <div className="w-11/12 mx-auto mt-10 overflow-x-auto">
-                <div className="min-w-[800px] border border-gray-200 rounded-md flex flex-col justify-center">
+              </div>              <div className="w-11/12 mx-auto mt-10 overflow-x-auto">
+                <div className="min-w-[900px] border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
-                    <div className="w-3/12">Device</div>
+                    <div className="w-2/12">Device</div>
                     <div className="w-2/12">Customer</div>
                     <div className="w-1/12 text-center">Priority</div>
                     <div className="w-2/12 text-center">Contact No</div>
                     <div className="w-1/12 text-center">Category</div>
                     <div className="w-1/12 text-center">Status</div>
+                    <div className="w-1/12 text-end">Date</div>
                     <div className="w-1/12 text-center"></div>
                   </div>
 
-                  <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />
-                  {tickets.map((ticket) => (
+                  <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />                  {tickets.map((ticket) => (
                     <div key={ticket.id} className="flex border-b p-3 text-sm">
-                      <div className="w-3/12 font-medium">
+                      <div className="w-2/12 font-medium">
                         {ticket.device_model}
                       </div>
                       <div className="w-2/12 text-gray-600">
@@ -261,6 +259,14 @@ const ServiceCenter = () => {
                             ? "Completed"
                             : "Cancelled"}
                         </span>
+                      </div>
+                      <div className="w-1/12 text-end text-gray-600 text-xs">
+                        {ticket.created_at 
+                          ? new Date(ticket.created_at).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })
+                          : 'N/A'}
                       </div>
                       <div className="w-1/12 text-end pr-1">
                         <a

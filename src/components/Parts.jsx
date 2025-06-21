@@ -87,11 +87,10 @@ const Parts = ({onBack,onPartAdd}) => {
               <div key={part.id} className="border border-gray-200 rounded-md flex p-2 items-center justify-between gap-2">
                 <div className="flex gap-2">
                   <div className="w-16 h-16 rounded border-4 border-gray-100 flex justify-center items-center overflow-hidden ">
-                                       <img 
-                      src={
+                                       <img                      src={
                         !part.part_image || part.part_image === "not available" 
                           ? "../images/Apple-ID.png" 
-                          : `http://localhost:8000/api/part-images/${part.part_image}`
+                          : `${process.env.REACT_APP_API_BASE_URL}/storage/parts/${part.part_image}`
                       }
                       onError={(e) => {
                         e.target.src = "../images/Apple-ID.png";

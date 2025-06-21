@@ -45,10 +45,12 @@ const CartItem = ({
     <>
       <div className="flex gap-4 mt-1.5  ">
         <div className="flex flex-col justify-center items-center px-1 w-16 h-16 rounded-md bg-zinc-100">
-          <div className="flex flex-col justify-center items-center px-1 w-14 h-14 bg-white rounded">
-            <img
+          <div className="flex flex-col justify-center items-center px-1 w-14 h-14 bg-white rounded">            <img
               loading="lazy"
-              src={image}
+              src={image 
+                ? `${process.env.REACT_APP_API_BASE_URL}/storage/${image}`
+                : '/images/Apple-ID.png'
+              }
               alt={name}
               className="object-contain aspect-[1.02] w-[41px]"
             />
