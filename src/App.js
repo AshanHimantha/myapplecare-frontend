@@ -18,7 +18,7 @@ import PrintInvoice from "./components/PrintInvoice";
 import OutletReturn from "./OutletReturn";
 import ViewInvoice from "./components/ViewInvoice";
 import AdminDashboard from "./components/AdminDashboard";
-
+import CustomerInvoice from "./CustomerInvoice";
 
 
 
@@ -34,6 +34,10 @@ const App = () => {
         <Route path="/sales-return" element={<OutletReturn />} />
 
         <Route path="/view-invoice/:id" element={<ViewInvoice />} />
+        
+        {/* Public route for customer invoice viewing */}
+        <Route path="/customer-invoice/:invoiceId" element={<CustomerInvoice />} />
+        
         <Route
           path="/AddStock"
           element={
