@@ -19,6 +19,8 @@ const ViewTicket = () => {
   const [itemChanged, setItemChanged] = useState(false);
   const [serviceChanged, setServiceChanged] = useState(false);
   const [printModalOpen, setPrintModalOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   const isTicketModifiable = () => {
     return ticket?.status !== "completed";
@@ -46,6 +48,25 @@ const ViewTicket = () => {
     setServiceChanged(true);
   };
 
+  const handleAssignRepairer = async (userId) => {
+    if (!userId) {
+      // Handle unassigning (setting to null)
+      userId = null;
+    }
+    
+    try {
+      const response = await api.patch(`/tickets/${id}`, {
+        repaired_by: userId
+      });
+      
+      if (response.data.status === "success") {
+        setServiceChanged(true); // This will trigger a refresh of ticket data
+      }
+    } catch (err) {
+      console.error("Failed to assign repairer:", err);
+    }
+  };
+
   useEffect(() => {
     const fetchTicketDetails = async () => {
       try {
@@ -61,7 +82,27 @@ const ViewTicket = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        const response = await api.get('/users');
+        if (response.data) {
+          const allUsers = response.data.data || [];
+          // Filter users to only include those with 'technician' role
+          const technicians = allUsers.filter(user => 
+            user.roles && user.roles.some(role => role.name === 'technician')
+          );
+          setUsers(technicians);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
     fetchTicketDetails();
+    fetchUsers();
   }, [id]);
 
   useEffect(() => {
@@ -171,6 +212,119 @@ const ViewTicket = () => {
               </div>
               <div className="text-end font-normal text-xs">
                 {ticket?.contact_number}
+              </div>
+            </div>
+          </div>
+
+          {/* Device & Issue Information Card */}
+          <div className="w-full bg-white border border-gray-200 rounded-md mt-2 p-5">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+              {/* Device Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <img
+                    src={ticket?.device_category === 'android' ? '/images/androidIcon.svg' : '/images/iphoneIcon.svg'}
+                    alt="device"
+                    className="w-5 h-5 mr-2"
+                  />
+                  Device Information
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600">Category:</span>
+                    <span className="text-sm capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      {ticket?.device_category}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600">Model:</span>
+                    <span className="text-sm font-semibold text-gray-800">{ticket?.device_model}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600">IMEI:</span>
+                    <span className="text-sm font-mono text-gray-800">{ticket?.imei}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600">Priority:</span>
+                    <span className={`text-sm px-2 py-1 rounded-full font-medium ${
+                      ticket?.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      ticket?.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {ticket?.priority?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Issue & Assignment Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                  <img
+                    src="/images/repair.svg"
+                    alt="issue"
+                    className="w-5 h-5 mr-2"
+                  />
+                  Issue & Assignment
+                </h3>
+                <div className="space-y-2">
+                  <div className="py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600 block mb-1">Issue Description:</span>
+                    <p className="text-sm text-gray-800 leading-relaxed">{ticket?.issue}</p>
+                  </div>
+                  
+                  {/* Assigned User */}
+                  <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
+                    <span className="text-sm font-medium text-gray-600">Ticket Created by:</span>
+                    <div className="text-right">
+                      {ticket?.user ? (
+                        <>
+                          <div className="text-sm font-semibold text-gray-800">{ticket.user.name}</div>
+                          <div className="text-xs text-gray-500">{ticket.user.email}</div>
+                        </>
+                      ) : (
+                        <div className="text-sm text-orange-600 font-medium">
+                          <span className="bg-orange-100 px-2 py-1 rounded-full">Not Assigned</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Repaired By */}
+                  <div className="py-2 px-3 bg-gray-50 rounded-md">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        {ticket?.status === "completed" ? "Repaired by:" : "Assign Repairer:"}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        {ticket?.status !== "completed" && (
+                          <select
+                            value={ticket?.repaired_by?.id || ''}
+                            onChange={(e) => handleAssignRepairer(e.target.value)}
+                            className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[80px] max-w-32"
+                            disabled={loadingUsers}
+                          >
+                            <option value="">
+                              {loadingUsers ? 'Loading...' : 'Select Technician'}
+                            </option>
+                            {users.map((user) => (
+                              <option key={user.id} value={user.id}>
+                                {user.name} - {user.email}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        {ticket?.repaired_by && (
+                          <div className="text-right mr-2">
+                            <div className="text-sm font-semibold text-green-800">{ticket.repaired_by.name}</div>
+                            <div className="text-xs text-green-600">{ticket.repaired_by.email}</div>
+                          </div>
+                        )}
+                       
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

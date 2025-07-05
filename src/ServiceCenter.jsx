@@ -169,7 +169,7 @@ const ServiceCenter = () => {
                   type="text"
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="flex overflow-hidden duration-100 gap-5 justify-between px-2 py-1 text-sm w-full rounded-md border border-solid border-black border-opacity-10 text-zinc-700 text-opacity-30"
+                  className="flex overflow-hidden duration-100 gap-5 justify-between px-2 py-1 text-sm w-full rounded-md border border-solid border-black border-opacity-10 text-black "
                   placeholder="Search"
                 />
               </div>
@@ -181,9 +181,10 @@ const ServiceCenter = () => {
                   options={displayStatusOptions}
                   onChange={handleSegmentChange}
                 />
-              </div>              <div className="w-11/12 mx-auto mt-10 overflow-x-auto">
+              </div>              <div className="w-full mx-auto mt-10 overflow-x-auto">
                 <div className="min-w-[900px] border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
+                    <div className="w-1/12">Ticket ID</div>
                     <div className="w-2/12">Device</div>
                     <div className="w-2/12">Customer</div>
                     <div className="w-1/12 text-center">Priority</div>
@@ -191,11 +192,14 @@ const ServiceCenter = () => {
                     <div className="w-1/12 text-center">Category</div>
                     <div className="w-1/12 text-center">Status</div>
                     <div className="w-1/12 text-end">Date</div>
-                    <div className="w-1/12 text-center"></div>
+                    <div className="w-1/12 text-center">Actions</div>
                   </div>
 
                   <div className="shrink-0 max-w-full h-px border border-solid border-zinc-100 w-[95%] self-center" />                  {tickets.map((ticket) => (
                     <div key={ticket.id} className="flex border-b p-3 text-sm">
+                      <div className="w-1/12 font-semibold text-blue-600">
+                        #{ticket.id}
+                      </div>
                       <div className="w-2/12 font-medium">
                         {ticket.device_model}
                       </div>
@@ -268,26 +272,23 @@ const ServiceCenter = () => {
                             })
                           : 'N/A'}
                       </div>
-                      <div className="w-1/12 text-end pr-1">
+                      <div className="w-1/12 flex justify-center items-center gap-2">
                         <a
                           href={`/view-ticket/${ticket.id}`}
-                          className="text-blue-500"
+                          className="text-blue-500 text-xs"
                         >
                           View
                         </a>
-                      </div>
-
-                      <div className="w-1/12 flex justify-center">
                         {(ticket.status === "open" ||
                           ticket.status === "in_progress") && (
                           <button
                             onClick={() => handleDeleteTicket(ticket.id)}
-                            className="text-blue-500 text-center text-xs"
+                            className="text-red-500"
                           >
                             <img
                               src="/images/bin.svg"
                               alt="delete"
-                              className="h-5 w-5"
+                              className="h-4 w-4"
                             />
                           </button>
                         )}

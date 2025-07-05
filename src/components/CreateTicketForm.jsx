@@ -46,13 +46,11 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
       if (!formData.device_model || formData.device_model === "Select Device") {
         newErrors.device_model = "Device Model is required";
       }
-    } else {
-      if (!formData.device_model || !formData.device_model.trim()) {
-        newErrors.device_model = "Device Model is required";
-      }
+    } else {    if (!formData.device_model || !formData.device_model.trim()) {
+      newErrors.device_model = "Device Model is required";
     }
-    if (!formData.imei) newErrors.imei = "IMEI is required";
-    if (!formData.issue) newErrors.issue = "Issue description is required";
+  }
+  if (!formData.issue) newErrors.issue = "Issue description is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -316,7 +314,7 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
         )}
 
         <label htmlFor="imei" className="self-start mt-1.5 font-medium">
-          IMEI
+          IMEI (Optional)
         </label>
         <input
           id="imei"
