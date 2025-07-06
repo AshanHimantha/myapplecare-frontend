@@ -224,15 +224,6 @@ const ThermalPrintTicket = ({ isOpen, onClose, ticket = {}, ticketItems = [] }) 
                     <p className="text-xs font-bold">Ticket #{ticket?.id || 'N/A'}</p>
                   </div>
 
-                  <div className="mb-3">
-                    <p className="text-xs">
-                      <strong>Customer:</strong> {ticket?.first_name || ''} {ticket?.last_name || ''}
-                    </p>
-                    <p className="text-xs">
-                      <strong>Contact:</strong> {ticket?.contact_number || 'N/A'}
-                    </p>
-
-                  </div>
 
                   <div className="border-b border-dashed my-2"></div>
 

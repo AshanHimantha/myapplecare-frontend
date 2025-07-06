@@ -90,13 +90,16 @@ const TempTicketPrint = ({ isOpen, onClose, ticket = {} }) => {
           .text-lg { font-size: 18px; }
           .text-xl { font-size: 24px; }
           .font-bold { font-weight: bold; }
+          .mb-1 { margin-bottom: 4px; }
           .mb-2 { margin-bottom: 8px; }
           .mb-3 { margin-bottom: 12px; }
           .mb-4 { margin-bottom: 16px; }
+          .mb-5 { margin-bottom: 20px; }
           .mt-1 { margin-top: 4px; }
           .mt-2 { margin-top: 8px; }
           .mt-4 { margin-top: 16px; }
           .my-2 { margin-top: 8px; margin-bottom: 8px; }
+          .my-4 { margin-top: 16px; margin-bottom: 16px; }
           .py-1 { padding-top: 4px; padding-bottom: 4px; }
           .py-2 { padding-top: 8px; padding-bottom: 8px; }
           .border-b { border-bottom: 1px solid #999; }
@@ -192,6 +195,14 @@ const TempTicketPrint = ({ isOpen, onClose, ticket = {} }) => {
                     <p className="mb-1">• Please keep this receipt safe</p>
                     <p className="mb-1">• Present this when collecting your device</p>
                     <p className="mb-1">• We will contact you when repair is complete</p>
+                  </div>
+
+                  <div className="border-b border-dashed my-4"></div>
+
+                  <div className="text-center text-xs mb-4">
+                    <p className="font-bold mb-2">TRACK YOUR TICKET ONLINE</p>
+                    <p className="mb-1">Visit: {window.location.origin}/ticket/{ticket?.id}</p>
+                    <p className="mb-1">Enter Contact: {ticket?.contact_number}</p>
                   </div>
 
                   <div className="border-b border-dashed my-4"></div>

@@ -19,6 +19,7 @@ import OutletReturn from "./OutletReturn";
 import ViewInvoice from "./components/ViewInvoice";
 import AdminDashboard from "./components/AdminDashboard";
 import CustomerInvoice from "./CustomerInvoice";
+import PublicTicketView from "./components/PublicTicketView";
 
 
 
@@ -37,6 +38,9 @@ const App = () => {
         
         {/* Public route for customer invoice viewing */}
         <Route path="/customer-invoice/:invoiceId" element={<CustomerInvoice />} />
+        
+        {/* Public routes */}
+        <Route path="/ticket/:id" element={<PublicTicketView />} />
         
         <Route
           path="/AddStock"
@@ -143,6 +147,11 @@ const App = () => {
               <ViewTicket />
             </ProtectedRoute>
           }
+        />
+
+        <Route
+          path="/public-ticket-view/:id"
+          element={<PublicTicketView />}
         />
       </Routes>
     </Router>
