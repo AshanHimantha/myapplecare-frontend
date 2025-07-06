@@ -215,7 +215,7 @@ const CustomerInvoice = () => {
                   <th className="text-center font-medium hidden sm:table-cell">Qty</th>
                   <th className="text-center font-medium sm:hidden">Q</th>
                   <th className="text-center font-medium hidden sm:table-cell">Price</th>
-                  <th className="text-center font-medium sm:hidden">₹</th>
+                  <th className="text-center font-medium sm:hidden">Rs</th>
                   <th className="text-right font-medium">Total</th>
                 </tr>
               </thead>
