@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '../api/axios';
 
 const PublicTicketView = () => {
   const { id } = useParams();
@@ -33,10 +32,11 @@ const PublicTicketView = () => {
 
     try {
       // Try to fetch the ticket using the existing endpoint
-      const response = await api.get(`/tickets/${id}`);
+      const response = await fetch(`/api/tickets/${id}`);
+      const data = await response.json();
 
-      if (response.data.status === 'success') {
-        const ticketData = response.data.data;
+      if (response.ok && data.status === 'success') {
+        const ticketData = data.data;
         
         // Verify the contact number matches
         if (ticketData.contact_number === contactNumber) {
@@ -44,9 +44,10 @@ const PublicTicketView = () => {
           
           // Fetch ticket items if available
           try {
-            const itemsResponse = await api.get(`/tickets/${id}/items`);
-            if (itemsResponse.data.status === 'success') {
-              setTicketItems(itemsResponse.data.data);
+            const itemsResponse = await fetch(`/api/tickets/${id}/items`);
+            const itemsData = await itemsResponse.json();
+            if (itemsResponse.ok && itemsData.status === 'success') {
+              setTicketItems(itemsData.data);
             }
           } catch (itemsErr) {
             console.log('No items found for this ticket');
@@ -56,13 +57,14 @@ const PublicTicketView = () => {
         } else {
           setError('Contact number does not match our records');
         }
-      }
-    } catch (err) {
-      if (err.response?.status === 404) {
+      } else if (response.status === 404) {
         setError('Ticket not found or contact number does not match');
       } else {
         setError('Failed to fetch ticket details. Please try again.');
       }
+    } catch (err) {
+      console.error('Error fetching ticket:', err);
+      setError('Failed to fetch ticket details. Please try again.');
     } finally {
       setLoading(false);
     }
