@@ -81,8 +81,12 @@ const CreateTicketForm = ({ onClose, onSuccess }) => {
           issue: "",
         });
 
-        window.location.reload();
-        onSuccess();
+        // Pass the created ticket data back to parent
+        if (onSuccess && response.data.data) {
+          onSuccess(response.data.data);
+        } else {
+          onSuccess();
+        }
         
       }
     } catch (err) {

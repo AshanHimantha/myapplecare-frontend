@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import CreateTicketForm from "./components/CreateTicketForm";
 import SegmentedPicker from "./components/SegmentedPicker";
 import ServiceCenterNav from "./components/ServiceCenterNav";
-import Alert from "./components/Alert";
+import TempTicketPrint from "./components/TempTicketPrint";
 import api from "./api/axios";
 import debounce from "lodash.debounce";
 
 const ServiceCenter = () => {
   const [isCreateTicketVisible, setIsCreateTicketVisible] = useState(true);
-  const [showAlert, setShowAlert] = useState(false);
+  const [showTempTicketModal, setShowTempTicketModal] = useState(false);
+  const [createdTicket, setCreatedTicket] = useState(null);
+  const [createdTicketItems, setCreatedTicketItems] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -30,6 +32,15 @@ const ServiceCenter = () => {
 
   const handleCreateTicketClick = () => {
     setIsCreateTicketVisible(!isCreateTicketVisible);
+  };
+
+  const handleTicketCreated = (ticketData) => {
+    setCreatedTicket(ticketData);
+    setCreatedTicketItems([]); // For now, new tickets don't have items
+    setShowTempTicketModal(true); // Show temp ticket
+    // Refresh the tickets list
+    setPage(1);
+    fetchTickets(1);
   };
 
   const handleSegmentChange = (option) => {
@@ -146,12 +157,6 @@ const ServiceCenter = () => {
   return (
     <>
       <ServiceCenterNav setVisible={handleCreateTicketClick} />
-      <Alert
-        isVisible={showAlert}
-        onClose={() => setShowAlert(false)}
-        message="Ticket Created Successfully"
-        type="success"
-      />
       <div className="w-full lg:h-screen flex justify-center  overflow-hidden hide-scrollbar">
         <div
           ref={containerRef}
@@ -318,12 +323,19 @@ const ServiceCenter = () => {
             >
               <CreateTicketForm
                 onClose={() => setIsCreateTicketVisible(false)}
-                onSuccess={() => setShowAlert(true)}
+                onSuccess={handleTicketCreated}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+      
+      {/* Temporary Ticket Modal */}
+      <TempTicketPrint
+        isOpen={showTempTicketModal}
+        onClose={() => setShowTempTicketModal(false)}
+        ticket={createdTicket}
+      />
     </>
   );
 };
