@@ -32,7 +32,7 @@ const PublicTicketView = () => {
 
     try {
       // Try to fetch the ticket using the existing endpoint
-      const response = await fetch(`/api/tickets/${id}`);
+      const response = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${id}`);
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
@@ -44,7 +44,7 @@ const PublicTicketView = () => {
           
           // Fetch ticket items if available
           try {
-            const itemsResponse = await fetch(`/api/tickets/${id}/items`);
+            const itemsResponse = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${id}/items`);
             const itemsData = await itemsResponse.json();
             if (itemsResponse.ok && itemsData.status === 'success') {
               setTicketItems(itemsData.data);
@@ -254,11 +254,9 @@ const PublicTicketView = () => {
 
                   <div>
                     <h3 className="font-medium text-gray-700 mb-2">Device Information</h3>
-                    <p className="text-gray-600">{ticket.device_category} - {ticket.device_model}</p>
-                    {ticket.imei && <p className="text-gray-600 text-sm">IMEI: {ticket.imei}</p>}
-                    <p className={`text-sm font-medium ${getPriorityColor(ticket.priority)}`}>
-                      Priority: {ticket.priority?.charAt(0).toUpperCase() + ticket.priority?.slice(1)}
-                    </p>
+                    <p className="text-gray-600 mb-1">{ticket.device_category} - {ticket.device_model}</p>
+                    {ticket.imei && <p className="text-gray-600 text-sm ">IMEI: {ticket.imei}</p>}
+
                   </div>
                 </div>
 
