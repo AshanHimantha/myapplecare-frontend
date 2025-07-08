@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Alert = ({ isVisible, onClose, message, type = 'success' }) => {
   const images = {
-    success: './images/success.gif',
-    error: './images/error.gif'
+    success: '../images/success.gif',
+    error: '../images/error.gif'
   };
 
   return (

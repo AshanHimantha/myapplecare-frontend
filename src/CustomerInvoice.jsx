@@ -7,10 +7,6 @@ const CustomerInvoice = () => {
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isValidated, setIsValidated] = useState(false);
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [validationError, setValidationError] = useState("");
-  const [validating, setValidating] = useState(false);
 
   useEffect(() => {
     fetchInvoice();
@@ -32,54 +28,6 @@ const CustomerInvoice = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const validateMobileNumber = async () => {
-    if (!mobileNumber.trim()) {
-      setValidationError("Please enter your mobile number");
-      return;
-    }
-
-    // Clean the mobile number (remove spaces, dashes, etc.)
-    const cleanMobile = mobileNumber.replace(/[\s\-\(\)]/g, '');
-    
-    // Basic validation for Sri Lankan mobile numbers
-    if (cleanMobile.length < 9 || cleanMobile.length > 10) {
-      setValidationError("Please enter a valid mobile number");
-      return;
-    }
-
-    setValidating(true);
-    setValidationError("");
-
-    try {
-      // Check if the mobile number matches the invoice
-      if (invoice && invoice.contact_number) {
-        const invoiceMobile = invoice.contact_number.replace(/[\s\-\(\)]/g, '');
-        
-        // Compare the numbers (allow for different formats)
-        if (cleanMobile === invoiceMobile || 
-            cleanMobile === invoiceMobile.substring(1) || // Remove country code
-            `0${cleanMobile}` === invoiceMobile || // Add leading zero
-            cleanMobile === `94${invoiceMobile.substring(1)}`) { // Add country code
-          setIsValidated(true);
-          setValidationError("");
-        } else {
-          setValidationError("Mobile number does not match our records for this invoice");
-        }
-      } else {
-        setValidationError("Unable to validate mobile number");
-      }
-    } catch (err) {
-      setValidationError("Validation failed. Please try again.");
-    } finally {
-      setValidating(false);
-    }
-  };
-
-  const handleMobileSubmit = (e) => {
-    e.preventDefault();
-    validateMobileNumber();
   };
 
   const handlePrint = () => {
@@ -104,64 +52,6 @@ const CustomerInvoice = () => {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div><p className="text-gray-600">Loading...</p></div></div>;
   if (error) return <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4"><div className="text-center"><h1 className="text-xl font-bold text-red-600 mb-2">Error</h1><p className="text-gray-600">{error}</p></div></div>;
   if (!invoice) return <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4"><div className="text-center"><h1 className="text-xl font-bold text-gray-800 mb-2">Invoice Not Found</h1><p className="text-gray-600">No invoice found</p></div></div>;
-
-  // Show validation form if not validated
-  if (!isValidated) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 sm:p-8">
-          <div className="text-center mb-6">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <img src="/images/apple-logo.svg" alt="apple logo" className="w-8 h-8" />
-              <h1 className="text-xl font-medium">MyAppleCare</h1>
-            </div>
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Verify Your Identity</h2>
-            <p className="text-sm text-gray-600">Please enter your mobile number to view invoice #{invoiceId}</p>
-          </div>
-
-          <form onSubmit={handleMobileSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-2">
-                Mobile Number
-              </label>
-              <input
-                type="tel"
-                id="mobile"
-                value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your mobile number"
-                required
-              />
-              {validationError && (
-                <p className="mt-2 text-sm text-red-600">{validationError}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={validating}
-              className="w-full bg-black hover:bg-gray-900 disabled:bg-gray-400 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              {validating ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Validating...
-                </>
-              ) : (
-                "View Invoice"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-xs text-gray-500">
-            <p>Enter the mobile number associated with this invoice</p>
-            <p className="mt-1">Having trouble? Contact us at +94 769991183</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-4">

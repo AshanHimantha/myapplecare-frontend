@@ -130,7 +130,7 @@ const AddNewPart = ({ isOpen, onClose }) => {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Add New Part</h3>
                 <button onClick={onClose}>
-                  <img src="../images/close2.svg" alt="close" className="w-3 h-3" />
+                  <img src="./images/close2.svg" alt="close" className="w-3 h-3" />
                 </button>
               </div>
 
@@ -240,7 +240,7 @@ const AddNewPart = ({ isOpen, onClose }) => {
                         />
                         {category.icon && (
                           <img
-                            src={`http://localhost:3000/images/${category.icon}`}
+                            src={`../images/${category.icon}`}
                             className="w-4 h-4"
                             alt=""
                           />

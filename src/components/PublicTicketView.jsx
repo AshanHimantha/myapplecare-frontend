@@ -14,15 +14,13 @@ const PublicTicketView = () => {
   // Load ticket when component mounts if ID is provided
   useEffect(() => {
     if (id) {
-      setShowContactForm(true); // Show contact form first for verification
+      loadTicket();
     }
   }, [id]);
 
-  const handleLookup = async (e) => {
-    e.preventDefault();
-    
-    if (!id || !contactNumber.trim()) {
-      setError('Please enter your contact number to verify your identity');
+  const loadTicket = async () => {
+    if (!id) {
+      setError('Please provide a valid ticket ID');
       return;
     }
 
@@ -31,34 +29,32 @@ const PublicTicketView = () => {
     setTicket(null);
 
     try {
+      // Remove last 3 digits from the ID before making the API call
+      const modifiedId = id.slice(0, -3);
+      
       // Try to fetch the ticket using the existing endpoint
-      const response = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${id}`);
+      const response = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${modifiedId}`);
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
         const ticketData = data.data;
         
-        // Verify the contact number matches
-        if (ticketData.contact_number === contactNumber) {
-          setTicket(ticketData);
-          
-          // Fetch ticket items if available
-          try {
-            const itemsResponse = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${id}/items`);
-            const itemsData = await itemsResponse.json();
-            if (itemsResponse.ok && itemsData.status === 'success') {
-              setTicketItems(itemsData.data);
-            }
-          } catch (itemsErr) {
-            console.log('No items found for this ticket');
-            setTicketItems([]);
+        setTicket(ticketData);
+        
+        // Fetch ticket items if available
+        try {
+          const itemsResponse = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${modifiedId}/items`);
+          const itemsData = await itemsResponse.json();
+          if (itemsResponse.ok && itemsData.status === 'success') {
+            setTicketItems(itemsData.data);
           }
-          setShowContactForm(false); // Hide the contact form after successful verification
-        } else {
-          setError('Contact number does not match our records');
+        } catch (itemsErr) {
+          console.log('No items found for this ticket');
+          setTicketItems([]);
         }
+        setShowContactForm(false); // Hide the contact form after successful fetch
       } else if (response.status === 404) {
-        setError('Ticket not found or contact number does not match');
+        setError('Ticket not found');
       } else {
         setError('Failed to fetch ticket details. Please try again.');
       }
@@ -149,79 +145,37 @@ const PublicTicketView = () => {
       </div>
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8">
-        {(!ticket && showContactForm) ? (
+        {loading ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg shadow-sm border p-8 max-w-md mx-auto"
+            className="bg-white rounded-lg shadow-sm border p-8 max-w-md mx-auto text-center"
           >
-            <h2 className="text-xl font-semibold text-center mb-6">
-              {id ? `Verify Your Identity for Ticket #${id}` : 'Check Your Ticket Status'}
-            </h2>
-            
-            <form onSubmit={handleLookup} className="space-y-4">
-              {!id && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ticket ID
-                  </label>
-                  <input
-                    type="text"
-                    value={id || ''}
-                    readOnly
-                    placeholder="Enter your ticket ID"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              )}
-
-              {id && (
-                <div className="bg-blue-50 p-3 rounded-md text-center">
-                  <p className="text-sm text-blue-700">
-                    Looking up ticket: <span className="font-semibold">#{id}</span>
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Number
-                </label>
-                <input
-                  type="text"
-                  value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
-                  placeholder="Enter your contact number to verify"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {error && (
-                <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded">
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Searching...
-                  </>
-                ) : (
-                  'Check Status'
-                )}
-              </button>
-            </form>
+            <div className="flex items-center justify-center mb-4">
+              <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Loading Ticket</h2>
+            <p className="text-gray-600">Please wait while we fetch your ticket details...</p>
           </motion.div>
-        ) : (
+        ) : error ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-lg shadow-sm border p-8 max-w-md mx-auto text-center"
+          >
+            <div className="text-red-600 text-lg font-semibold mb-4">Error</div>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={loadTicket}
+              className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+            >
+              Try Again
+            </button>
+          </motion.div>
+        ) : ticket ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -329,6 +283,15 @@ const PublicTicketView = () => {
                 No 03, 2nd FLOOR, MC Plazza, Kurunegala
               </p>
             </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-lg shadow-sm border p-8 max-w-md mx-auto text-center"
+          >
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">No Ticket ID</h2>
+            <p className="text-gray-600">Please provide a valid ticket ID to view ticket details.</p>
           </motion.div>
         )}
       </div>

@@ -66,7 +66,8 @@ const ServicesAndParts = () => {
 
   const handleCloseAddRepairModal = () => {
     setAddRepairModalOpen(false);
-    fetchData(); // Refresh data
+    // Fetch data again to refresh the repair services list
+    fetchData();
   };
   
   // Handle edit part modal
