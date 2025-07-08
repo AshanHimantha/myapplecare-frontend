@@ -15,7 +15,11 @@ const CustomerInvoice = () => {
   const fetchInvoice = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/invoices/${invoiceId}`);
+      
+      // Remove last 3 digits from the invoice ID before making the API call
+      const modifiedInvoiceId = invoiceId.slice(0, -3);
+      
+      const response = await api.get(`/invoices/${modifiedInvoiceId}`);
       
       if (response.data.status === "success") {
         setInvoice(response.data.data);
