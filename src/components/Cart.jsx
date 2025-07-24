@@ -337,7 +337,7 @@ const Cart = ({ cartId, onClose, change }) => {
 
             <div className="flex gap-4  w-full font-semibold p-2">
               <div className="flex   w-full font-semibold p-2">
-                <div className="grid grid-cols-2 gap-4 items-start text-sm text-zinc-400 w-full">
+                <div className="grid grid-cols-3 gap-1 items-start text-sm text-zinc-400 w-full">
                   <label
                     className={`flex gap-3 justify-center items-center px-8 py-1.5 rounded-md border-2 cursor-pointer
       ${
@@ -386,6 +386,31 @@ const Cart = ({ cartId, onClose, change }) => {
                       className={`w-5 aspect-[0.95] object-contain transition-opacity
                         ${paymentMethod === "card" ? "opacity-100" : "opacity-30"}`}
                     />
+                  </label>
+
+                  <label
+                    className={`flex gap-3 justify-center items-center  py-1.5 rounded-md border-2 cursor-pointer
+      ${
+        paymentMethod === "bank_transfer"
+          ? "border-black text-black"
+          : "border-zinc-100 text-zinc-300"
+      }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="bank_transfer"
+                      checked={paymentMethod === "bank_transfer"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="hidden"
+                    />
+                    <span className="text-[10px] flex">BANK TRANSFER</span>
+                    {/* <img
+                      src="/images/cash.svg"
+                      alt="Bank Transfer"
+                      className={`w-5 aspect-[0.95] object-contain transition-opacity
+                        ${paymentMethod === "bank_transfer" ? "opacity-100" : "opacity-30"}`}
+                    /> */}
                   </label>
                 </div>
               </div>
