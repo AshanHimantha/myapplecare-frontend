@@ -368,6 +368,7 @@ const ViewTicket = () => {
                   <StatusButton
                     id={ticket?.id}
                     currentStatus={ticket?.status}
+                    imei={ticket?.imei}
                     onChange={() => setServiceChanged(true)}
                   />
 
@@ -379,6 +380,14 @@ const ViewTicket = () => {
                   </button>
                 </div>
               </div>
+              {ticket?.status === 'completed' && ticket?.payment_type && (
+                <div className="mt-2 mb-2 text-sm font-medium">
+                  {ticket.payment_type === 'cash' && 'Repair complete with cash'}
+                  {ticket.payment_type === 'credit' && 'Repair complete with credit'}
+                  {ticket.payment_type === 'account' && 'Repair complete with account'}
+                  {['cash','credit','account'].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
+                </div>
+              )}
               <div className="w-full mx-auto mt-5 overflow-x-auto">
                 <div className="min-w-[600px] border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
