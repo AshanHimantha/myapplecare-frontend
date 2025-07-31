@@ -217,11 +217,11 @@ const ViewTicket = () => {
           </div>
 
           {/* Device & Issue Information Card */}
-          <div className="w-full bg-white border border-gray-200 rounded-md mt-2 p-5">
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+          <div className="w-full bg-white border border-gray-200 rounded-md mt-2 p-2 sm:p-5">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-2 sm:gap-6 w-full overflow-auto">
               {/* Device Information */}
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
                   <img
                     src={
                       ticket?.device_category === "android"
@@ -246,7 +246,7 @@ const ViewTicket = () => {
                     <span className="text-sm font-medium text-gray-600">
                       Model:
                     </span>
-                    <span className="text-sm font-semibold text-gray-800">
+                    <span className="text-sm font-semibold text-gray-800 break-words max-w-[140px] sm:max-w-full">
                       {ticket?.device_model}
                     </span>
                   </div>
@@ -254,7 +254,7 @@ const ViewTicket = () => {
                     <span className="text-sm font-medium text-gray-600">
                       IMEI:
                     </span>
-                    <span className="text-sm font-mono text-gray-800">
+                    <span className="text-sm font-mono text-gray-800 break-words max-w-[140px] sm:max-w-full">
                       {ticket?.imei}
                     </span>
                   </div>
@@ -279,7 +279,7 @@ const ViewTicket = () => {
 
               {/* Issue & Assignment Information */}
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
                   <img
                     src="/images/repair.svg"
                     alt="issue"
@@ -366,78 +366,140 @@ const ViewTicket = () => {
                     </div>
                   </div>
 
-{ticket?.status === "completed" && (
-  <div className="py-2 px-3 bg-gray-50 rounded-md">
-    <div className="flex justify-between items-center">
-      {ticket?.payment_type ? (
-        <div className="flex items-center justify-between w-full">
-          <div className={`mt-2 mb-2 text-sm font-medium flex items-center ${ticket.payment_type === "credit" ? "text-yellow-700" : "text-green-700"}`}>
-            {ticket.payment_type === "cash" && (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
-                </svg>
-                Repair complete with cash
-              </>
-            )}
-            {ticket.payment_type === "credit" && (
-              <>
-                <span className="flex items-center mr-2 text-yellow-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                    <circle cx="10" cy="10" r="8" fill="currentColor" />
-                    <text x="10" y="14" textAnchor="middle" fontSize="10" fill="#fff">!</text>
-                  </svg>
-                </span>
-                Repair complete with credit
-              </>
-            )}
-            {ticket.payment_type === "account" && (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
-                </svg>
-                Repair complete with account
-              </>
-            )}
-            {["cash", "credit", "account"].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
-        </div>
-        {ticket.payment_type === "credit" && (
-          <div className="ml-auto">
-            <MarkAsPaidButton
-              id={ticket?.id}
-              onPaid={() => setServiceChanged(true)}
-              label="Pay"
-            />
-          </div>
-        )}
-        </div>
-      ) : (
-        <div className="flex items-center justify-between w-full">
-          <div className="mt-2 mb-2 text-sm font-medium text-yellow-700 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-              <circle cx="10" cy="10" r="8" fill="currentColor" />
-              <text x="10" y="14" textAnchor="middle" fontSize="10" fill="#fff">!</text>
-            </svg>
-            Payment Pending
-          </div>
-          <div className="ml-auto">
-            <MarkAsPaidButton
-              id={ticket?.id}
-              onPaid={() => setServiceChanged(true)}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-                  
+                  {ticket?.status === "completed" && (
+                    <div className="py-2 px-3 bg-gray-50 rounded-md">
+                      <div className="flex justify-between items-center">
+                        {ticket?.payment_type ? (
+                          <div className="flex items-center justify-between w-full">
+                            <div
+                              className={`mt-2 mb-2 text-sm font-medium flex items-center ${
+                                ticket.payment_type === "credit"
+                                  ? "text-yellow-700"
+                                  : "text-green-700"
+                              }`}
+                            >
+                              {ticket.payment_type === "cash" && (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 mr-2 text-green-500"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  Repair complete with cash
+                                </>
+                              )}
+                              {ticket.payment_type === "credit" && (
+                                <>
+                                  <span className="flex items-center mr-2 text-yellow-700">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5 mr-1 text-yellow-500"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <circle
+                                        cx="10"
+                                        cy="10"
+                                        r="8"
+                                        fill="currentColor"
+                                      />
+                                      <text
+                                        x="10"
+                                        y="14"
+                                        textAnchor="middle"
+                                        fontSize="10"
+                                        fill="#fff"
+                                      >
+                                        !
+                                      </text>
+                                    </svg>
+                                  </span>
+                                  Repair complete with credit
+                                </>
+                              )}
+                              {ticket.payment_type === "account" && (
+                                <>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 mr-2 text-green-500"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  Repair complete with account
+                                </>
+                              )}
+                              {["cash", "credit", "account"].indexOf(
+                                ticket.payment_type
+                              ) === -1 &&
+                                `Repair complete with ${ticket.payment_type}`}
+                            </div>
+                            {ticket.payment_type === "credit" && (
+                              <div className="ml-auto">
+                                <MarkAsPaidButton
+                                  id={ticket?.id}
+                                  onPaid={() => setServiceChanged(true)}
+                                  label="Pay"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between w-full">
+                            <div className="mt-2 mb-2 text-sm font-medium text-yellow-700 flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 mr-2 text-yellow-500"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <circle
+                                  cx="10"
+                                  cy="10"
+                                  r="8"
+                                  fill="currentColor"
+                                />
+                                <text
+                                  x="10"
+                                  y="14"
+                                  textAnchor="middle"
+                                  fontSize="10"
+                                  fill="#fff"
+                                >
+                                  !
+                                </text>
+                              </svg>
+                              Payment Pending
+                            </div>
+                            <div className="ml-auto">
+                              <MarkAsPaidButton
+                                id={ticket?.id}
+                                onPaid={() => setServiceChanged(true)}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="w-full flex lg:flex-row flex-col bg-white border border-gray-200 rounded-md p-5 mt-2 gap-5">
+          <div className="w-full flex lg:flex-row flex-col bg-white border border-gray-200 rounded-md p-3 sm:p-5 mt-2 gap-3 sm:gap-5">
             <div className="lg:w-4/12 w-full">
               {addItem === "parts" && isTicketModifiable() ? (
                 <Parts
@@ -493,7 +555,7 @@ const ViewTicket = () => {
               </div>
 
               <div className="w-full mx-auto mt-5 overflow-x-auto">
-                <div className="min-w-[600px] border border-gray-200 rounded-md flex flex-col justify-center">
+                <div className="w-full border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
                     <div className="w-5/12">Item</div>
                     <div className="w-1/12 text-center">Type</div>
