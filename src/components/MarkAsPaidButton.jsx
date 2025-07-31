@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import api from "../api/axios";
 
-const MarkAsPaidButton = ({ id, onPaid }) => {
+const MarkAsPaidButton = ({ id, onPaid, label = "Mark as Paid" }) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paymentType, setPaymentType] = useState("cash");
@@ -32,7 +32,7 @@ const MarkAsPaidButton = ({ id, onPaid }) => {
         onClick={() => setShowModal(true)}
         disabled={loading}
       >
-        Mark as Paid
+        {label}
       </button>
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -70,6 +70,7 @@ const MarkAsPaidButton = ({ id, onPaid }) => {
 MarkAsPaidButton.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   onPaid: PropTypes.func,
+  label: PropTypes.string,
 };
 
 export default MarkAsPaidButton;

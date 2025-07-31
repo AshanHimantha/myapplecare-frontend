@@ -194,8 +194,8 @@ const ServiceCenter = () => {
                     <div className="w-2/12">Customer</div>
                     <div className="w-1/12 text-center">Priority</div>
                     <div className="w-2/12 text-center">Contact No</div>
-                    <div className="w-1/12 text-center">Category</div>
                     <div className="w-1/12 text-center">Status</div>
+                    <div className="w-1/12 text-end">Payment</div>
                     <div className="w-1/12 text-end">Date</div>
                     <div className="w-1/12 text-center">Actions</div>
                   </div>
@@ -227,9 +227,6 @@ const ServiceCenter = () => {
                       </div>
                       <div className="w-2/12 text-center text-gray-600">
                         {ticket.contact_number}
-                      </div>
-                      <div className="w-1/12 text-center text-gray-600">
-                        {ticket.device_category}
                       </div>
                       <div className="w-1/12 text-center">
                         <span
@@ -269,6 +266,34 @@ const ServiceCenter = () => {
                             : "Cancelled"}
                         </span>
                       </div>
+                      <div className="w-1/12 text-end">
+                        {/* Payment status icon logic */}
+                        {ticket.payment_type === null ? (
+                          <span className="inline-flex items-end text-yellow-700 font-semibold" title="Payment Pending">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="#FEF3C7" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3" stroke="#F59E42" />
+                            </svg>
+                          </span>
+                        ) : ticket.payment_type === "cash" ? (
+                          <span className="inline-flex items-end text-green-700" title="Cash Payment">
+                            <img src="/images/cash.svg" alt="cash" className="h-5 w-5 mr-1" />
+                            
+                          </span>
+                        ) : ticket.payment_type === "account" ? (
+                          <span className="inline-flex items-end text-blue-700" title="Bank Payment">
+                            <img src="/images/card.svg" alt="bank" className="h-5 w-5 mr-1" />
+                            
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-end text-gray-700">
+                            <span>{ticket.payment_type}</span>
+                          </span>
+                        )}
+                      </div>
+
+
+                      
                       <div className="w-1/12 text-end text-gray-600 text-xs">
                         {ticket.created_at 
                           ? new Date(ticket.created_at).toLocaleDateString('en-US', { 

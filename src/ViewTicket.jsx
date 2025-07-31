@@ -370,14 +370,46 @@ const ViewTicket = () => {
   <div className="py-2 px-3 bg-gray-50 rounded-md">
     <div className="flex justify-between items-center">
       {ticket?.payment_type ? (
-        <div className="mt-2 mb-2 text-sm font-medium flex items-center text-green-700">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
-          </svg>
-          {ticket.payment_type === "cash" && "Repair complete with cash"}
-          {ticket.payment_type === "credit" && "Repair complete with credit"}
-          {ticket.payment_type === "account" && "Repair complete with account"}
-          {["cash", "credit", "account"].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
+        <div className="flex items-center justify-between w-full">
+          <div className={`mt-2 mb-2 text-sm font-medium flex items-center ${ticket.payment_type === "credit" ? "text-yellow-700" : "text-green-700"}`}>
+            {ticket.payment_type === "cash" && (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
+                </svg>
+                Repair complete with cash
+              </>
+            )}
+            {ticket.payment_type === "credit" && (
+              <>
+                <span className="flex items-center mr-2 text-yellow-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                    <circle cx="10" cy="10" r="8" fill="currentColor" />
+                    <text x="10" y="14" textAnchor="middle" fontSize="10" fill="#fff">!</text>
+                  </svg>
+                </span>
+                Repair complete with credit
+              </>
+            )}
+            {ticket.payment_type === "account" && (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
+                </svg>
+                Repair complete with account
+              </>
+            )}
+            {["cash", "credit", "account"].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
+        </div>
+        {ticket.payment_type === "credit" && (
+          <div className="ml-auto">
+            <MarkAsPaidButton
+              id={ticket?.id}
+              onPaid={() => setServiceChanged(true)}
+              label="Pay"
+            />
+          </div>
+        )}
         </div>
       ) : (
         <div className="flex items-center justify-between w-full">
