@@ -7,6 +7,7 @@ import Parts from "./components/Parts";
 import Repair from "./components/Repair";
 import TicketItem from "./components/TicketItem";
 import StatusButton from "./components/StatusButton";
+import MarkAsPaidButton from "./components/MarkAsPaidButton";
 import ThermalPrintTicket from "./components/ThermalPrintTicket";
 
 const ViewTicket = () => {
@@ -53,12 +54,12 @@ const ViewTicket = () => {
       // Handle unassigning (setting to null)
       userId = null;
     }
-    
+
     try {
       const response = await api.patch(`/tickets/${id}`, {
-        repaired_by: userId
+        repaired_by: userId,
       });
-      
+
       if (response.data.status === "success") {
         setServiceChanged(true); // This will trigger a refresh of ticket data
       }
@@ -73,7 +74,6 @@ const ViewTicket = () => {
         const response = await api.get(`/tickets/${id}`);
         if (response.data.status === "success") {
           setTicket(response.data.data);
-          
         }
       } catch (err) {
         console.error("Failed to fetch ticket:", err);
@@ -85,12 +85,14 @@ const ViewTicket = () => {
     const fetchUsers = async () => {
       try {
         setLoadingUsers(true);
-        const response = await api.get('/users');
+        const response = await api.get("/users");
         if (response.data) {
           const allUsers = response.data.data || [];
           // Filter users to only include those with 'technician' role
-          const technicians = allUsers.filter(user => 
-            user.roles && user.roles.some(role => role.name === 'technician')
+          const technicians = allUsers.filter(
+            (user) =>
+              user.roles &&
+              user.roles.some((role) => role.name === "technician")
           );
           setUsers(technicians);
         }
@@ -110,7 +112,7 @@ const ViewTicket = () => {
       try {
         setItemsLoading(true);
         const response = await api.get(`/tickets/${id}/items`);
-      
+
         if (response.data.status === "success") {
           setTicketItems(response.data.data);
         }
@@ -128,7 +130,6 @@ const ViewTicket = () => {
   }, [id, itemChanged]);
 
   const handleDeleteItem = async (itemId) => {
-
     try {
       const response = await api.delete(`/ticket-items/${itemId}`);
       if (response.data.status === "success") {
@@ -179,7 +180,7 @@ const ViewTicket = () => {
   return (
     <>
       <ServiceCenterNav />
-      <ThermalPrintTicket 
+      <ThermalPrintTicket
         isOpen={printModalOpen}
         onClose={() => setPrintModalOpen(false)}
         ticket={ticket}
@@ -198,12 +199,11 @@ const ViewTicket = () => {
                   onClick={() => window.history.back()}
                 />
                 <div>
-                <div className="text-start">Ticket #{id}</div>
-                <div className="text-start font-normal text-xs">
-                  {new Date(ticket?.created_at).toLocaleString()}
+                  <div className="text-start">Ticket #{id}</div>
+                  <div className="text-start font-normal text-xs">
+                    {new Date(ticket?.created_at).toLocaleString()}
+                  </div>
                 </div>
-                </div>
-
               </div>
             </div>
             <div className="flex p-2 px-5 text-black lg:text-xl text-sm font-medium flex-col items-end justify-center">
@@ -223,7 +223,11 @@ const ViewTicket = () => {
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center">
                   <img
-                    src={ticket?.device_category === 'android' ? '/images/androidIcon.svg' : '/images/iphoneIcon.svg'}
+                    src={
+                      ticket?.device_category === "android"
+                        ? "/images/androidIcon.svg"
+                        : "/images/iphoneIcon.svg"
+                    }
                     alt="device"
                     className="w-5 h-5 mr-2"
                   />
@@ -231,26 +235,42 @@ const ViewTicket = () => {
                 </h3>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600">Category:</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      Category:
+                    </span>
                     <span className="text-sm capitalize bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                       {ticket?.device_category}
                     </span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600">Model:</span>
-                    <span className="text-sm font-semibold text-gray-800">{ticket?.device_model}</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      Model:
+                    </span>
+                    <span className="text-sm font-semibold text-gray-800">
+                      {ticket?.device_model}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600">IMEI:</span>
-                    <span className="text-sm font-mono text-gray-800">{ticket?.imei}</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      IMEI:
+                    </span>
+                    <span className="text-sm font-mono text-gray-800">
+                      {ticket?.imei}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600">Priority:</span>
-                    <span className={`text-sm px-2 py-1 rounded-full font-medium ${
-                      ticket?.priority === 'high' ? 'bg-red-100 text-red-800' :
-                      ticket?.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+                    <span className="text-sm font-medium text-gray-600">
+                      Priority:
+                    </span>
+                    <span
+                      className={`text-sm px-2 py-1 rounded-full font-medium ${
+                        ticket?.priority === "high"
+                          ? "bg-red-100 text-red-800"
+                          : ticket?.priority === "medium"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {ticket?.priority?.toUpperCase()}
                     </span>
                   </div>
@@ -269,22 +289,34 @@ const ViewTicket = () => {
                 </h3>
                 <div className="space-y-2">
                   <div className="py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600 block mb-1">Issue Description:</span>
-                    <p className="text-sm text-gray-800 leading-relaxed">{ticket?.issue}</p>
+                    <span className="text-sm font-medium text-gray-600 block mb-1">
+                      Issue Description:
+                    </span>
+                    <p className="text-md text-blackeading-relaxed">
+                      {ticket?.issue}
+                    </p>
                   </div>
-                  
+
                   {/* Assigned User */}
                   <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md">
-                    <span className="text-sm font-medium text-gray-600">Ticket Created by:</span>
+                    <span className="text-sm font-medium text-gray-600">
+                      Ticket Created by:
+                    </span>
                     <div className="text-right">
                       {ticket?.user ? (
                         <>
-                          <div className="text-sm font-semibold text-gray-800">{ticket.user.name}</div>
-                          <div className="text-xs text-gray-500">{ticket.user.email}</div>
+                          <div className="text-sm font-semibold text-gray-800">
+                            {ticket.user.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {ticket.user.email}
+                          </div>
                         </>
                       ) : (
                         <div className="text-sm text-orange-600 font-medium">
-                          <span className="bg-orange-100 px-2 py-1 rounded-full">Not Assigned</span>
+                          <span className="bg-orange-100 px-2 py-1 rounded-full">
+                            Not Assigned
+                          </span>
                         </div>
                       )}
                     </div>
@@ -294,18 +326,24 @@ const ViewTicket = () => {
                   <div className="py-2 px-3 bg-gray-50 rounded-md">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600">
-                        {ticket?.status === "completed" ? "Repaired by:" : "Assign Repairer:"}
+                        {ticket?.status === "completed"
+                          ? "Repaired by:"
+                          : "Assign Repairer:"}
                       </span>
                       <div className="flex items-center space-x-2">
                         {ticket?.status !== "completed" && (
                           <select
-                            value={ticket?.repaired_by?.id || ''}
-                            onChange={(e) => handleAssignRepairer(e.target.value)}
+                            value={ticket?.repaired_by?.id || ""}
+                            onChange={(e) =>
+                              handleAssignRepairer(e.target.value)
+                            }
                             className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[80px] max-w-32"
                             disabled={loadingUsers}
                           >
                             <option value="">
-                              {loadingUsers ? 'Loading...' : 'Select Technician'}
+                              {loadingUsers
+                                ? "Loading..."
+                                : "Select Technician"}
                             </option>
                             {users.map((user) => (
                               <option key={user.id} value={user.id}>
@@ -316,14 +354,52 @@ const ViewTicket = () => {
                         )}
                         {ticket?.repaired_by && (
                           <div className="text-right mr-2">
-                            <div className="text-sm font-semibold text-green-800">{ticket.repaired_by.name}</div>
-                            <div className="text-xs text-green-600">{ticket.repaired_by.email}</div>
+                            <div className="text-sm font-semibold text-green-800">
+                              {ticket.repaired_by.name}
+                            </div>
+                            <div className="text-xs text-green-600">
+                              {ticket.repaired_by.email}
+                            </div>
                           </div>
                         )}
-                       
                       </div>
                     </div>
                   </div>
+
+{ticket?.status === "completed" && (
+  <div className="py-2 px-3 bg-gray-50 rounded-md">
+    <div className="flex justify-between items-center">
+      {ticket?.payment_type ? (
+        <div className="mt-2 mb-2 text-sm font-medium flex items-center text-green-700">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd" />
+          </svg>
+          {ticket.payment_type === "cash" && "Repair complete with cash"}
+          {ticket.payment_type === "credit" && "Repair complete with credit"}
+          {ticket.payment_type === "account" && "Repair complete with account"}
+          {["cash", "credit", "account"].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
+        </div>
+      ) : (
+        <div className="flex items-center justify-between w-full">
+          <div className="mt-2 mb-2 text-sm font-medium text-yellow-700 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="10" r="8" fill="currentColor" />
+              <text x="10" y="14" textAnchor="middle" fontSize="10" fill="#fff">!</text>
+            </svg>
+            Payment Pending
+          </div>
+          <div className="ml-auto">
+            <MarkAsPaidButton
+              id={ticket?.id}
+              onPaid={() => setServiceChanged(true)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+                  
                 </div>
               </div>
             </div>
@@ -349,14 +425,17 @@ const ViewTicket = () => {
                     }
                   }}
                   selectedItem={addItem}
-                  handleServiceSubmit={isTicketModifiable() ? handleServiceSubmit : null}
+                  handleServiceSubmit={
+                    isTicketModifiable() ? handleServiceSubmit : null
+                  }
                   disabled={!isTicketModifiable()}
                 />
               )}
-              
+
               {ticket?.status === "completed" && (
                 <div className="mt-4 p-3 bg-yellow-50 text-yellow-800 rounded-md text-sm">
-                  This ticket is marked as completed. Adding parts, repairs, or service charges is disabled.
+                  This ticket is marked as completed. Adding parts, repairs, or
+                  service charges is disabled.
                 </div>
               )}
             </div>
@@ -372,7 +451,7 @@ const ViewTicket = () => {
                     onChange={() => setServiceChanged(true)}
                   />
 
-                  <button 
+                  <button
                     className="text-xs macBlueButton text-white px-2 py-1 rounded-md"
                     onClick={() => setPrintModalOpen(true)}
                   >
@@ -380,14 +459,7 @@ const ViewTicket = () => {
                   </button>
                 </div>
               </div>
-              {ticket?.status === 'completed' && ticket?.payment_type && (
-                <div className="mt-2 mb-2 text-sm font-medium">
-                  {ticket.payment_type === 'cash' && 'Repair complete with cash'}
-                  {ticket.payment_type === 'credit' && 'Repair complete with credit'}
-                  {ticket.payment_type === 'account' && 'Repair complete with account'}
-                  {['cash','credit','account'].indexOf(ticket.payment_type) === -1 && `Repair complete with ${ticket.payment_type}`}
-                </div>
-              )}
+
               <div className="w-full mx-auto mt-5 overflow-x-auto">
                 <div className="min-w-[600px] border border-gray-200 rounded-md flex flex-col justify-center">
                   <div className="flex font-semibold text-xs p-3">
@@ -409,7 +481,9 @@ const ViewTicket = () => {
                       <TicketItem
                         key={item.id}
                         item={item}
-                        onDelete={isTicketModifiable() ? handleDeleteItem : null}
+                        onDelete={
+                          isTicketModifiable() ? handleDeleteItem : null
+                        }
                       />
                     ))
                   )}
