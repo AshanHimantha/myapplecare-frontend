@@ -13,7 +13,7 @@ const TicketItem = ({ item, onDelete }) => {
   
   const unitPrice = isPart 
     ? item?.part?.selling_price 
-    : item?.repair?.cost;
+    : item?.repair?.selling_price;
     
   const quantity = isPart ? item?.quantity : 1;
   const total = parseFloat(unitPrice || 0) * quantity;

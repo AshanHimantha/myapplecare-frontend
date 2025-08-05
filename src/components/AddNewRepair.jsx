@@ -8,6 +8,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
     repair_name: '',
     device_category: '',
     cost: '',
+    selling_price: '',
     description: ''
   });
   const [showAlert, setShowAlert] = useState(false);
@@ -22,6 +23,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
         repair_name: repairDetails.repair_name,
         device_category: repairDetails.device_category.toLowerCase(),
         cost: parseFloat(repairDetails.cost),
+        selling_price: parseFloat(repairDetails.selling_price),
         description: repairDetails.description
       };
 
@@ -33,6 +35,7 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
           repair_name: '',
           device_category: '',
           cost: '',
+          selling_price: '',
           description: ''
         });
         setTimeout(() => {
@@ -135,6 +138,18 @@ const AddNewRepair = ({ isOpen, onClose, onSubmit }) => {
                     onChange={(e) => setRepairDetails({...repairDetails, cost: e.target.value})}
                     className="mt-1 w-full px-3 py-1 border border-gray-200 rounded-md placeholder:text-gray-300 placeholder:text-xs"
                     placeholder="Enter Cost"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700">Selling Price</label>
+                  <input
+                    type="number"
+                    value={repairDetails.selling_price}
+                    onChange={(e) => setRepairDetails({...repairDetails, selling_price: e.target.value})}
+                    className="mt-1 w-full px-3 py-1 border border-gray-200 rounded-md placeholder:text-gray-300 placeholder:text-xs"
+                    placeholder="Enter Selling Price"
                     required
                   />
                 </div>

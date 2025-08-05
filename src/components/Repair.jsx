@@ -120,7 +120,7 @@ const Repair = ({ onBack, onRepairAdd }) => {
                       {repair.repair_name}
                     </div>
                     <div className="text-sm font-medium mt-1 text-gray-700">
-                      {repair.cost} LKR
+                      {repair.selling_price} LKR
                     </div>
 
                   </div>

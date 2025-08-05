@@ -7,6 +7,7 @@ const EditRepair = ({ isOpen, onClose, repair }) => {
     repair_name: repair.repair_name,
     device_category: repair.device_category,
     cost: repair.cost,
+    selling_price: repair.selling_price || '',
     description: repair.description || ''
   });
   const [showAlert, setShowAlert] = useState(false);
@@ -26,10 +27,16 @@ const EditRepair = ({ isOpen, onClose, repair }) => {
     if (!repairDetails.repair_name) newErrors.repair_name = 'Repair name is required';
     if (!repairDetails.device_category) newErrors.device_category = 'Device category is required';
     if (!repairDetails.cost) newErrors.cost = 'Cost is required';
+    if (!repairDetails.selling_price) newErrors.selling_price = 'Selling price is required';
     
     // Cost validation
     if (parseFloat(repairDetails.cost) <= 0) {
       newErrors.cost = 'Cost must be greater than zero';
+    }
+
+    // Selling price validation
+    if (parseFloat(repairDetails.selling_price) <= 0) {
+      newErrors.selling_price = 'Selling price must be greater than zero';
     }
   
     setErrors(newErrors);
@@ -50,6 +57,7 @@ const EditRepair = ({ isOpen, onClose, repair }) => {
         repair_name: repairDetails.repair_name,
         device_category: repairDetails.device_category.toLowerCase(),
         cost: repairDetails.cost,
+        selling_price: repairDetails.selling_price,
         description: repairDetails.description?.trim() || null
       });
       
@@ -130,6 +138,20 @@ const EditRepair = ({ isOpen, onClose, repair }) => {
                 className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.cost && <p className="text-red-500 text-xs mt-1">{errors.cost}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (Rs.)</label>
+              <input
+                type="number"
+                name="selling_price"
+                value={repairDetails.selling_price}
+                onChange={handleChange}
+                step="0.01"
+                min="0"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.selling_price && <p className="text-red-500 text-xs mt-1">{errors.selling_price}</p>}
             </div>
           </div>
           

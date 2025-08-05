@@ -63,7 +63,7 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
         // Create an array of promises for parallel requests
         const promises = [
           api.get(
-            `/dashboard/service-metrics?start_date=${startDateStr}&end_date=${endDateStr}`
+            `/dashboard/service-metrics?start_date=${startDateStr}&end_date=${endDateStr}&center_id=${centerId}`
           ),
           api.get("/dashboard/ticket-charts"),
         ];
@@ -149,15 +149,10 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
   const getMetricValue = (metricKey) => {
     if (!metrics) return 0;
 
-    // Handle nested properties like repair_stats.total_repairs
-    if (metricKey.includes(".")) {
-      const [parentKey, childKey] = metricKey.split(".");
-      if (!metrics[parentKey]) return 0;
-      return Number(metrics[parentKey][childKey] || 0);
-    }
-
-    // For regular properties
-    return Number(metrics[metricKey] || 0);
+    // For regular properties, convert string numbers to actual numbers
+    const value = metrics[metricKey];
+    if (value === null || value === undefined) return 0;
+    return Number(value);
   };
 
   // Data for ticket status chart
@@ -319,7 +314,7 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <SummaryCard
           title="Total Tickets"
           value={metrics.total_tickets}
@@ -344,11 +339,19 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
         />
         <SummaryCard
           title="Repairs"
-          value={getMetricValue("repair_stats.total_repairs")}
+          value={getMetricValue("total_repairs_performed")}
           icon={<WrenchScrewdriverIcon className="h-6 w-6 text-amber-600" />}
           subtext={`Rs.${getMetricValue(
             "repair_revenue"
           ).toLocaleString()} revenue`}
+        />
+        <SummaryCard
+          title="Parts Used"
+          value={getMetricValue("total_parts_used")}
+          icon={<CubeIcon className="h-6 w-6 text-indigo-600" />}
+          subtext={`Rs.${getMetricValue(
+            "parts_profit"
+          ).toLocaleString()} profit`}
         />
       </div>
 
@@ -410,7 +413,7 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
                         );
                         const percentage =
                           total > 0 ? Math.round((value / total) * 100) : 0;
-                        return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                        return `${label}: Rs.${value.toLocaleString()} (${percentage}%)`;
                       },
                     },
                   },
@@ -439,10 +442,7 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
                         label += ": ";
                       }
                       if (context.parsed.y !== null) {
-                        label += new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        }).format(context.parsed.y);
+                        label += "Rs." + new Intl.NumberFormat("en-US").format(context.parsed.y);
                       }
                       return label;
                     },

@@ -147,7 +147,7 @@ const ViewTicket = () => {
       if (item.type === "part") {
         return sum + parseFloat(item.part.selling_price) * item.quantity;
       } else {
-        return sum + parseFloat(item.repair.cost);
+        return sum + parseFloat(item.repair.selling_price);
       }
     }, 0);
 
