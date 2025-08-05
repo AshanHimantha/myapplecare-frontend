@@ -2,12 +2,7 @@
 import axios from 'axios';
 import useAuthStore from '../stores/authStore';
 
-// Debug environment variables
-console.log('Environment variables debug:', {
-  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
-  REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
-  NODE_ENV: process.env.NODE_ENV
-});
+
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'https://systemapi.1000dtechnology.com/api',

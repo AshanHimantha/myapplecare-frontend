@@ -89,7 +89,11 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
 
   // Helper function to format date for API
   const formatDateForAPI = (date) => {
-    return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD format
+    // Use local date formatting to avoid timezone issues
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Helper to set predefined date ranges
@@ -152,7 +156,10 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
     // For regular properties, convert string numbers to actual numbers
     const value = metrics[metricKey];
     if (value === null || value === undefined) return 0;
-    return Number(value);
+    
+    // Handle string numbers and regular numbers
+    const numValue = typeof value === 'string' ? parseFloat(value) : Number(value);
+    return isNaN(numValue) ? 0 : numValue;
   };
 
   // Data for ticket status chart
@@ -161,9 +168,9 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
     datasets: [
       {
         data: [
-          metrics.open_tickets || 0,
-          metrics.in_progress_tickets || 0,
-          metrics.completed_tickets || 0,
+          getMetricValue('open_tickets'),
+          getMetricValue('in_progress_tickets'),
+          getMetricValue('completed_tickets'),
         ],
         backgroundColor: [
           "rgba(255, 159, 64, 0.7)", // orange
@@ -187,9 +194,9 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       {
         label: "Revenue Breakdown",
         data: [
-          Number(metrics.service_revenue || 0),
-          Number(metrics.repair_revenue || 0),
-          Number(metrics.parts_revenue || 0),
+          getMetricValue("service_revenue"),
+          getMetricValue("repair_revenue"),
+          getMetricValue("parts_revenue"),
         ],
         backgroundColor: [
           "rgba(54, 162, 235, 0.7)", // blue
@@ -213,8 +220,8 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       {
         label: "Service",
         data: [
-          Number(metrics.service_revenue_month || 0),
-          Number(metrics.service_revenue_year || 0),
+          getMetricValue("service_revenue_month"),
+          getMetricValue("service_revenue_year"),
         ],
         backgroundColor: "rgba(54, 162, 235, 0.7)",
         borderColor: "rgb(54, 162, 235)",
@@ -223,8 +230,8 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       {
         label: "Repairs",
         data: [
-          Number(metrics.repair_revenue_month || 0),
-          Number(metrics.repair_revenue_year || 0),
+          getMetricValue("repair_revenue_month"),
+          getMetricValue("repair_revenue_year"),
         ],
         backgroundColor: "rgba(75, 192, 192, 0.7)",
         borderColor: "rgb(75, 192, 192)",
@@ -233,8 +240,8 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       {
         label: "Parts",
         data: [
-          Number(metrics.parts_revenue_month || 0),
-          Number(metrics.parts_revenue_year || 0),
+          getMetricValue("parts_revenue_month"),
+          getMetricValue("parts_revenue_year"),
         ],
         backgroundColor: "rgba(255, 159, 64, 0.7)",
         borderColor: "rgb(255, 159, 64)",
@@ -317,23 +324,19 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <SummaryCard
           title="Total Tickets"
-          value={metrics.total_tickets}
+          value={getMetricValue('total_tickets')}
           icon={<TicketIcon className="h-6 w-6 text-blue-600" />}
-          subtext={`${metrics.completed_tickets} tickets completed`}
+          subtext={`${getMetricValue('completed_tickets')} tickets completed`}
         />
         <SummaryCard
           title="Total Revenue"
-          value={`Rs.${getMetricValue(
-            "total_service_revenue"
-          ).toLocaleString()}`}
+          value={`Rs.${getMetricValue("total_service_revenue").toLocaleString()}`}
           icon={<CurrencyDollarIcon className="h-6 w-6 text-green-600" />}
           subtext={`Based on data from ${getDateRangeText()}`}
         />
         <SummaryCard
           title="Total Profit"
-          value={`Rs.${getMetricValue(
-            "total_service_profit"
-          ).toLocaleString()}`}
+          value={`Rs.${getMetricValue("total_service_profit").toLocaleString()}`}
           icon={<ShieldCheckIcon className="h-6 w-6 text-purple-600" />}
           subtext={`From service, repairs, and parts`}
         />
@@ -341,17 +344,13 @@ const ServiceCenterDashboard = ({ onBack, centerId }) => {
           title="Repairs"
           value={getMetricValue("total_repairs_performed")}
           icon={<WrenchScrewdriverIcon className="h-6 w-6 text-amber-600" />}
-          subtext={`Rs.${getMetricValue(
-            "repair_revenue"
-          ).toLocaleString()} revenue`}
+          subtext={`Rs.${getMetricValue("repair_revenue").toLocaleString()} revenue`}
         />
         <SummaryCard
           title="Parts Used"
           value={getMetricValue("total_parts_used")}
           icon={<CubeIcon className="h-6 w-6 text-indigo-600" />}
-          subtext={`Rs.${getMetricValue(
-            "parts_profit"
-          ).toLocaleString()} profit`}
+          subtext={`Rs.${getMetricValue("parts_profit").toLocaleString()} profit`}
         />
       </div>
 
