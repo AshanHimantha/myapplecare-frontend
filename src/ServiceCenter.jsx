@@ -18,6 +18,7 @@ const ServiceCenter = () => {
   const [hasMore, setHasMore] = useState(true);
   const [status, setStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPerPage, setCurrentPerPage] = useState(20);
   const containerRef = useRef(null);
   const PER_PAGE = 20;
 
@@ -48,27 +49,35 @@ const ServiceCenter = () => {
     setStatus(apiStatus);
     setPage(1); // Reset to first page
     setTickets([]); // Clear existing tickets
+    setCurrentPerPage(20); // Reset per_page to default
   };
 
   const fetchTickets = useCallback(
-    async (pageNum) => {
+    async (pageNum, perPageLimit = currentPerPage) => {
       try {
         setLoading(true);
+        // Request one more than we need to check if there are more records
+        const requestAmount = perPageLimit + 1;
         const response = await api.get(`/tickets-filter`, {
           params: {
             page: pageNum,
-            per_page: PER_PAGE,
+            per_page: requestAmount,
             status: status === "all" ? "" : status,
           },
         });
 
         if (response.data.status === "success") {
+          const hasMoreRecords = response.data.data.length > perPageLimit;
+          const ticketsToShow = hasMoreRecords 
+            ? response.data.data.slice(0, perPageLimit)
+            : response.data.data;
+
           if (pageNum === 1) {
-            setTickets(response.data.data);
+            setTickets(ticketsToShow);
           } else {
-            setTickets((prev) => [...prev, ...response.data.data]);
+            setTickets((prev) => [...prev, ...ticketsToShow]);
           }
-          setHasMore(response.data.data.length === PER_PAGE);
+          setHasMore(hasMoreRecords);
         }
       } catch (err) {
         console.error("Failed to fetch tickets:", err);
@@ -76,13 +85,14 @@ const ServiceCenter = () => {
         setLoading(false);
       }
     },
-    [status]
-  ); // Add status as dependency
+    [status, currentPerPage]
+  ); // Add currentPerPage as dependency
 
   const handleSearch = useCallback(
     debounce(async (term) => {
       if (!term.trim()) {
-        fetchTickets(1);
+        setCurrentPerPage(20); // Reset per_page when clearing search
+        fetchTickets(1, 20);
         return;
       }
 
@@ -132,23 +142,23 @@ const ServiceCenter = () => {
     }
   };
 
+  const handleLoadMore = () => {
+    const newPerPage = currentPerPage + 20;
+    setCurrentPerPage(newPerPage);
+    fetchTickets(1, newPerPage);
+  };
+
   useEffect(() => {
     setPage(1);
-    fetchTickets(1);
-  }, [status, fetchTickets]);
+    setCurrentPerPage(20); // Reset per_page when status changes
+    fetchTickets(1, 20);
+  }, [status]);
 
   useEffect(() => {
     if (page > 1) {
       fetchTickets(page);
     }
   }, [page, fetchTickets]);
-
-  const handleScroll = (e) => {
-    const { scrollTop, clientHeight, scrollHeight } = e.target;
-    if (scrollHeight - scrollTop <= clientHeight * 1.5 && !loading && hasMore) {
-      setPage((prev) => prev + 1);
-    }
-  };
 
   const drawerVariants = {
     hidden: { x: "100%" },
@@ -160,7 +170,6 @@ const ServiceCenter = () => {
       <div className="w-full lg:h-screen flex justify-center  overflow-hidden hide-scrollbar">
         <div
           ref={containerRef}
-          onScroll={handleScroll}
           className="lg:w-3/4 w-full h-full overflow-auto hide-scrollbar flex flex-col items-center "
         >
           <div className="w-11/12 overflow-auto hide-scrollbar">
@@ -325,6 +334,18 @@ const ServiceCenter = () => {
                       </div>
                     </div>
                   ))}
+
+                  {/* Load More Button */}
+                  {!loading && !searchTerm && hasMore && (
+                    <div className="flex justify-center p-4 border-t">
+                      <button
+                        onClick={handleLoadMore}
+                        className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors font-medium"
+                      >
+                        Load More
+                      </button>
+                    </div>
+                  )}
 
                   {loading && (
                     <div className="text-center py-4">
