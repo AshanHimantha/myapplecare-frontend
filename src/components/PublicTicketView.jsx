@@ -110,7 +110,7 @@ const PublicTicketView = () => {
       if (item.type === 'part') {
         return sum + parseFloat(item.part?.selling_price || 0) * parseInt(item.quantity || 1);
       } else if (item.type === 'repair') {
-        return sum + parseFloat(item.repair?.cost || 0);
+        return sum + parseFloat(item.repair?.selling_price || 0);
       }
       return sum;
     }, 0);
@@ -250,7 +250,7 @@ const PublicTicketView = () => {
                           <p className="font-medium">
                             {item.type === 'part' 
                               ? (parseFloat(item.part?.selling_price || 0) * parseInt(item.quantity || 1)).toLocaleString()
-                              : parseFloat(item.repair?.cost || 0).toLocaleString()
+                              : parseFloat(item.repair?.selling_price || 0).toLocaleString()
                             } LKR
                           </p>
                         </div>
