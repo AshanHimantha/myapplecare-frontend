@@ -1,0 +1,40 @@
+name: Deploy Vite React App to Hostinger
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Create .env file using secrets
+      - name: Create .env file
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> .env
+          echo "VITE_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Vite project
+        run: npm run build
+
+      - name: Deploy via FTP to Hostinger
+        uses: samkirkland/ftp-deploy-action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/
+          server-dir: /
