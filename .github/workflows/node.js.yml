@@ -1,4 +1,4 @@
-name: Deploy Vite React App to Hostinger
+name: Deploy React App to Hostinger
 
 on:
   push:
@@ -21,13 +21,18 @@ jobs:
       # Create .env file using secrets
       - name: Create .env file
         run: |
-          echo "VITE_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> .env
-          echo "VITE_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
+          echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> .env
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
+          echo "CI=false" >> .env
+          echo "GENERATE_SOURCEMAP=false" >> .env
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build Vite project
+      - name: Build React project
+        env:
+          CI: false
+          GENERATE_SOURCEMAP: false
         run: npm run build
 
       - name: Deploy via FTP to Hostinger
@@ -36,5 +41,5 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/
+          local-dir: build/
           server-dir: /

@@ -8,10 +8,6 @@ const CustomerInvoice = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchInvoice();
-  }, [invoiceId, fetchInvoice]);
-
   const fetchInvoice = useCallback(async () => {
     try {
       setLoading(true);
@@ -33,6 +29,10 @@ const CustomerInvoice = () => {
       setLoading(false);
     }
   }, [invoiceId]);
+
+  useEffect(() => {
+    fetchInvoice();
+  }, [fetchInvoice]);
 
   const handlePrint = () => {
     window.print();
