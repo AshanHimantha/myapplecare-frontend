@@ -3,7 +3,7 @@ name: Deploy Vite React App to Hostinger
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
