@@ -203,13 +203,12 @@ const PublicTicketView = () => {
                   <div>
                     <h3 className="font-medium text-gray-700 mb-2">Customer Information</h3>
                     <p className="text-gray-600">{ticket.first_name} {ticket.last_name}</p>
-                    <p className="text-gray-600">{ticket.contact_number}</p>
+                    
                   </div>
 
                   <div>
                     <h3 className="font-medium text-gray-700 mb-2">Device Information</h3>
                     <p className="text-gray-600 mb-1">{ticket.device_category} - {ticket.device_model}</p>
-                    {ticket.imei && <p className="text-gray-600 text-sm ">IMEI: {ticket.imei}</p>}
 
                   </div>
                 </div>
