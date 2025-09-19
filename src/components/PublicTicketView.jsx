@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import api from '../api/axios';
 
 const PublicTicketView = () => {
   const { id } = useParams();
@@ -11,12 +12,61 @@ const PublicTicketView = () => {
 
   // Load ticket when component mounts if ID is provided
   useEffect(() => {
+    const loadTicket = async () => {
+      if (!id) {
+        setError('Please provide a valid ticket ID');
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+      setTicket(null);
+
+      try {
+        // Remove last 3 digits from the ID before making the API call
+        const modifiedId = id.slice(0, -3);
+        
+        // Try to fetch the ticket using the existing endpoint
+        const response = await api.get(`/tickets/${modifiedId}`);
+        const data = response.data;
+
+        if (data.status === 'success') {
+          const ticketData = data.data;
+          
+          setTicket(ticketData);
+          
+          // Fetch ticket items if available
+          try {
+            const itemsResponse = await api.get(`/tickets/${modifiedId}/items`);
+            const itemsData = itemsResponse.data;
+            if (itemsData.status === 'success') {
+              setTicketItems(itemsData.data);
+            }
+          } catch (itemsErr) {
+            console.log('No items found for this ticket');
+            setTicketItems([]);
+          }
+        } else {
+          setError('Failed to fetch ticket details. Please try again.');
+        }
+      } catch (err) {
+        console.error('Error fetching ticket:', err);
+        if (err.response?.status === 404) {
+          setError('Ticket not found');
+        } else {
+          setError('Failed to fetch ticket details. Please try again.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
       loadTicket();
     }
-  }, [id, loadTicket]);
+  }, [id]);
 
-  const loadTicket = useCallback(async () => {
+  const retryLoadTicket = () => {
     if (!id) {
       setError('Please provide a valid ticket ID');
       return;
@@ -26,42 +76,48 @@ const PublicTicketView = () => {
     setError('');
     setTicket(null);
 
-    try {
-      // Remove last 3 digits from the ID before making the API call
-      const modifiedId = id.slice(0, -3);
-      
-      // Try to fetch the ticket using the existing endpoint
-      const response = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${modifiedId}`);
-      const data = await response.json();
+    const loadTicket = async () => {
+      try {
+        // Remove last 3 digits from the ID before making the API call
+        const modifiedId = id.slice(0, -3);
+        
+        // Try to fetch the ticket using the existing endpoint
+        const response = await api.get(`/tickets/${modifiedId}`);
+        const data = response.data;
 
-      if (response.ok && data.status === 'success') {
-        const ticketData = data.data;
-        
-        setTicket(ticketData);
-        
-        // Fetch ticket items if available
-        try {
-          const itemsResponse = await fetch(`https://systemapi.1000dtechnology.com/api/tickets/${modifiedId}/items`);
-          const itemsData = await itemsResponse.json();
-          if (itemsResponse.ok && itemsData.status === 'success') {
-            setTicketItems(itemsData.data);
+        if (data.status === 'success') {
+          const ticketData = data.data;
+          
+          setTicket(ticketData);
+          
+          // Fetch ticket items if available
+          try {
+            const itemsResponse = await api.get(`/tickets/${modifiedId}/items`);
+            const itemsData = itemsResponse.data;
+            if (itemsData.status === 'success') {
+              setTicketItems(itemsData.data);
+            }
+          } catch (itemsErr) {
+            console.log('No items found for this ticket');
+            setTicketItems([]);
           }
-        } catch (itemsErr) {
-          console.log('No items found for this ticket');
-          setTicketItems([]);
+        } else {
+          setError('Failed to fetch ticket details. Please try again.');
         }
-      } else if (response.status === 404) {
-        setError('Ticket not found');
-      } else {
-        setError('Failed to fetch ticket details. Please try again.');
+      } catch (err) {
+        console.error('Error fetching ticket:', err);
+        if (err.response?.status === 404) {
+          setError('Ticket not found');
+        } else {
+          setError('Failed to fetch ticket details. Please try again.');
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching ticket:', err);
-      setError('Failed to fetch ticket details. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+    };
+
+    loadTicket();
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -145,7 +201,7 @@ const PublicTicketView = () => {
             <div className="text-red-600 text-lg font-semibold mb-4">Error</div>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
-              onClick={loadTicket}
+              onClick={retryLoadTicket}
               className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
             >
               Try Again
