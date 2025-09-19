@@ -3,7 +3,6 @@ import "./index.css";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "./stores/authStore";
 import ChooseStore from "./components/ChooseStore";
-import api from "./api/axios";
 
 
 const Login = () => {
@@ -22,7 +21,7 @@ useEffect(() => {
   }else {
     navigate(redirectPath);
   }
-},[]);
+},[getRedirectPath, navigate]);
 
 
   const handleSubmit = async (e) => {
@@ -89,7 +88,7 @@ useEffect(() => {
       </h1>
 
       {/* Form */}
-      {choose == false ? (
+      {choose === false ? (
         <div className="w-full max-w-sm rounded-lg p-6">
           <div className="w-full text-center mb-1">
             <span className="text-red-500">{message}</span>
@@ -99,7 +98,7 @@ useEffect(() => {
           <div>
             <label
               className={
-                message == null
+                message === null
                   ? "block text-gray-300 text-xs font-medium absolute ml-3 mt-2"
                   : "block text-red-500 text-xs font-medium absolute ml-3 mt-2"
               }
@@ -108,7 +107,7 @@ useEffect(() => {
             </label>
             <input
               className={
-                message == null
+                message === null
                   ? "border rounded-t-md w-full py-2 px-3 font-semibold leading-tight focus:outline-none focus:shadow-outline pt-6"
                   : "bg-red-100 border border-red-700 rounded-t-md w-full py-2 px-3 font-semibold leading-tight focus:outline-none focus:shadow-outline pt-6"
               }
@@ -123,7 +122,7 @@ useEffect(() => {
           <div className="mb-2">
             <label
               className={
-                message == null
+                message === null
                   ? "block text-gray-300 text-xs font-medium absolute ml-3 mt-2"
                   : "block text-red-500 text-xs font-medium absolute ml-3 mt-2"
               }
@@ -133,7 +132,7 @@ useEffect(() => {
             </label>
             <input
               className={
-                message == null
+                message === null
                   ? "appearance-none border rounded-b-md border-t-0 w-full py-2 px-3 font-semibold leading-tight focus:outline-none focus:shadow-outline pt-6"
                   : "appearance-none bg-red-100 border border-red-700 rounded-b-md border-t-0 w-full py-2 px-3 font-semibold leading-tight focus:outline-none focus:shadow-outline pt-6"
               }

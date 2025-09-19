@@ -10,7 +10,6 @@ const CartItem = ({
   onShowDiscountModal,
 }) => {
   const roles = useAuthStore((state) => state.roles);
-  const [loading, setLoading] = useState(false);
   const [animating, setAnimating] = useState(false);
 
   const handleQuantityUpdate = async (newQuantity) => {
@@ -86,7 +85,7 @@ const CartItem = ({
           <div className="flex gap-5 justify-between items-start mt-1.5 w-full">
             <div className="flex flex-col text-center">
               <div className="flex gap-2 text-xs">
-                {price != 0 ? (
+                {price !== 0 ? (
                   <>
                     <div className="grow text-neutral-400 line-through">
                       LKR {selling_price}
@@ -110,7 +109,7 @@ const CartItem = ({
               <div className="flex gap-3 mt-2.5">
                 <button
                   onClick={() => handleQuantityUpdate(quantity - 1)}
-                  disabled={loading || quantity <= 1}
+                  disabled={quantity <= 1}
                   className="flex shrink-0 bg-white rounded-full h-[13px] shadow-[0px_1px_2px_rgba(0,0,0,0.25)] w-[13px] flex-col justify-center items-center px-1 disabled:opacity-50"
                 >
                   -
@@ -120,7 +119,6 @@ const CartItem = ({
                 </div>
                 <button
                   onClick={() => handleQuantityUpdate(quantity + 1)}
-                  disabled={loading}
                   className={`flex flex-col justify-center items-center px-1 rounded-full h-[13px] w-[13px] transition-colors duration-300
                     ${animating ? 'bg-red-500 animate-bounce' : 'bg-white'} 
                     shadow-[0px_1px_2px_rgba(0,0,0,0.25)] disabled:opacity-50`}

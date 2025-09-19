@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "./api/axios";
 
@@ -10,9 +10,9 @@ const CustomerInvoice = () => {
 
   useEffect(() => {
     fetchInvoice();
-  }, [invoiceId]);
+  }, [invoiceId, fetchInvoice]);
 
-  const fetchInvoice = async () => {
+  const fetchInvoice = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -32,25 +32,10 @@ const CustomerInvoice = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [invoiceId]);
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const formatCurrency = (amount) => {
-    return `LKR ${parseFloat(amount).toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}`;
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div><p className="text-gray-600">Loading...</p></div></div>;

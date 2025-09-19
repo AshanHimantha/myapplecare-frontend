@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const PublicTicketView = () => {
   const { id } = useParams();
-  const [contactNumber, setContactNumber] = useState('');
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [ticketItems, setTicketItems] = useState([]);
-  const [showContactForm, setShowContactForm] = useState(true);
 
   // Load ticket when component mounts if ID is provided
   useEffect(() => {
     if (id) {
       loadTicket();
     }
-  }, [id]);
+  }, [id, loadTicket]);
 
-  const loadTicket = async () => {
+  const loadTicket = useCallback(async () => {
     if (!id) {
       setError('Please provide a valid ticket ID');
       return;
@@ -52,7 +50,6 @@ const PublicTicketView = () => {
           console.log('No items found for this ticket');
           setTicketItems([]);
         }
-        setShowContactForm(false); // Hide the contact form after successful fetch
       } else if (response.status === 404) {
         setError('Ticket not found');
       } else {
@@ -64,7 +61,7 @@ const PublicTicketView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -92,19 +89,6 @@ const PublicTicketView = () => {
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
-        return 'text-red-500';
-      case 'medium':
-        return 'text-yellow-500';
-      case 'low':
-        return 'text-green-500';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
   const calculateTotal = () => {
     const itemsTotal = ticketItems.reduce((sum, item) => {
       if (item.type === 'part') {
@@ -117,14 +101,6 @@ const PublicTicketView = () => {
 
     const serviceCharge = parseFloat(ticket?.service_charge || 0);
     return itemsTotal + serviceCharge;
-  };
-
-  const reset = () => {
-    setTicket(null);
-    setTicketItems([]);
-    setContactNumber('');
-    setError('');
-    setShowContactForm(true);
   };
 
   return (

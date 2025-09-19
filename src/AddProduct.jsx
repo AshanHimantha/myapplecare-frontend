@@ -5,7 +5,6 @@ import api from './api/axios';
 const AddProduct = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [subcategories, setSubcategories] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -16,7 +15,6 @@ const AddProduct = () => {
   });
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,11 +44,11 @@ const AddProduct = () => {
   };
 
   useEffect(() => {
-    if (selectedCategory) {
-      const category = categories.find(cat => cat.id === parseInt(selectedCategory));
+    if (formData.device_category_id) {
+      const category = categories.find(cat => cat.id === parseInt(formData.device_category_id));
       setSubcategories(category?.device_subcategories || []);
     }
-  }, [selectedCategory, categories]);
+  }, [formData.device_category_id, categories]);
 
   const validateField = (name, value) => {
     switch (name) {
@@ -81,22 +79,6 @@ const AddProduct = () => {
     // Find selected category and its subcategories
     const selectedCat = categories.find(cat => cat.id === parseInt(categoryId));
     setSubcategories(selectedCat?.device_subcategories || []);
-  };
-
-  const handleSubCategoryChange = (e) => {
-    const subCategoryId = e.target.value;
-    const selectedCategory = categories.find(
-      cat => cat.id.toString() === formData.device_category_id
-    );
-    const selectedSubCategory = selectedCategory?.device_subcategories.find(
-      sub => sub.id.toString() === subCategoryId
-    );
-
-    setFormData(prev => ({
-      ...prev,
-      device_subcategory_id: subCategoryId,
-      subCategory: selectedSubCategory?.name || ''
-    }));
   };
 
   const handleInputChange = (e) => {
@@ -146,7 +128,6 @@ const AddProduct = () => {
       return;
     }
     setLoading(true);
-    setError(null);
 
     try {
       const formPayload = new FormData();
@@ -171,11 +152,11 @@ const AddProduct = () => {
       if (response.data.status === 'success') {
         navigate('/products');
       } else {
-        setError(response.data.message || 'Failed to create product');
+        console.error(response.data.message || 'Failed to create product');
       }
       
     } catch (err) {
-      setError('Failed to create product');
+      console.error('Failed to create product');
       console.error(err);
     } finally {
       setLoading(false);
@@ -193,8 +174,8 @@ const AddProduct = () => {
       const name = newCategory.name.trim();
       const slug = name.toLowerCase()
         .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/[^\w-]+/g, '')        // Remove all non-word chars
+        .replace(/--+/g, '-')           // Replace multiple - with single -
         .replace(/^-+/, '')             // Trim - from start
         .replace(/-+$/, '');            // Trim - from end
   
@@ -226,8 +207,8 @@ const AddProduct = () => {
       const name = newSubCategory.name.trim();
       const slug = name.toLowerCase()
         .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-')
+        .replace(/[^\w-]+/g, '')
+        .replace(/--+/g, '-')
         .replace(/^-+/, '')
         .replace(/-+$/, '');
 

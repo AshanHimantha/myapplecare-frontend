@@ -4,8 +4,6 @@ import api from "../api/axios";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const navigate = useNavigate();
@@ -21,9 +19,7 @@ const ProductList = () => {
         setProducts(response.data.data);
       }
     } catch (err) {
-      setError("Failed to load products");
-    } finally {
-      setLoading(false);
+      console.error("Failed to load products", err);
     }
   };
 

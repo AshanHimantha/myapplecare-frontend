@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios';
 
@@ -20,9 +20,9 @@ const EditStock = () => {
 
   useEffect(() => {
     fetchStock();
-  }, [id]);
+  }, [fetchStock]);
 
-  const fetchStock = async () => {
+  const fetchStock = useCallback(async () => {
     try {
       const response = await api.get(`/stocks/${id}`);
 
@@ -64,7 +64,7 @@ const EditStock = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const validatePrices = (cost, selling) => {
     if (parseFloat(cost) >= parseFloat(selling)) {

@@ -95,32 +95,6 @@ const DashboardHome = () => {
     }]
   };
 
-  // Ticket status data
-  const ticketStatusData = {
-    labels: ['Open', 'In Progress', 'Completed', 'Cancelled'],
-    datasets: [{
-      data: [
-        dashboardData.ticket_status?.open || 0,
-        dashboardData.ticket_status?.in_progress || 0,
-        dashboardData.ticket_status?.completed || 0,
-        dashboardData.ticket_status?.cancelled || 0
-      ],
-      backgroundColor: [
-        'rgba(255, 159, 64, 0.7)',   // orange
-        'rgba(54, 162, 235, 0.7)',    // blue
-        'rgba(75, 192, 192, 0.7)',    // green
-        'rgba(255, 99, 132, 0.7)',    // red
-      ],
-      borderColor: [
-        'rgb(255, 159, 64)',
-        'rgb(54, 162, 235)',
-        'rgb(75, 192, 192)',
-        'rgb(255, 99, 132)',
-      ],
-      borderWidth: 1
-    }]
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

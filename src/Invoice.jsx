@@ -32,7 +32,7 @@ const Invoice = () => {
     } else {
       setFilteredInvoices(invoices);
     }
-  }, [searchTerm]);
+  }, [searchTerm, invoices]);
 
   useEffect(() => {
     const fetchInvoices = async () => {

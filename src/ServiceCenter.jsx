@@ -11,7 +11,6 @@ const ServiceCenter = () => {
   const [isCreateTicketVisible, setIsCreateTicketVisible] = useState(true);
   const [showTempTicketModal, setShowTempTicketModal] = useState(false);
   const [createdTicket, setCreatedTicket] = useState(null);
-  const [createdTicketItems, setCreatedTicketItems] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,6 @@ const ServiceCenter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPerPage, setCurrentPerPage] = useState(20);
   const containerRef = useRef(null);
-  const PER_PAGE = 20;
 
   const displayStatusOptions = ["All", "Pending", "Ongoing", "Completed"];
 
@@ -37,7 +35,6 @@ const ServiceCenter = () => {
 
   const handleTicketCreated = (ticketData) => {
     setCreatedTicket(ticketData);
-    setCreatedTicketItems([]); // For now, new tickets don't have items
     setShowTempTicketModal(true); // Show temp ticket
     // Refresh the tickets list
     setPage(1);
@@ -115,7 +112,7 @@ const ServiceCenter = () => {
         setLoading(false);
       }
     }, 500),
-    [status, fetchTickets, setLoading, setTickets, setHasMore]
+    [status, fetchTickets]
   );
 
   const handleSearchChange = (e) => {
@@ -152,7 +149,7 @@ const ServiceCenter = () => {
     setPage(1);
     setCurrentPerPage(20); // Reset per_page when status changes
     fetchTickets(1, 20);
-  }, [status]);
+  }, [status, fetchTickets]);
 
   useEffect(() => {
     if (page > 1) {
