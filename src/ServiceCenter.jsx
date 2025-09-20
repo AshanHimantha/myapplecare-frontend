@@ -17,7 +17,6 @@ const ServiceCenter = () => {
   const [hasMore, setHasMore] = useState(true);
   const [status, setStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPerPage, setCurrentPerPage] = useState(20);
   const containerRef = useRef(null);
 
   const displayStatusOptions = ["All", "Pending", "Ongoing", "Completed"];
@@ -46,35 +45,31 @@ const ServiceCenter = () => {
     setStatus(apiStatus);
     setPage(1); // Reset to first page
     setTickets([]); // Clear existing tickets
-    setCurrentPerPage(20); // Reset per_page to default
   };
 
   const fetchTickets = useCallback(
-    async (pageNum, perPageLimit = currentPerPage) => {
+    async (pageNum = 1, reset = false) => {
       try {
         setLoading(true);
-        // Request one more than we need to check if there are more records
-        const requestAmount = perPageLimit + 1;
         const response = await api.get(`/tickets-filter`, {
           params: {
             page: pageNum,
-            per_page: requestAmount,
+            per_page: 20, // Fixed per_page to 20
             status: status === "all" ? "" : status,
           },
         });
 
         if (response.data.status === "success") {
-          const hasMoreRecords = response.data.data.length > perPageLimit;
-          const ticketsToShow = hasMoreRecords 
-            ? response.data.data.slice(0, perPageLimit)
-            : response.data.data;
-
-          if (pageNum === 1) {
-            setTickets(ticketsToShow);
+          const newTickets = response.data.data;
+          
+          if (reset || pageNum === 1) {
+            setTickets(newTickets);
           } else {
-            setTickets((prev) => [...prev, ...ticketsToShow]);
+            setTickets((prev) => [...prev, ...newTickets]);
           }
-          setHasMore(hasMoreRecords);
+          
+          // Check if there are more records - if we got less than 20, no more data
+          setHasMore(newTickets.length === 20);
         }
       } catch (err) {
         console.error("Failed to fetch tickets:", err);
@@ -82,14 +77,14 @@ const ServiceCenter = () => {
         setLoading(false);
       }
     },
-    [status, currentPerPage]
-  ); // Add currentPerPage as dependency
+    [status]
+  );
 
   const handleSearch = useCallback(
     debounce(async (term) => {
       if (!term.trim()) {
-        setCurrentPerPage(20); // Reset per_page when clearing search
-        fetchTickets(1, 20);
+        setPage(1);
+        fetchTickets(1, true); // Reset to first page
         return;
       }
 
@@ -104,7 +99,7 @@ const ServiceCenter = () => {
 
         if (response.data.status === "success") {
           setTickets(response.data.data);
-          setHasMore(false);
+          setHasMore(false); // Search results don't support pagination
         }
       } catch (err) {
         console.error("Search failed:", err);
@@ -140,20 +135,19 @@ const ServiceCenter = () => {
   };
 
   const handleLoadMore = () => {
-    const newPerPage = currentPerPage + 20;
-    setCurrentPerPage(newPerPage);
-    fetchTickets(1, newPerPage);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchTickets(nextPage, false); // Load next page, don't reset
   };
 
   useEffect(() => {
     setPage(1);
-    setCurrentPerPage(20); // Reset per_page when status changes
-    fetchTickets(1, 20);
+    fetchTickets(1, true); // Reset to first page with reset flag
   }, [status, fetchTickets]);
 
   useEffect(() => {
     if (page > 1) {
-      fetchTickets(page);
+      fetchTickets(page, false); // Don't reset when loading additional pages
     }
   }, [page, fetchTickets]);
 
